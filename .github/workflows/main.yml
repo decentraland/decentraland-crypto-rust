@@ -30,21 +30,19 @@ jobs:
 
       - uses: actions-rs/cargo@v1
         with:
+          command: test
+          args: --docs
+
+      - uses: actions-rs/cargo@v1
+        with:
           command: build
           args: --release --all-features
 
       - uses: actions-rs/cargo@v1
+        if: ${{ github.ref == 'refs/heads/main' }}
         with:
           command: doc
           args: --no-deps
-
-      - name: testing
-        run: npm test -- --coverage
-
-      - name: coveralls
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       # publish to gh pages
       - name: publishing documents

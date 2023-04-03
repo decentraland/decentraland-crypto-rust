@@ -12,3 +12,4 @@
 - [ ] load identities from file
 - [ ] create identities
 - [ ] sign auth chain from identity
+- [ ] publish cargo
