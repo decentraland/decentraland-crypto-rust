@@ -113,7 +113,7 @@ impl From<[u8; 20]> for Address {
     /// ```rust
     ///   use decentraland_crypto::account::Address;
     ///
-    ///   let address = Address::from([0; 32])
+    ///   let address = Address::from([0; 20]);
     ///   assert_eq!(address.to_string(), "0x0000000000000000000000000000000000000000")
     /// ```
     fn from(value: [u8; 20]) -> Self {
@@ -128,7 +128,7 @@ impl From<H160> for Address {
     ///   use web3::types::H160;
     ///   use decentraland_crypto::account::Address;
     ///
-    ///   let address = Address::from(H160([0; 32]))
+    ///   let address = Address::from(H160([0; 20]));
     ///   assert_eq!(address.to_string(), "0x0000000000000000000000000000000000000000")
     /// ```
     fn from(value: H160) -> Self {
@@ -173,36 +173,33 @@ impl TryFrom<&str> for Address {
     ///
     /// It requires the address string to be prefixed with `0x`
     /// ```rust
-    ///   use decentraland_crypto::account::Address;
-    ///   use decentraland_crypto::error::FromHexError;
+    ///   use decentraland_crypto::account::{Address, DecodeHexError};
     ///
     ///   let not_prefixed_address = Address::try_from("f15fd08462c3248b2bfe9c39b48af7801fc303db");
     ///   assert_eq!(not_prefixed_address.is_err(), true);
-    ///   assert_eq!(not_prefixed_address, Err(FromHexError::MissingPrefix));
+    ///   assert_eq!(not_prefixed_address, Err(DecodeHexError::MissingPrefix));
     /// ```
     ///
     /// It requires the address to be `42` characters long
     /// ```rust
-    ///   use decentraland_crypto::account::Address;
-    ///   use decentraland_crypto::error::FromHexError;
+    ///   use decentraland_crypto::account::{Address, DecodeHexError};
     ///
     ///   let len_41_address = Address::try_from("0xf15fd08462c3248b2bfe9c39b48af7801fc303d");
     ///   assert_eq!(len_41_address.is_err(), true);
-    ///   assert_eq!(len_41_address, Err(FromHexError::InvalidLength(41)));
+    ///   assert_eq!(len_41_address, Err(DecodeHexError::InvalidLength));
     ///
     ///   let len_43_address = Address::try_from("0xf15fd08462c3248b2bfe9c39b48af7801fc303dbb");
     ///   assert_eq!(len_43_address.is_err(), true);
-    ///   assert_eq!(len_43_address, Err(FromHexError::InvalidLength(43)));
+    ///   assert_eq!(len_43_address, Err(DecodeHexError::InvalidLength));
     /// ```
     ///
     /// It requires all characters to be hexadecimals
     /// ```rust
-    ///   use decentraland_crypto::account::Address;
-    ///   use decentraland_crypto::error::FromHexError;
+    ///   use decentraland_crypto::account::{Address, DecodeHexError};
     ///
     ///   let not_hex_address = Address::try_from("0xf15fd08462c3248b2bfe9c39b48af7801fc303dx");
     ///   assert_eq!(not_hex_address.is_err(), true);
-    ///   assert_eq!(not_hex_address, Err(FromHexError::InvalidHexCharacter{ c: 'x', index: 41}));
+    ///   assert_eq!(not_hex_address, Err(DecodeHexError::InvalidHexCharacter{ c: 'x', index: 41}));
     /// ```
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let mut bits: [u8; 20] = [0; 20];
@@ -363,11 +360,6 @@ impl From<web3::signing::Signature> for PersonalSignature {
 impl TryFrom<&str> for PersonalSignature {
     type Error = DecodeHexError;
 
-    /// Creates a Signature from a hexadecimal representation
-    ///
-    /// ```rust
-    ///   Signature
-    /// ```
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         if value.len() != 132 {
             return Err(DecodeHexError::InvalidLength);
@@ -419,8 +411,8 @@ impl Display for PersonalSignature {
     /// Format signature on its hexadecimal representation
     ///
     /// ```rust
-    ///   use decentraland_crypto::account::Signature;
-    ///   assert_eq!(Signature::from([0; 65]).to_string(), "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
+    ///   use decentraland_crypto::account::PersonalSignature;
+    ///   assert_eq!(PersonalSignature::from([0; 65]).to_string(), "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
     /// ```
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "0x{}", hex::encode(self.0))
@@ -431,12 +423,12 @@ impl PersonalSignature {
     /// Recover the signer of the signature from a giving message
     ///
     /// ```rust
-    ///   use decentraland_crypto::account::Signature;
+    ///   use decentraland_crypto::account::PersonalSignature;
     ///   let signer = "0xb92702b3eefb3c2049aeb845b0335b283e11e9c6";
     ///   let message = "Decentraland Login\nEphemeral address: 0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3\nExpiration: 2023-03-30T15:44:55.787Z";
     ///   let payload = "0xd35f95b1e35e95e31a65d972348633c34411030ce971e2c49513a28a04706aa44906c6da35cf7bad51872b15dc971541952be62e63af8c8e9b300dfcddf4c60a1c";
     ///
-    ///   let sign = Signature::try_from(payload).unwrap();
+    ///   let sign = PersonalSignature::try_from(payload).unwrap();
     ///   let address = sign.try_recover_from_message(message).unwrap();
     ///   assert_eq!(address.to_string(), signer)
     /// ```
@@ -481,11 +473,6 @@ impl Display for EIP1271Signature {
 impl TryFrom<&str> for EIP1271Signature {
     type Error = DecodeHexError;
 
-    /// Creates a Signature from a hexadecimal representation
-    ///
-    /// ```rust
-    ///   Signature
-    /// ```
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let data = decode(value)?;
         Ok(Self(data))
@@ -524,8 +511,7 @@ static DEFAULT_EPHEMERAL_PAYLOAD_TITLE: &str = "Decentraland Login";
 /// An `EphemeralPayload` is a message that delegates the right to sign a message to a specific address until an expiration date.
 ///
 /// ```rust
-///     use decentraland_crypto::account::Address;
-///     use decentraland_crypto::chain::EphemeralPayload;
+///     use decentraland_crypto::account::{Address, EphemeralPayload};
 ///
 ///     let payload = EphemeralPayload::try_from("Decentraland Login\nEphemeral address: 0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3\nExpiration: 2023-03-30T15:44:55.787Z").unwrap();
 ///     let expiration = chrono::DateTime::parse_from_rfc3339("2023-03-30T15:44:55.787Z").unwrap().with_timezone(&chrono::Utc);
