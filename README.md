@@ -13,6 +13,6 @@
 - [ ] create identity
 - [ ] sign auth chain from identity
 - [ ] release process
-  - [ ] build cache (?)
+  - [x] build cache
   - [ ] coverage
   - [ ] publish cargo
