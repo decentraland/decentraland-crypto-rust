@@ -64,4 +64,4 @@ jobs:
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./target/doc/decentraland_crypto
+          publish_dir: ./target/doc
