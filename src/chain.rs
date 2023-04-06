@@ -14,8 +14,8 @@ static ECDSA_EIP_1654_SIGNED_ENTITY: &str = "ECDSA_EIP_1654_SIGNED_ENTITY";
 /// Representation of each link on an auth chain
 ///
 /// ```rust
-/// use decentraland_crypto::account::Address;
-/// use decentraland_crypto::chain::AuthLink;
+/// use dcl_crypto::account::Address;
+/// use dcl_crypto::chain::AuthLink;
 ///
 /// let signer = AuthLink::parse(r#"{"type": "SIGNER","payload": "0x3f17f1962b36e491b30a40b2405849e597ba5fb5","signature": ""}"#).unwrap();
 /// let expected = AuthLink::Signer{ payload: Address::try_from("0x3f17f1962b36e491b30a40b2405849e597ba5fb5").unwrap(), signature: String::new() };
@@ -23,8 +23,8 @@ static ECDSA_EIP_1654_SIGNED_ENTITY: &str = "ECDSA_EIP_1654_SIGNED_ENTITY";
 /// ```
 ///
 /// ```rust
-/// use decentraland_crypto::account::{Address, PersonalSignature, EphemeralPayload};
-/// use decentraland_crypto::chain::AuthLink;
+/// use dcl_crypto::account::{Address, PersonalSignature, EphemeralPayload};
+/// use dcl_crypto::chain::AuthLink;
 ///
 /// let personal_ephemeral = AuthLink::parse(r#"{"type":"ECDSA_EPHEMERAL","payload":"Decentraland Login\nEphemeral address: 0x612f2657CE738799056051aB09926cE806CcDa0E\nExpiration: 2023-05-02T23:06:21.135Z","signature":"0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c5"}"#).unwrap();
 /// let expected = AuthLink::EcdsaPersonalEphemeral{
@@ -121,7 +121,7 @@ impl AuthChain {
     /// Parse a json string into an AuthChain
     ///
     /// ```rust
-    /// use decentraland_crypto::chain::AuthChain;
+    /// use dcl_crypto::chain::AuthChain;
     ///
     /// let chain = AuthChain::parse(r#"[
     ///       {

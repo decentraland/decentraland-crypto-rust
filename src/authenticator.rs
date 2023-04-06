@@ -69,9 +69,9 @@ impl Transport for WithoutTransport {
 /// Validates a message and has correspond to an address.
 ///
 /// ```
-/// use decentraland_crypto::authenticator::Authenticator;
-/// use decentraland_crypto::account::Address;
-/// use decentraland_crypto::chain::AuthChain;
+/// use dcl_crypto::authenticator::Authenticator;
+/// use dcl_crypto::account::Address;
+/// use dcl_crypto::chain::AuthChain;
 ///
 /// # tokio_test::block_on(async {
 ///     let authenticator = Authenticator::new();
@@ -139,7 +139,22 @@ impl<T: Transport> Authenticator<T> {
         }
     }
 
-    fn validate_personal(
+    /// Validates a message and has correspond to an address.
+    ///
+    /// ```
+    /// use dcl_crypto::authenticator::Authenticator;
+    /// use dcl_crypto::account::{Address, PersonalSignature};
+    ///
+    /// # tokio_test::block_on(async {
+    ///     let address = Address::try_from("0xb92702b3EeFB3c2049aEB845B0335b283e11E9c6").unwrap();
+    ///     let message = "Decentraland Login\nEphemeral address: 0xF5E49370d9754924C9f082077ec6ad49F3113150\nExpiration: 2023-05-02T02:20:12.026Z".to_string();
+    ///     let hash = PersonalSignature::try_from("0xb2985d12400f9ee87091156b5951ee0e745efda50f503bbdcee3a3e7fc8adbb051b20ce386f7b400ae5865e7263c6a7155decda1af433287bceff911994849e81c").unwrap().to_vec();
+    ///
+    ///     let result = Authenticator::validate_personal(address, message, hash).unwrap();
+    ///     assert_eq!(result, true);
+    /// # })
+    /// ```
+    pub fn validate_personal(
         &self,
         address: Address,
         message: String,
