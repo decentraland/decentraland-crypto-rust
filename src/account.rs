@@ -47,7 +47,7 @@ impl From<hex::FromHexError> for DecodeHexError {
 /// # Example
 ///
 /// ```
-/// use decentraland_crypto::account::{decode, DecodeHexError};
+/// use dcl_crypto::account::{decode, DecodeHexError};
 ///
 /// assert_eq!(
 ///     decode("0x48656c6c6f20776f726c6421"),
@@ -78,7 +78,7 @@ pub fn decode(value: &str) -> Result<Vec<u8>, DecodeHexError> {
 /// # Example
 ///
 /// ```
-/// use decentraland_crypto::account::{decode_to_slice, DecodeHexError};
+/// use dcl_crypto::account::{decode_to_slice, DecodeHexError};
 ///
 /// let mut bytes = [0u8; 4];
 /// assert_eq!(decode_to_slice("0x6b697769", &mut bytes as &mut [u8]), Ok(()));
@@ -111,7 +111,7 @@ impl From<[u8; 20]> for Address {
     /// Converts `[u8; 20]` into an `Address`
     ///
     /// ```rust
-    ///   use decentraland_crypto::account::Address;
+    ///   use dcl_crypto::account::Address;
     ///
     ///   let address = Address::from([0; 20]);
     ///   assert_eq!(address.to_string(), "0x0000000000000000000000000000000000000000")
@@ -126,7 +126,7 @@ impl From<H160> for Address {
     ///
     /// ```rust
     ///   use web3::types::H160;
-    ///   use decentraland_crypto::account::Address;
+    ///   use dcl_crypto::account::Address;
     ///
     ///   let address = Address::from(H160([0; 20]));
     ///   assert_eq!(address.to_string(), "0x0000000000000000000000000000000000000000")
@@ -162,7 +162,7 @@ impl TryFrom<&str> for Address {
     /// Converts an hexadecimal representation into an Address
     ///
     /// ```rust
-    ///   use decentraland_crypto::account::Address;
+    ///   use dcl_crypto::account::Address;
     ///
     ///   let lower_address = Address::try_from("0xf15fd08462c3248b2bfe9c39b48af7801fc303db");
     ///   let upper_address = Address::try_from("0xF15FD08462C3248B2BFE9C39B48AF7801FC303DB");
@@ -173,7 +173,7 @@ impl TryFrom<&str> for Address {
     ///
     /// It requires the address string to be prefixed with `0x`
     /// ```rust
-    ///   use decentraland_crypto::account::{Address, DecodeHexError};
+    ///   use dcl_crypto::account::{Address, DecodeHexError};
     ///
     ///   let not_prefixed_address = Address::try_from("f15fd08462c3248b2bfe9c39b48af7801fc303db");
     ///   assert_eq!(not_prefixed_address.is_err(), true);
@@ -182,7 +182,7 @@ impl TryFrom<&str> for Address {
     ///
     /// It requires the address to be `42` characters long
     /// ```rust
-    ///   use decentraland_crypto::account::{Address, DecodeHexError};
+    ///   use dcl_crypto::account::{Address, DecodeHexError};
     ///
     ///   let len_41_address = Address::try_from("0xf15fd08462c3248b2bfe9c39b48af7801fc303d");
     ///   assert_eq!(len_41_address.is_err(), true);
@@ -195,7 +195,7 @@ impl TryFrom<&str> for Address {
     ///
     /// It requires all characters to be hexadecimals
     /// ```rust
-    ///   use decentraland_crypto::account::{Address, DecodeHexError};
+    ///   use dcl_crypto::account::{Address, DecodeHexError};
     ///
     ///   let not_hex_address = Address::try_from("0xf15fd08462c3248b2bfe9c39b48af7801fc303dx");
     ///   assert_eq!(not_hex_address.is_err(), true);
@@ -221,7 +221,7 @@ impl UpperHex for Address {
     /// Formats the `Address` into its hexadecimal uppercase representation
     ///
     /// ```rust
-    ///     use decentraland_crypto::account::Address;
+    ///     use dcl_crypto::account::Address;
     ///     let address = Address::from([255; 20]);
     ///     let zero = Address::from([0; 20]);
     ///
@@ -241,7 +241,7 @@ impl LowerHex for Address {
     /// Formats the `Address` into its hexadecimal lowercase representation
     ///
     /// ```rust
-    ///     use decentraland_crypto::account::Address;
+    ///     use dcl_crypto::account::Address;
     ///     let address = Address::from([255; 20]);
     ///     let zero = Address::from([0; 20]);
     ///
@@ -260,7 +260,7 @@ impl Display for Address {
     /// Format an Address into it string representation
     ///
     /// ```rust
-    ///   use decentraland_crypto::account::Address;
+    ///   use dcl_crypto::account::Address;
     ///   assert_eq!(Address::from([0; 20]).to_string(), "0x0000000000000000000000000000000000000000");
     ///   assert_eq!(Address::from([255; 20]).to_string(), "0xffffffffffffffffffffffffffffffffffffffff");
     /// ```
@@ -273,7 +273,7 @@ impl Address {
     /// Creates an instance of the zero address
     ///
     /// ```rust
-    ///   use decentraland_crypto::account::Address;
+    ///   use dcl_crypto::account::Address;
     ///   assert_eq!(Address::zero().to_string(), "0x0000000000000000000000000000000000000000")
     /// ```
     pub fn zero() -> Self {
@@ -283,7 +283,7 @@ impl Address {
     /// Calculate ERC-55 version of the address
     ///
     /// ```rust
-    ///     use decentraland_crypto::account::Address;
+    ///     use dcl_crypto::account::Address;
     ///     assert_eq!(Address::try_from("0x0f5d2fb29fb7d3cfee444a200298f468908cc942").unwrap().to_string_checksum(), "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942");
     ///     assert_eq!(Address::try_from("0x554bb6488ba955377359bed16b84ed0822679cdc").unwrap().to_string_checksum(), "0x554BB6488bA955377359bED16b84Ed0822679CDC");
     ///     assert_eq!(Address::try_from("0x1784ef41af86e97f8d28afe95b573a24aeda966e").unwrap().to_string_checksum(), "0x1784Ef41af86e97f8D28aFe95b573a24aEDa966e");
@@ -411,7 +411,7 @@ impl Display for PersonalSignature {
     /// Format signature on its hexadecimal representation
     ///
     /// ```rust
-    ///   use decentraland_crypto::account::PersonalSignature;
+    ///   use dcl_crypto::account::PersonalSignature;
     ///   assert_eq!(PersonalSignature::from([0; 65]).to_string(), "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
     /// ```
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -423,7 +423,7 @@ impl PersonalSignature {
     /// Recover the signer of the signature from a giving message
     ///
     /// ```rust
-    ///   use decentraland_crypto::account::PersonalSignature;
+    ///   use dcl_crypto::account::PersonalSignature;
     ///   let signer = "0xb92702b3eefb3c2049aeb845b0335b283e11e9c6";
     ///   let message = "Decentraland Login\nEphemeral address: 0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3\nExpiration: 2023-03-30T15:44:55.787Z";
     ///   let payload = "0xd35f95b1e35e95e31a65d972348633c34411030ce971e2c49513a28a04706aa44906c6da35cf7bad51872b15dc971541952be62e63af8c8e9b300dfcddf4c60a1c";
@@ -511,7 +511,7 @@ static DEFAULT_EPHEMERAL_PAYLOAD_TITLE: &str = "Decentraland Login";
 /// An `EphemeralPayload` is a message that delegates the right to sign a message to a specific address until an expiration date.
 ///
 /// ```rust
-///     use decentraland_crypto::account::{Address, EphemeralPayload};
+///     use dcl_crypto::account::{Address, EphemeralPayload};
 ///
 ///     let payload = EphemeralPayload::try_from("Decentraland Login\nEphemeral address: 0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3\nExpiration: 2023-03-30T15:44:55.787Z").unwrap();
 ///     let expiration = chrono::DateTime::parse_from_rfc3339("2023-03-30T15:44:55.787Z").unwrap().with_timezone(&chrono::Utc);
