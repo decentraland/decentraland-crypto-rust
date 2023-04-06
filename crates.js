@@ -1,1 +1,1 @@
-window.ALL_CRATES = ["decentraland_crypto"];
+window.ALL_CRATES = ["dcl_crypto","decentraland_crypto"];

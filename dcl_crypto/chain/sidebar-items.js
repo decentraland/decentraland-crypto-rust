@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["AuthLink","Representation of each link on an auth chain"]],"struct":[["AuthChain",""]]};
