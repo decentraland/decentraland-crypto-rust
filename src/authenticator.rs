@@ -73,9 +73,9 @@ type SignatureValidatorResult =
 /// Validates a message and has correspond to an address.
 ///
 /// ```
-/// use decentraland_crypto::authenticator::Authenticator;
-/// use decentraland_crypto::account::Address;
-/// use decentraland_crypto::chain::AuthChain;
+/// use dcl_crypto::authenticator::Authenticator;
+/// use dcl_crypto::account::Address;
+/// use dcl_crypto::chain::AuthChain;
 ///
 /// # tokio_test::block_on(async {
 ///     let authenticator = Authenticator::default();
@@ -135,8 +135,8 @@ impl Authenticator {
     /// Validates a message and has correspond to an address.
     ///
     /// ```
-    /// use decentraland_crypto::authenticator::Authenticator;
-    /// use decentraland_crypto::account::{Address, PersonalSignature};
+    /// use dcl_crypto::authenticator::Authenticator;
+    /// use dcl_crypto::account::{Address, PersonalSignature};
     ///
     /// # tokio_test::block_on(async {
     ///     let address = Address::try_from("0xb92702b3EeFB3c2049aEB845B0335b283e11E9c6").unwrap();
