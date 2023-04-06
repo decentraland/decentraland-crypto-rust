@@ -1,13 +1,16 @@
+use chrono::DateTime;
 use lazy_static::lazy_static;
 use regex::Regex;
-use std::{fmt::{Display, UpperHex, LowerHex}, ops::Deref};
-use chrono::DateTime;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
+use std::{
+    fmt::{Display, LowerHex, UpperHex},
+    ops::Deref,
+};
 
 use thiserror::Error;
 use web3::{
-    signing::{hash_message, recover, RecoveryError, keccak256},
-    types::{H256, H160},
+    signing::{hash_message, keccak256, recover, RecoveryError},
+    types::{H160, H256},
 };
 
 /// An error that can occur when decoding a hexadecimal string
@@ -33,7 +36,10 @@ impl From<hex::FromHexError> for DecodeHexError {
             hex::FromHexError::OddLength => DecodeHexError::OddLength,
             hex::FromHexError::InvalidStringLength => DecodeHexError::InvalidLength,
             hex::FromHexError::InvalidHexCharacter { c, index } => {
-                DecodeHexError::InvalidHexCharacter { c, index: index + 2 }
+                DecodeHexError::InvalidHexCharacter {
+                    c,
+                    index: index + 2,
+                }
             }
         }
     }
@@ -149,7 +155,6 @@ impl std::cmp::PartialEq<H160> for &Address {
 }
 
 impl From<Address> for String {
-
     /// Formats an `Address` into its `String` representation
     fn from(value: Address) -> Self {
         value.to_string_checksum()
@@ -237,7 +242,6 @@ impl UpperHex for Address {
 }
 
 impl LowerHex for Address {
-
     /// Formats the `Address` into its hexadecimal lowercase representation
     ///
     /// ```rust
@@ -377,7 +381,7 @@ impl TryFrom<String> for PersonalSignature {
     type Error = DecodeHexError;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
-       Self::try_from(value.as_str())
+        Self::try_from(value.as_str())
     }
 }
 
@@ -388,7 +392,7 @@ impl From<PersonalSignature> for String {
 }
 
 impl From<PersonalSignature> for web3::signing::Signature {
-  fn from(value: PersonalSignature) -> Self {
+    fn from(value: PersonalSignature) -> Self {
         let mut r: [u8; 32] = [0; 32];
         r.copy_from_slice(&value[..32]);
 
@@ -397,8 +401,12 @@ impl From<PersonalSignature> for web3::signing::Signature {
 
         let v: u64 = value.0[64] as u64;
 
-    Self { v, r: H256(r), s: H256(s) }
-  }
+        Self {
+            v,
+            r: H256(r),
+            s: H256(s),
+        }
+    }
 }
 
 impl From<PersonalSignature> for Vec<u8> {
@@ -499,12 +507,10 @@ impl From<EIP1271Signature> for String {
     }
 }
 
-
 /// Alias of EIP1271Signature
 /// See https://eips.ethereum.org/EIPS/eip-1271
 /// See https://github.com/ethereum/EIPs/issues/1654
 pub type EIP1654Signature = EIP1271Signature;
-
 
 static DEFAULT_EPHEMERAL_PAYLOAD_TITLE: &str = "Decentraland Login";
 
@@ -524,14 +530,13 @@ static DEFAULT_EPHEMERAL_PAYLOAD_TITLE: &str = "Decentraland Login";
 #[derive(PartialEq, Debug, Serialize, Deserialize, Clone)]
 #[serde(try_from = "String", into = "String")]
 pub struct EphemeralPayload {
-    pub raw: String,
     pub title: String,
     pub address: Address,
     pub expiration: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(PartialEq, Debug, Error)]
-pub enum DelegationPayloadError {
+pub enum EphemeralPayloadError {
     #[error("invalid payload content")]
     InvalidPayload,
 
@@ -541,26 +546,17 @@ pub enum DelegationPayloadError {
     #[error("missing address line on payload")]
     MissingAddress,
 
-    #[error("invalid address: {0}")]
-    InvalidAddress(DecodeHexError),
+    #[error("invalid address: {err} (address: {value})")]
+    InvalidAddress { err: DecodeHexError, value: String },
 
     #[error("missing expiration line on payload")]
     MissingExpiration,
 
-    #[error("invalid expiration: {0}")]
-    InvalidExpiration(chrono::ParseError),
-}
-
-impl From<DecodeHexError> for DelegationPayloadError {
-    fn from(err: DecodeHexError) -> Self {
-        DelegationPayloadError::InvalidAddress(err)
-    }
-}
-
-impl From<chrono::ParseError> for DelegationPayloadError {
-    fn from(err: chrono::ParseError) -> Self {
-        DelegationPayloadError::InvalidExpiration(err)
-    }
+    #[error("invalid expiration: {err} (expiration: {value})")]
+    InvalidExpiration {
+        err: chrono::ParseError,
+        value: String,
+    },
 }
 
 static RE_TITLE_CAPTURE: &str = "title";
@@ -568,7 +564,7 @@ static RE_ADDRESS_CAPTURE: &str = "address";
 static RE_EXPIRATION_CAPTURE: &str = "expiration";
 
 impl TryFrom<&str> for EphemeralPayload {
-    type Error = DelegationPayloadError;
+    type Error = EphemeralPayloadError;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         lazy_static! {
@@ -580,29 +576,40 @@ impl TryFrom<&str> for EphemeralPayload {
         }
 
         let captures = match EPHEMERAL_PAYLOAD_REGEX.captures(value) {
-            None => return Err(DelegationPayloadError::InvalidPayload),
+            None => return Err(EphemeralPayloadError::InvalidPayload),
             Some(captures) => captures,
         };
 
         let title = match captures.name(RE_TITLE_CAPTURE) {
-            None => return Err(DelegationPayloadError::MissingTitle),
+            None => return Err(EphemeralPayloadError::MissingTitle),
             Some(title) => title.as_str().to_string(),
         };
 
         let address = match captures.name(RE_ADDRESS_CAPTURE) {
-            None => return Err(DelegationPayloadError::MissingAddress),
-            Some(address) => Address::try_from(address.as_str())?,
+            None => return Err(EphemeralPayloadError::MissingAddress),
+            Some(address) => {
+                let value = address.as_str();
+                Address::try_from(value).map_err(|err| EphemeralPayloadError::InvalidAddress {
+                    value: value.to_string(),
+                    err,
+                })?
+            }
         };
 
         let expiration = match captures.name(RE_EXPIRATION_CAPTURE) {
-            None => return Err(DelegationPayloadError::MissingExpiration),
+            None => return Err(EphemeralPayloadError::MissingExpiration),
             Some(expiration) => {
-                DateTime::parse_from_rfc3339(expiration.as_str())?.with_timezone(&chrono::Utc)
+                let value = expiration.as_str();
+                DateTime::parse_from_rfc3339(value)
+                    .map_err(|err| EphemeralPayloadError::InvalidExpiration {
+                        value: value.to_string(),
+                        err,
+                    })?
+                    .with_timezone(&chrono::Utc)
             }
         };
 
         Ok(Self {
-            raw: value.to_string(),
             title,
             address,
             expiration,
@@ -611,7 +618,7 @@ impl TryFrom<&str> for EphemeralPayload {
 }
 
 impl TryFrom<String> for EphemeralPayload {
-    type Error = DelegationPayloadError;
+    type Error = EphemeralPayloadError;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
         Self::try_from(value.as_str())
@@ -622,8 +629,11 @@ impl Display for EphemeralPayload {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "{}",
-            self.raw
+            "{}\nEphemeral address: {}\nExpiration: {}",
+            self.title,
+            self.address.to_string_checksum(),
+            self.expiration
+                .to_rfc3339_opts(chrono::SecondsFormat::Millis, true)
         )
     }
 }
@@ -636,7 +646,11 @@ impl From<EphemeralPayload> for String {
 
 impl EphemeralPayload {
     pub fn new(address: Address, expiration: chrono::DateTime<chrono::Utc>) -> Self {
-        Self::new_with_title(String::from(DEFAULT_EPHEMERAL_PAYLOAD_TITLE), address, expiration)
+        Self::new_with_title(
+            String::from(DEFAULT_EPHEMERAL_PAYLOAD_TITLE),
+            address,
+            expiration,
+        )
     }
 
     pub fn new_with_title(
@@ -644,16 +658,7 @@ impl EphemeralPayload {
         address: Address,
         expiration: chrono::DateTime<chrono::Utc>,
     ) -> Self {
-        let raw = format!(
-            "{}\nEphemeral address: {}\nExpiration: {}",
-            title,
-            address.to_string_checksum(),
-            expiration
-                .to_rfc3339_opts(chrono::SecondsFormat::Millis, true)
-        );
-
         Self {
-            raw,
             title,
             address,
             expiration,
