@@ -45,6 +45,8 @@ jobs:
         with:
           command: test
           args: --doc
+        env:
+          ETHEREUM_MAINNET_RPC: ${{ secrets.ETHEREUM_MAINNET_RPC }}
 
       - uses: actions-rs/cargo@v1
         with:

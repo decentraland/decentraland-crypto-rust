@@ -516,15 +516,15 @@ static DEFAULT_EPHEMERAL_PAYLOAD_TITLE: &str = "Decentraland Login";
 ///     let payload = EphemeralPayload::try_from("Decentraland Login\nEphemeral address: 0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3\nExpiration: 2023-03-30T15:44:55.787Z").unwrap();
 ///     let expiration = chrono::DateTime::parse_from_rfc3339("2023-03-30T15:44:55.787Z").unwrap().with_timezone(&chrono::Utc);
 ///
-///     assert_eq!(payload, EphemeralPayload {
-///         title: String::from("Decentraland Login"),
-///         address: Address::try_from("0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3").unwrap(),
+///     assert_eq!(payload, EphemeralPayload::new(
+///         Address::try_from("0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3").unwrap(),
 ///         expiration,
-///     })
+///     ))
 /// ```
 #[derive(PartialEq, Debug, Serialize, Deserialize, Clone)]
 #[serde(try_from = "String", into = "String")]
 pub struct EphemeralPayload {
+    pub raw: String,
     pub title: String,
     pub address: Address,
     pub expiration: chrono::DateTime<chrono::Utc>,
@@ -602,6 +602,7 @@ impl TryFrom<&str> for EphemeralPayload {
         };
 
         Ok(Self {
+            raw: value.to_string(),
             title,
             address,
             expiration,
@@ -621,11 +622,8 @@ impl Display for EphemeralPayload {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "{}\n{}\n{}",
-            self.title,
-            self.address.to_string_checksum(),
-            self.expiration
-                .to_rfc3339_opts(chrono::SecondsFormat::Millis, true)
+            "{}",
+            self.raw
         )
     }
 }
@@ -638,11 +636,7 @@ impl From<EphemeralPayload> for String {
 
 impl EphemeralPayload {
     pub fn new(address: Address, expiration: chrono::DateTime<chrono::Utc>) -> Self {
-        Self {
-            title: String::from(DEFAULT_EPHEMERAL_PAYLOAD_TITLE),
-            address,
-            expiration,
-        }
+        Self::new_with_title(String::from(DEFAULT_EPHEMERAL_PAYLOAD_TITLE), address, expiration)
     }
 
     pub fn new_with_title(
@@ -650,7 +644,16 @@ impl EphemeralPayload {
         address: Address,
         expiration: chrono::DateTime<chrono::Utc>,
     ) -> Self {
+        let raw = format!(
+            "{}\nEphemeral address: {}\nExpiration: {}",
+            title,
+            address.to_string_checksum(),
+            expiration
+                .to_rfc3339_opts(chrono::SecondsFormat::Millis, true)
+        );
+
         Self {
+            raw,
             title,
             address,
             expiration,

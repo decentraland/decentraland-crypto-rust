@@ -1,13 +1,14 @@
-use futures::Future;
+use futures::future::BoxFuture;
 use thiserror::Error;
 use web3::{
     signing::{hash_message, recover, RecoveryError},
-    Error as Web3Error,
+    Error as Web3Error, RequestId, Transport, Web3,
 };
 
 use crate::{
     account::Address,
     chain::{AuthChain, AuthLink},
+    rpc::{rpc_call_is_valid_signature, RPCCallError},
 };
 
 #[derive(Debug, Error)]
@@ -27,14 +28,12 @@ pub enum AuthenticatorError {
     #[error("malformed authchain: expecting ECDSA_SIGNED_ENTITY or ECDSA_EIP_1654_SIGNED_ENTITY")]
     SignedEntityMissing,
 
-    #[error("ECDSA_EPHEMERAL or ECDSA_SIGNED_ENTITY cannot be validated because personal validator is not implemented")]
-    PersonalValidatorNotImplemented,
-
-    #[error("ECDSA_EIP_1654_EPHEMERAL or ECDSA_EIP_1654_SIGNED_ENTITY cannot be validated because eip1654 validator is not implemented")]
-    EIP1654ValidatorNotImplemented,
-
-    #[error("validation error: {0}")]
-    ValidationError(String),
+    #[error("fail to validate {kind} at position {position}: {message}")]
+    ValidationError {
+        position: usize,
+        kind: String,
+        message: String,
+    },
 
     #[error("unexpected authority at position {position}: expected {expected}, but found {found}")]
     UnexpectedSigner {
@@ -53,22 +52,19 @@ pub enum AuthenticatorError {
     },
 }
 
-impl From<RecoveryError> for AuthenticatorError {
-    fn from(value: RecoveryError) -> Self {
-        AuthenticatorError::ValidationError(value.to_string())
+#[derive(Debug, Clone)]
+pub struct WithoutTransport {}
+impl Transport for WithoutTransport {
+    type Out = BoxFuture<'static, Result<serde_json::Value, Web3Error>>;
+
+    fn prepare(&self, _method: &str, _params: Vec<serde_json::Value>) -> (usize, jsonrpc_core::types::request::Call) {
+        unimplemented!()
+    }
+
+    fn send(&self, _id: RequestId, _request: jsonrpc_core::Call) -> Self::Out {
+        unimplemented!()
     }
 }
-
-impl From<Web3Error> for AuthenticatorError {
-    fn from(value: Web3Error) -> Self {
-        AuthenticatorError::ValidationError(value.to_string())
-    }
-}
-
-type SignatureValidator =
-    Box<dyn Fn(Address, String, Vec<u8>) -> SignatureValidatorResult + Send + Sync + 'static>;
-type SignatureValidatorResult =
-    Box<dyn Future<Output = Result<bool, AuthenticatorError>> + Send + 'static>;
 
 /// Validates a message and has correspond to an address.
 ///
@@ -78,7 +74,7 @@ type SignatureValidatorResult =
 /// use decentraland_crypto::chain::AuthChain;
 ///
 /// # tokio_test::block_on(async {
-///     let authenticator = Authenticator::default();
+///     let authenticator = Authenticator::new();
 ///
 ///     let chain = AuthChain::parse(r#"[
 ///       {
@@ -105,55 +101,52 @@ type SignatureValidatorResult =
 ///     assert_eq!(result, owner);
 /// # })
 /// ```
-#[derive(Default)]
-pub struct Authenticator {
-    eip1654_validator: Option<SignatureValidator>,
+pub struct Authenticator<T> {
+    transport: Option<T>,
 }
 
-impl Authenticator {
-    pub fn with_eip1654_validator<H, R>(mut self, validator: H) -> Self
-    where
-        H: Fn(Address, String, Vec<u8>) -> R + Send + Sync + 'static,
-        R: Future<Output = Result<bool, AuthenticatorError>> + Send + 'static,
-    {
-        self.eip1654_validator = Some(Box::new(move |address, message, hash| {
-            Box::new(validator(address, message, hash))
-        }));
-        self
+impl Authenticator<()> {
+    pub fn new() -> Authenticator<WithoutTransport> {
+        Authenticator { transport: None }
     }
 
-    async fn validate_with(
-        validator: &SignatureValidator,
+    pub fn with_transport<T: Transport>(transport: T) -> Authenticator<T> {
+        Authenticator {
+            transport: Some(transport),
+        }
+    }
+}
+
+impl Authenticator<WithoutTransport> {
+    pub fn add_transport<T: Transport>(&self, transport: T) -> Authenticator<T> {
+        Authenticator {
+            transport: Some(transport),
+        }
+    }
+}
+
+impl<T: Transport> Authenticator<T> {
+    async fn validate_eip1654(
+        &self,
         address: Address,
         message: String,
         hash: Vec<u8>,
-    ) -> Result<bool, AuthenticatorError> {
-        let validation = validator(address, message, hash);
-        Box::into_pin(validation).await
+    ) -> Result<bool, RPCCallError> {
+        if let Some(transport) = &self.transport {
+            rpc_call_is_valid_signature(&Web3::new(transport).eth(), address, message, hash).await
+        } else {
+            Err(RPCCallError::NotImplemented)
+        }
     }
 
-    /// Validates a message and has correspond to an address.
-    ///
-    /// ```
-    /// use decentraland_crypto::authenticator::Authenticator;
-    /// use decentraland_crypto::account::{Address, PersonalSignature};
-    ///
-    /// # tokio_test::block_on(async {
-    ///     let address = Address::try_from("0xb92702b3EeFB3c2049aEB845B0335b283e11E9c6").unwrap();
-    ///     let message = "Decentraland Login\nEphemeral address: 0xF5E49370d9754924C9f082077ec6ad49F3113150\nExpiration: 2023-05-02T02:20:12.026Z".to_string();
-    ///     let hash = PersonalSignature::try_from("0xb2985d12400f9ee87091156b5951ee0e745efda50f503bbdcee3a3e7fc8adbb051b20ce386f7b400ae5865e7263c6a7155decda1af433287bceff911994849e81c").unwrap().to_vec();
-    ///
-    ///     let result = Authenticator::validate_personal(address, message, hash).unwrap();
-    ///     assert_eq!(result, true);
-    /// # })
-    /// ```
-    pub fn validate_personal(
+    fn validate_personal(
+        &self,
         address: Address,
         message: String,
         hash: Vec<u8>,
-    ) -> Result<bool, AuthenticatorError> {
+    ) -> Result<bool, RecoveryError> {
         if hash.len() != 65 {
-            return Err(RecoveryError::InvalidSignature.into());
+            return Err(RecoveryError::InvalidSignature);
         }
 
         let signature = hash.get(..=63).ok_or(RecoveryError::InvalidSignature)?;
@@ -164,6 +157,7 @@ impl Authenticator {
             (recovery_id as i32) - 27,
         )?;
 
+        println!("{} == {}", address, h160);
         Ok(address == h160)
     }
 
@@ -189,27 +183,49 @@ impl Authenticator {
     ) -> Result<&'a Address, AuthenticatorError> {
         match link {
             AuthLink::EcdsaPersonalEphemeral { payload, signature } => {
-                Authenticator::validate_personal(
-                    authority.clone(),
-                    payload.to_string(),
-                    signature.to_vec(),
-                )?;
+                let result = self
+                    .validate_personal(authority.clone(), payload.to_string(), signature.to_vec())
+                    .map_err(|err| AuthenticatorError::ValidationError {
+                        position,
+                        kind: link.kind().to_string(),
+                        message: err.to_string(),
+                    })?;
+
+                if !result {
+                    return Err(AuthenticatorError::ValidationError {
+                        position,
+                        kind: link.kind().to_string(),
+                        message: format!(
+                            "Signature {} couldn't be validated against address {}",
+                            signature, authority
+                        ),
+                    });
+                }
 
                 Ok(&payload.address)
             }
             AuthLink::EcdsaEip1654Ephemeral { payload, signature } => {
-                if let Some(eip1654_validator) = &self.eip1654_validator {
-                    Authenticator::validate_with(
-                        eip1654_validator,
-                        authority.clone(),
-                        payload.to_string(),
-                        signature.to_vec(),
-                    )
-                    .await?;
-                    Ok(&payload.address)
-                } else {
-                    Err(AuthenticatorError::EIP1654ValidatorNotImplemented)
+                let result = self
+                    .validate_eip1654(authority.clone(), payload.to_string(), signature.to_vec())
+                    .await
+                    .map_err(|err| AuthenticatorError::ValidationError {
+                        position,
+                        kind: link.kind().to_string(),
+                        message: err.to_string(),
+                    })?;
+
+                if !result {
+                    return Err(AuthenticatorError::ValidationError {
+                        position,
+                        kind: link.kind().to_string(),
+                        message: format!(
+                            "Signature {} couldn't be validated against address {}",
+                            signature, authority
+                        ),
+                    });
                 }
+
+                Ok(&payload.address)
             }
             _ => Err(AuthenticatorError::EphemeralExpected {
                 position,
@@ -226,27 +242,49 @@ impl Authenticator {
     ) -> Result<&'a str, AuthenticatorError> {
         match link {
             AuthLink::EcdsaPersonalSignedEntity { payload, signature } => {
-                Authenticator::validate_personal(
-                    authority.clone(),
-                    payload.to_string(),
-                    signature.to_vec(),
-                )?;
+                let result = self
+                    .validate_personal(authority.clone(), payload.to_string(), signature.to_vec())
+                    .map_err(|err| AuthenticatorError::ValidationError {
+                        position,
+                        kind: link.kind().to_string(),
+                        message: err.to_string(),
+                    })?;
+
+                if !result {
+                    return Err(AuthenticatorError::ValidationError {
+                        position,
+                        kind: link.kind().to_string(),
+                        message: format!(
+                            "Signature {} couldn't be validated against address {}",
+                            signature, authority
+                        ),
+                    });
+                }
 
                 Ok(payload)
             }
             AuthLink::EcdsaEip1654SignedEntity { payload, signature } => {
-                if let Some(eip1654_validator) = &self.eip1654_validator {
-                    Authenticator::validate_with(
-                        eip1654_validator,
-                        authority.clone(),
-                        payload.to_string(),
-                        signature.to_vec(),
-                    )
-                    .await?;
-                    Ok(payload)
-                } else {
-                    Err(AuthenticatorError::EIP1654ValidatorNotImplemented)
+                let result = self
+                    .validate_eip1654(authority.clone(), payload.to_string(), signature.to_vec())
+                    .await
+                    .map_err(|err| AuthenticatorError::ValidationError {
+                        position,
+                        kind: link.kind().to_string(),
+                        message: err.to_string(),
+                    })?;
+
+                if !result {
+                    return Err(AuthenticatorError::ValidationError {
+                        position,
+                        kind: link.kind().to_string(),
+                        message: format!(
+                            "Signature {} couldn't be validated against address {}",
+                            signature, authority
+                        ),
+                    });
                 }
+
+                Ok(payload)
             }
             _ => Err(AuthenticatorError::SignedEntityExpected {
                 position,
@@ -267,7 +305,7 @@ impl Authenticator {
 
         let len = chain.len();
 
-        let mut latest_authority = &Address::default();
+        let mut latest_authority = owner;
         for (position, link) in chain.iter().enumerate().skip(1) {
             // is not the last link
             if position != len - 1 {
@@ -280,6 +318,7 @@ impl Authenticator {
                 let signed_message = self
                     .verify_signed_entity(latest_authority, link, position)
                     .await?;
+
                 if signed_message == last_authority {
                     return Ok(owner);
                 } else {
