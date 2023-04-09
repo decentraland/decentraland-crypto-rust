@@ -180,6 +180,65 @@
 <a href="#180" id="180">180</a>
 <a href="#181" id="181">181</a>
 <a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::ops::Deref;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>serde_json::Error <span class="kw">as </span>SerdeError;
@@ -236,16 +295,16 @@
         signature: PersonalSignature,
     },
 
-    <span class="doccomment">/// See https://github.com/ethereum/EIPs/issues/1654
-    /// See https://eips.ethereum.org/EIPS/eip-1271
+    <span class="doccomment">/// See &lt;https://github.com/ethereum/EIPs/issues/1654&gt;
+    /// See &lt;https://eips.ethereum.org/EIPS/eip-1271&gt;
     </span><span class="attr">#[serde(rename = <span class="string">&quot;ECDSA_EIP_1654_EPHEMERAL&quot;</span>)]
     </span>EcdsaEip1654Ephemeral {
         payload: EphemeralPayload,
         signature: EIP1271Signature,
     },
 
-    <span class="doccomment">/// See https://github.com/ethereum/EIPs/issues/1654
-    /// See https://eips.ethereum.org/EIPS/eip-1271
+    <span class="doccomment">/// See &lt;https://github.com/ethereum/EIPs/issues/1654&gt;
+    /// See &lt;https://eips.ethereum.org/EIPS/eip-1271&gt;
     </span><span class="attr">#[serde(rename = <span class="string">&quot;ECDSA_EIP_1654_SIGNED_ENTITY&quot;</span>)]
     </span>EcdsaEip1654SignedEntity {
         payload: String,
@@ -293,17 +352,32 @@
 
 <span class="kw">impl </span>AuthChain {
 
-    <span class="kw">pub fn </span>simple(signer: Address, payload: String, signature: PersonalSignature) -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Returns the original owner of the chain
+    ///
+    /// ```rust
+    /// use dcl_crypto::chain::AuthChain;
+    /// use dcl_crypto::account::{Address, PersonalSignature};
+    ///
+    /// let address = Address::try_from(&quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;).unwrap();
+    /// let payload = String::from(&quot;signed message&quot;);
+    /// let signature = PersonalSignature::try_from(&quot;0x013e0b0b75bd8404d70a37d96bb893596814d8f29f517e383d9d1421111f83c32d4ca0d6e399349c7badd54261feaa39895d027880d28d806c01089677400b7c1b&quot;).unwrap();
+    ///
+    /// let chain = AuthChain::simple(address, payload, signature);
+    /// let owner = chain.owner().unwrap();
+    /// assert_eq!(owner, &amp;Address::try_from(&quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;).unwrap());
+    /// ```
+    </span><span class="kw">pub fn </span>simple(signer: Address, payload: String, signature: PersonalSignature) -&gt; <span class="self">Self </span>{
         AuthChain::from(<span class="macro">vec!</span>[
             AuthLink::signer(signer),
             AuthLink::EcdsaPersonalSignedEntity { payload, signature }
         ])
     }
 
-    <span class="doccomment">/// Parse a json string into an AuthChain
+    <span class="doccomment">/// Parse a json string and returns an AuthChain
     ///
     /// ```rust
     /// use dcl_crypto::chain::AuthChain;
+    /// use dcl_crypto::account::Address;
     ///
     /// let chain = AuthChain::parse(r#&quot;[
     ///       {
@@ -323,11 +397,40 @@
     ///      }
     ///    ]&quot;#).unwrap();
     /// ```
+    ///
+    /// let owner = chain.owner().unwrap();
+    /// assert_eq!(owner, &amp;Address::try_from(&quot;0x3f17f1962b36e491b30a40b2405849e597ba5fb5&quot;).unwrap());
     </span><span class="kw">pub fn </span>parse(value: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;AuthChain, SerdeError&gt; {
         serde_json::from_str::&lt;AuthChain&gt;(value)
     }
 
-    <span class="kw">pub fn </span>parse_links(value: Vec&lt;<span class="kw-2">&amp;</span>str&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;AuthChain, SerdeError&gt; {
+    <span class="doccomment">/// Parse a list of json strings and returns an AuthChain
+    ///
+    /// ```rust
+    /// use dcl_crypto::account::Address;
+    /// use dcl_crypto::chain::AuthChain;
+    ///
+    /// let chain = AuthChain::parse_links(vec![
+    ///      r#&quot;{
+    ///        &quot;type&quot;: &quot;SIGNER&quot;,
+    ///        &quot;payload&quot;: &quot;0x3f17f1962b36e491b30a40b2405849e597ba5fb5&quot;,
+    ///        &quot;signature&quot;: &quot;&quot;
+    ///      }&quot;#,
+    ///     r#&quot;{
+    ///        &quot;type&quot;: &quot;ECDSA_EPHEMERAL&quot;,
+    ///        &quot;payload&quot;: &quot;Decentraland Login\nEphemeral address: 0x612f2657CE738799056051aB09926cE806CcDa0E\nExpiration: 2023-05-02T23:06:21.135Z&quot;,
+    ///        &quot;signature&quot;: &quot;0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c5&quot;
+    ///      }&quot;#,
+    ///     r#&quot;{
+    ///        &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;,
+    ///        &quot;payload&quot;: &quot;signed message&quot;,
+    ///        &quot;signature&quot;: &quot;0x6168f285b5f905510de86c042c08fea79a66fff86abdf9ba4d374d0a6680ffc52ac251e36430a208d2369692797b3b049164b4b68d7519f50c8e5022e100837c1c&quot;
+    ///      }&quot;#]).unwrap();
+    ///
+    /// let owner = chain.owner().unwrap();
+    /// assert_eq!(owner, &amp;Address::try_from(&quot;0x3f17f1962b36e491b30a40b2405849e597ba5fb5&quot;).unwrap());
+    /// ```
+    </span><span class="kw">pub fn </span>parse_links(value: Vec&lt;<span class="kw-2">&amp;</span>str&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;AuthChain, SerdeError&gt; {
         <span class="kw">let </span>links = value
             .iter()
             .map(|link| {
@@ -339,12 +442,27 @@
         <span class="prelude-val">Ok</span>(AuthChain::from(links))
     }
 
-    <span class="kw">pub fn </span>owner(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Address&gt; {
+    <span class="doccomment">/// Returns the original owner of the chain
+    ///
+    /// ```rust
+    /// use dcl_crypto::chain::AuthChain;
+    /// use dcl_crypto::account::Address;
+    ///
+    /// let chain = AuthChain::parse(r#&quot;[
+    ///     { &quot;type&quot;: &quot;SIGNER&quot;, &quot;payload&quot;: &quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;, &quot;signature&quot;: &quot;&quot;},
+    ///     { &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;, &quot;payload&quot;: &quot;signed message&quot;, &quot;signature&quot;: &quot;0x013e0b0b75bd8404d70a37d96bb893596814d8f29f517e383d9d1421111f83c32d4ca0d6e399349c7badd54261feaa39895d027880d28d806c01089677400b7c1b&quot;}
+    /// ]&quot;#).unwrap();
+    ///
+    /// let owner = chain.owner().unwrap();
+    /// assert_eq!(owner, &amp;Address::try_from(&quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;).unwrap());
+    /// ```
+    </span><span class="kw">pub fn </span>owner(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Address&gt; {
         <span class="kw">match </span>(<span class="kw-2">*</span><span class="self">self</span>).first() {
             <span class="prelude-val">Some</span>(AuthLink::Signer{ payload, .. }) =&gt; <span class="prelude-val">Some</span>(payload),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
     }
+
 
     <span class="kw">pub fn </span>is_expired(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.iter().any(|link| <span class="kw">match </span>link {
