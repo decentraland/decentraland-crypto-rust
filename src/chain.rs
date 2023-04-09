@@ -54,16 +54,16 @@ pub enum AuthLink {
         signature: PersonalSignature,
     },
 
-    /// See https://github.com/ethereum/EIPs/issues/1654
-    /// See https://eips.ethereum.org/EIPS/eip-1271
+    /// See <https://github.com/ethereum/EIPs/issues/1654>
+    /// See <https://eips.ethereum.org/EIPS/eip-1271>
     #[serde(rename = "ECDSA_EIP_1654_EPHEMERAL")]
     EcdsaEip1654Ephemeral {
         payload: EphemeralPayload,
         signature: EIP1271Signature,
     },
 
-    /// See https://github.com/ethereum/EIPs/issues/1654
-    /// See https://eips.ethereum.org/EIPS/eip-1271
+    /// See <https://github.com/ethereum/EIPs/issues/1654>
+    /// See <https://eips.ethereum.org/EIPS/eip-1271>
     #[serde(rename = "ECDSA_EIP_1654_SIGNED_ENTITY")]
     EcdsaEip1654SignedEntity {
         payload: String,
