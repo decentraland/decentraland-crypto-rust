@@ -32,10 +32,21 @@ jobs:
           restore-keys: ${{ runner.os }}-cargo-
 
       - name: publishing lib
-        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: cargo-edit
+
+      - name: publishing lib
+        uses: actions-rs/cargo@v1
+        with:
+          command: set-version
+          args: ${{github.ref_name}}
+
+      - name: publishing lib
         uses: actions-rs/cargo@v1
         with:
           command: publish
-          args: --release --token ${CRATESIO_TOKEN} -p dcl-crypto
+          args: --release --token ${CRATESIO_TOKEN} -p dcl-crypto --allow-dirty
         env:
           CRATESIO_TOKEN: ${{ secrets.CRATESIO_TOKEN }}
