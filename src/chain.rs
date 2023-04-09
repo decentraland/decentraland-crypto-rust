@@ -166,6 +166,7 @@ impl AuthChain {
     /// Parse a list of json strings and returns an AuthChain
     ///
     /// ```rust
+    /// use dcl_crypto::account::Address;
     /// use dcl_crypto::chain::AuthChain;
     ///
     /// let chain = AuthChain::parse_links(vec![
