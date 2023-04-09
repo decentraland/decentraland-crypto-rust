@@ -187,7 +187,7 @@ impl AuthChain {
     ///      }"#]).unwrap();
     ///
     /// let owner = chain.owner().unwrap();
-    /// assert_eq!(owner, &Address::try_from("0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34").unwrap());
+    /// assert_eq!(owner, &Address::try_from("0x3f17f1962b36e491b30a40b2405849e597ba5fb5").unwrap());
     /// ```
     pub fn parse_links(value: Vec<&str>) -> Result<AuthChain, SerdeError> {
         let links = value
