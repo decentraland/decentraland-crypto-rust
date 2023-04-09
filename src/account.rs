@@ -508,8 +508,8 @@ impl From<EIP1271Signature> for String {
 }
 
 /// Alias of EIP1271Signature
-/// See https://eips.ethereum.org/EIPS/eip-1271
-/// See https://github.com/ethereum/EIPs/issues/1654
+/// See <https://eips.ethereum.org/EIPS/eip-1271>
+/// See <https://github.com/ethereum/EIPs/issues/1654>
 pub type EIP1654Signature = EIP1271Signature;
 
 static DEFAULT_EPHEMERAL_PAYLOAD_TITLE: &str = "Decentraland Login";
