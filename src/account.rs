@@ -39,6 +39,12 @@ impl From<hex::FromHexError> for DecodeHexError {
     }
 }
 
+impl From<secp256k1::Error> for DecodeHexError {
+    fn from(_value: secp256k1::Error) -> Self {
+        DecodeHexError::InvalidLength
+    }
+}
+
 /// Decodes a hex string prefixed with `0x` into raw bytes.
 ///
 /// Both, upper and lower case characters are valid in the input string and can
@@ -357,6 +363,15 @@ impl From<web3::signing::Signature> for PersonalSignature {
     }
 }
 
+impl From<secp256k1::ecdsa::Signature> for PersonalSignature {
+    fn from(value: secp256k1::ecdsa::Signature) -> Self {
+        let mut bits: [u8; 65] = [0; 65];
+        bits[..64].copy_from_slice(&value.serialize_compact());
+        bits[64] = 0x1b;
+        Self(bits)
+    }
+}
+
 impl TryFrom<&str> for PersonalSignature {
     type Error = DecodeHexError;
 
@@ -663,5 +678,73 @@ impl EphemeralPayload {
 
     pub fn is_expired_at(&self, time: chrono::DateTime<chrono::Utc>) -> bool {
         self.expiration < time
+    }
+}
+
+struct Hash(H256);
+
+impl secp256k1::ThirtyTwoByteHash for Hash {
+    fn into_32(self) -> [u8; 32] {
+        self.0.0
+    }
+}
+
+
+pub struct Account(secp256k1::SecretKey);
+
+impl TryFrom<&str> for Account {
+    type Error = DecodeHexError;
+
+    /// Creates a new account from a private key in hex format.
+    ///
+    /// ```rust
+    /// use dcl_crypto::account::Account;
+    ///
+    /// ```
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        let mut bytes = [0u8; 32];
+        decode_to_slice(value, &mut bytes)?;
+        let key = secp256k1::SecretKey::from_slice(&bytes)?;
+        Ok(Self(key))
+    }
+}
+
+impl Account {
+
+    /// Return the address of the account.
+    ///
+    /// ```rust
+    /// use dcl_crypto::account::{Account, Address};
+    ///
+    /// let account = Account::try_from("0xbc453a92d9baeb3d10294cbc1d48ef6738f718fd31b4eb8085efe7b311299399").unwrap();
+    /// let address = account.address();
+    /// assert_eq!(address, Address::try_from("0x84452bbFA4ca14B7828e2F3BBd106A2bD495CD34").unwrap());
+    /// ```
+    pub fn address(&self) -> Address {
+        lazy_static!{
+            static ref SECP256K1: secp256k1::Secp256k1<secp256k1::All> = secp256k1::Secp256k1::new();
+        }
+
+        let public = self.0.public_key(&SECP256K1).serialize_uncompressed();
+        let hash = keccak256(&public[1..]);
+        let mut bytes = [0u8; 20];
+        bytes.copy_from_slice(&hash[12..]);
+        Address::from(bytes)
+    }
+
+    /// Sign a message with the account.
+    ///
+    /// ```rust
+    /// use dcl_crypto::account::{Account, PersonalSignature};
+    ///
+    /// let account = Account::try_from("0xbc453a92d9baeb3d10294cbc1d48ef6738f718fd31b4eb8085efe7b311299399").unwrap();
+    /// let message = account.sign("signed message");
+    /// assert_eq!(message, PersonalSignature::try_from("0x013e0b0b75bd8404d70a37d96bb893596814d8f29f517e383d9d1421111f83c32d4ca0d6e399349c7badd54261feaa39895d027880d28d806c01089677400b7c1b").unwrap());
+    /// ```
+    pub fn sign(&self, message: &str) -> PersonalSignature {
+        let data = hash_message(message.as_bytes());
+        let message = secp256k1::Message::from(Hash(data));
+        let bytes = self.0.sign_ecdsa(message);
+        bytes.into()
     }
 }
