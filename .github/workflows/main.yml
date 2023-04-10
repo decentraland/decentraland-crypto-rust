@@ -23,7 +23,8 @@ jobs:
         with:
           toolchain: stable
 
-      - uses: actions-rs/clippy-check@v1
+      - name: Clippy (lint)
+        uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --all-features
@@ -41,24 +42,27 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-
 
-      - uses: actions-rs/cargo@v1
+      - name: Test
+        uses: actions-rs/cargo@v1
         with:
           command: test
           args: --doc
 
-      - uses: actions-rs/cargo@v1
+      - name: Build
+        uses: actions-rs/cargo@v1
         with:
           command: build
           args: --release --all-features
 
-      - uses: actions-rs/cargo@v1
+      - name: Build docs
+        uses: actions-rs/cargo@v1
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           command: doc
           args: --no-deps
 
       # publish to gh pages
-      - name: publishing documents
+      - name: Publish docs
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: peaceiris/actions-gh-pages@v3
         with:

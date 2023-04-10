@@ -31,19 +31,19 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-
 
-      - name: publishing lib
+      - name: Intall cargo-edit
         uses: actions-rs/cargo@v1
         with:
           command: install
           args: cargo-edit
 
-      - name: publishing lib
+      - name: Set version
         uses: actions-rs/cargo@v1
         with:
           command: set-version
           args: ${{github.ref_name}}
 
-      - name: publishing lib
+      - name: Publish lib
         uses: actions-rs/cargo@v1
         with:
           command: publish
