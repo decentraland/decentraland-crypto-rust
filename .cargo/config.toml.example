@@ -1,0 +1,2 @@
+[env]
+ETHEREUM_MAINNET_RPC = "https://mainnet.infura.io/v3/00000000000000000000000000000000"

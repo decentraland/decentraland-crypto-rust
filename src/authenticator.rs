@@ -363,23 +363,22 @@ mod test {
         let chain = AuthChain::parse(r#"[
             {
               "type": "SIGNER",
-              "payload": "0x3b21028719a4aca7ebee35b0157a6f1b0cf0d0c5",
+              "payload": "0x8C889222833F961FC991B31d15e25738c6732930",
               "signature": ""
             },
             {
               "type": "ECDSA_EIP_1654_EPHEMERAL",
-              "payload": "Decentraland Login\nEphemeral address: 0x69fBdE5Da06eb76e8E7F6Fd2FEEd968F28b951a5\nExpiration: Tue Aug 06 7112 10:14:51 GMT-0300 (Argentina Standard Time)",
-              "signature": "0x03524dbe44d19aacc8162b4d5d17820c370872de7bfd25d1add2b842adb1de546b454fc973b6d215883c30f4c21774ae71683869317d773f27e6bfaa9a2a05101b36946c3444914bb93f17a29d88e2449bcafdb6478b4835102c522197fa6f63d13ce5ab1d5c11c95db0c210fb4380995dff672392e5569c86d7c6bb2a44c53a151c"
+              "payload": "Decentraland Login\nEphemeral address: 0x4A1b9FD363dE915145008C41FA217377B2C223F2\nExpiration: 2123-03-18T16:59:36.515Z",
+              "signature": "0x00050203596af90cecdbf9a768886e771178fd5561dd27ab005d000100019dde76f11e2c6aff01f6548f3046a9d0c569e13e79dec4218322068d3123e1162167fabd84dccfaabd350b93d2405f7b8a9cef4846b4d9a55d17838809a0e2591b020101c50adeadb7fe15bee45dcb820610cdedcd314eb0030102640dccefda3685e6c0dbeb70c1cf8018c27077eb00021cfbe892a1b29ac5e2fda1038c7965656be94aec57b658582f16447089bcf50b09df216a7e21d861cd7474723a7bfc70bf1caa55a962476cf78eb4b54471018b1b020103d9e87370ededc599df3bf9dd0e48586005f1a1bb"
             },
             {
               "type": "ECDSA_SIGNED_ENTITY",
               "payload": "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo",
-              "signature": "0xd73b0315dd39080d9b6d1a613a56732a75d68d2cef2a38f3b7be12bdab3c59830c92c6bdf394dcb47ba1aa736e0338cf9112c9eee59dbe4109b8af6a993b12d71b"
+              "signature": "0xb962b57accc8e12083769339888f82752d13f280012b2c7b2aa2722eae103aea7a623dc88605bf7036ec8c23b0bb8f036b52f5e4e30ee913f6f2a077d5e5e3e01b"
             }
           ]"#).unwrap();
 
         let owner = authenticator.verify(&chain, "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo").await.unwrap();
-        assert_eq!(owner.to_string(), "0x3b21028719a4aca7ebee35b0157a6f1b0cf0d0c5");
-        // let chain = AuthChain::from_s
+        assert_eq!(owner, &Address::try_from("0x8C889222833F961FC991B31d15e25738c6732930").unwrap());
     }
 }
