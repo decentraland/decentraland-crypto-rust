@@ -1,3 +1,4 @@
+use hex::encode;
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::{fmt::{Display, UpperHex, LowerHex}, ops::Deref};
@@ -681,6 +682,7 @@ impl EphemeralPayload {
     }
 }
 
+// abstraction to implement secp256k1::ThirtyTwoByteHash for H256
 struct Hash(H256);
 
 impl secp256k1::ThirtyTwoByteHash for Hash {
@@ -689,7 +691,26 @@ impl secp256k1::ThirtyTwoByteHash for Hash {
     }
 }
 
+// Calculate the public key from a secret key
+fn to_public_key(secret: &secp256k1::SecretKey) -> secp256k1::PublicKey {
+    lazy_static!{
+        static ref SECP256K1: secp256k1::Secp256k1<secp256k1::All> = secp256k1::Secp256k1::new();
+    }
 
+    secret.public_key(&SECP256K1)
+}
+
+// Intermediary representation of a private key from an Identity
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct EphemeralAccount {
+    address: String,
+    public_key: String,
+    pub private_key: Account,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(try_from = "EphemeralAccount", into = "EphemeralAccount")]
 pub struct Account(secp256k1::SecretKey);
 
 impl TryFrom<&str> for Account {
@@ -709,6 +730,37 @@ impl TryFrom<&str> for Account {
     }
 }
 
+impl TryFrom<String> for Account {
+    type Error = DecodeHexError;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        Self::try_from(value.as_str())
+    }
+}
+
+impl From<Account> for String {
+    fn from(account: Account) -> Self {
+        format!("0x{}", encode(account.0.secret_bytes()))
+    }
+}
+
+impl From<EphemeralAccount> for Account {
+    fn from(account: EphemeralAccount) -> Self {
+        account.private_key
+    }
+}
+
+impl From<Account> for EphemeralAccount {
+    fn from(account: Account) -> Self {
+        let public = to_public_key(&account.0).serialize_uncompressed();
+        Self {
+            address: account.address().to_string_checksum(),
+            public_key: format!("0x{}", hex::encode(public)),
+            private_key: account,
+        }
+    }
+}
+
 impl Account {
 
     /// Return the address of the account.
@@ -717,15 +769,10 @@ impl Account {
     /// use dcl_crypto::account::{Account, Address};
     ///
     /// let account = Account::try_from("0xbc453a92d9baeb3d10294cbc1d48ef6738f718fd31b4eb8085efe7b311299399").unwrap();
-    /// let address = account.address();
-    /// assert_eq!(address, Address::try_from("0x84452bbFA4ca14B7828e2F3BBd106A2bD495CD34").unwrap());
+    /// assert_eq!(account.address(), Address::try_from("0x84452bbFA4ca14B7828e2F3BBd106A2bD495CD34").unwrap());
     /// ```
     pub fn address(&self) -> Address {
-        lazy_static!{
-            static ref SECP256K1: secp256k1::Secp256k1<secp256k1::All> = secp256k1::Secp256k1::new();
-        }
-
-        let public = self.0.public_key(&SECP256K1).serialize_uncompressed();
+        let public = to_public_key(&self.0).serialize_uncompressed();
         let hash = keccak256(&public[1..]);
         let mut bytes = [0u8; 20];
         bytes.copy_from_slice(&hash[12..]);
