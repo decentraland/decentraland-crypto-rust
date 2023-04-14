@@ -569,7 +569,7 @@ impl TryFrom<&str> for EphemeralPayload {
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         lazy_static! {
             static ref EPHEMERAL_PAYLOAD_REGEX: Regex = Regex::new(&format!(
-                r"^(?P<{}>.*)\nEphemeral address: (?P<{}>.*)\nExpiration: (?P<{}>.*)$",
+                r"^(?P<{}>[^\r\n]*)\r?\nEphemeral address: (?P<{}>[^\r\n]*)\r?\nExpiration: (?P<{}>.*)$",
                 RE_TITLE_CAPTURE, RE_ADDRESS_CAPTURE, RE_EXPIRATION_CAPTURE
             ))
             .unwrap();
