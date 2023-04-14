@@ -111,6 +111,7 @@ impl From<Vec<AuthLink>> for AuthChain {
 
 impl AuthChain {
 
+
     /// Returns the original owner of the chain
     ///
     /// ```rust
@@ -246,14 +247,15 @@ impl AuthChain {
     }
 
     pub fn is_expired(&self) -> bool {
+        let now = &chrono::Utc::now();
         self.iter().any(|link| match link {
-            AuthLink::EcdsaPersonalEphemeral { payload, .. } => payload.is_expired(),
-            AuthLink::EcdsaEip1654Ephemeral { payload, .. } => payload.is_expired(),
+            AuthLink::EcdsaPersonalEphemeral { payload, .. } => payload.is_expired_at(now),
+            AuthLink::EcdsaEip1654Ephemeral { payload, .. } => payload.is_expired_at(now),
             _ => false,
         })
     }
 
-    pub fn is_expired_at(&self, time: chrono::DateTime<chrono::Utc>) -> bool {
+    pub fn is_expired_at(&self, time: &chrono::DateTime<chrono::Utc>) -> bool {
         self.iter().any(|link| match link {
             AuthLink::EcdsaPersonalEphemeral { payload, .. } => payload.is_expired_at(time),
             AuthLink::EcdsaEip1654Ephemeral { payload, .. } => payload.is_expired_at(time),

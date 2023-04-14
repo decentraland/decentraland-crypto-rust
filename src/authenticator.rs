@@ -11,7 +11,7 @@ use crate::{
     rpc::{rpc_call_is_valid_signature, RPCCallError},
 };
 
-#[derive(Debug, Error)]
+#[derive(Debug, Error, PartialEq)]
 pub enum AuthenticatorError {
     #[error("malformed authchain: expecting at least 2 links, but is empty")]
     EmptyChain,
@@ -50,6 +50,9 @@ pub enum AuthenticatorError {
         expected: String,
         found: String,
     },
+
+    #[error("expired entity {kind} at position {position}")]
+    ExpiredEntity { position: usize, kind: String },
 }
 
 #[derive(Debug, Clone)]
@@ -57,7 +60,11 @@ pub struct WithoutTransport {}
 impl Transport for WithoutTransport {
     type Out = BoxFuture<'static, Result<serde_json::Value, Web3Error>>;
 
-    fn prepare(&self, _method: &str, _params: Vec<serde_json::Value>) -> (usize, jsonrpc_core::types::request::Call) {
+    fn prepare(
+        &self,
+        _method: &str,
+        _params: Vec<serde_json::Value>,
+    ) -> (usize, jsonrpc_core::types::request::Call) {
         unimplemented!()
     }
 
@@ -172,10 +179,11 @@ impl<T: Transport> Authenticator<T> {
             (recovery_id as i32) - 27,
         )?;
 
-        println!("{} == {}", address, h160);
         Ok(address == h160)
     }
 
+
+    /// Verifies that and authlink is a signer and returns it as result. Otherwise, returns an error.
     async fn verify_signer<'a>(
         &self,
         link: &'a AuthLink,
@@ -190,14 +198,29 @@ impl<T: Transport> Authenticator<T> {
         }
     }
 
-    async fn verify_ephemeral<'a>(
+    /// Verifies:
+    /// - the authlink is an ephemeral link (personal or eip1654)
+    /// - the ephemeral link is not expired
+    /// - the ephemeral payload is valid
+    /// - the ephemeral signature corresponds to the authority
+    ///
+    /// returns the address defined in the ephemeral payload, otherwise returns an error.
+    async fn verify_ephemeral<'a, 'l, 'd>(
         &self,
         authority: &'a Address,
-        link: &'a AuthLink,
+        link: &'l AuthLink,
+        expiration: &'d chrono::DateTime<chrono::Utc>,
         position: usize,
-    ) -> Result<&'a Address, AuthenticatorError> {
+    ) -> Result<&'l Address, AuthenticatorError> {
         match link {
             AuthLink::EcdsaPersonalEphemeral { payload, signature } => {
+                if payload.is_expired_at(expiration) {
+                    return Err(AuthenticatorError::ExpiredEntity {
+                        position,
+                        kind: link.kind().to_string(),
+                    });
+                }
+
                 let result = self
                     .validate_personal(authority.clone(), payload.to_string(), signature.to_vec())
                     .map_err(|err| AuthenticatorError::ValidationError {
@@ -220,6 +243,13 @@ impl<T: Transport> Authenticator<T> {
                 Ok(&payload.address)
             }
             AuthLink::EcdsaEip1654Ephemeral { payload, signature } => {
+                if payload.is_expired_at(expiration) {
+                    return Err(AuthenticatorError::ExpiredEntity {
+                        position,
+                        kind: link.kind().to_string(),
+                    });
+                }
+
                 let result = self
                     .validate_eip1654(authority.clone(), payload.to_string(), signature.to_vec())
                     .await
@@ -249,6 +279,12 @@ impl<T: Transport> Authenticator<T> {
         }
     }
 
+    /// Verifies:
+    /// - the authlink is an ephemeral link (personal or eip1654)
+    /// - the ephemeral link is not expired
+    /// - the ephemeral signature corresponds to the authority
+    ///
+    /// returns the signed payload, otherwise returns an error.
     async fn verify_signed_entity<'a>(
         &self,
         authority: &'a Address,
@@ -308,10 +344,12 @@ impl<T: Transport> Authenticator<T> {
         }
     }
 
-    pub async fn verify<'a>(
+    /// Verifies and authchain is valid, not expired at a given date and corresponds to the last_authority, otherwise, returns an error.
+    pub async fn verify_signature_at<'a>(
         &self,
         chain: &'a AuthChain,
         last_authority: &str,
+        expiration: &chrono::DateTime<chrono::Utc>
     ) -> Result<&'a Address, AuthenticatorError> {
         let owner = match chain.first() {
             Some(link) => self.verify_signer(link, 0).await?,
@@ -319,13 +357,12 @@ impl<T: Transport> Authenticator<T> {
         };
 
         let len = chain.len();
-
         let mut latest_authority = owner;
         for (position, link) in chain.iter().enumerate().skip(1) {
             // is not the last link
             if position != len - 1 {
                 latest_authority = self
-                    .verify_ephemeral(latest_authority, link, position)
+                    .verify_ephemeral(latest_authority, link, expiration, position)
                     .await?;
 
                 // is the last link
@@ -348,15 +385,54 @@ impl<T: Transport> Authenticator<T> {
 
         Err(AuthenticatorError::SignedEntityMissing)
     }
+
+    /// Verifies and authchain is valid, not expired and corresponds to the last_authority, otherwise, returns an error.
+    pub async fn verify_signature<'a>(
+        &self,
+        chain: &'a AuthChain,
+        last_authority: &str
+    ) -> Result<&'a Address, AuthenticatorError> {
+        let now = &chrono::Utc::now();
+        self.verify_signature_at(chain, last_authority, now).await
+    }
 }
 
-
+#[cfg(test)]
 mod test {
-    use std::env;
     use super::*;
+    use std::env;
 
     #[tokio::test]
-    async fn test_should_validate_request_eip_1654() {
+    async fn test_should_validate_personal_signature() {
+        let authenticator = Authenticator::new();
+        let chain = AuthChain::parse(r#"[
+            {
+              "type": "SIGNER",
+              "payload": "0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34",
+              "signature": ""
+            },
+            {
+              "type": "ECDSA_EPHEMERAL",
+              "payload": "Decentraland Login\nEphemeral address: 0xB80549D339DCe9834271EcF5F1F1bb141C70AbC2\nExpiration: 2123-03-20T12:36:25.522Z",
+              "signature": "0x76bf8d3c8ee6798bd488c4bc7ac1298d0ad78759669be39876e63ccfd9af81e31b8c6d8000b892ed2d17eb2f5a2b56fc3edbbf33c6089d3e5148d83cc70ce9001c"
+            },
+            {
+              "type": "ECDSA_SIGNED_ENTITY",
+              "payload": "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo",
+              "signature": "0xd71fb5511f7d9116d171a12754b2c6f4c795240bee982511049a14aba57f18684b48a08413ab00176801d773eab0436fff5d0c978877b6d05f483ee2ae36efb41b"
+            }
+          ]"#).unwrap();
+
+        let owner = authenticator
+            .verify_signature(&chain, "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo")
+            .await
+            .unwrap();
+        let expected = &Address::try_from("0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34").unwrap();
+        assert_eq!(owner, expected);
+    }
+
+    #[tokio::test]
+    async fn test_should_validate_eip_1654_signatures() {
         let endpoint = env::var("ETHEREUM_MAINNET_RPC").unwrap();
         let transport = web3::transports::Http::new(&endpoint).unwrap();
         let authenticator = Authenticator::with_transport(&transport);
@@ -378,7 +454,143 @@ mod test {
             }
           ]"#).unwrap();
 
-        let owner = authenticator.verify(&chain, "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo").await.unwrap();
-        assert_eq!(owner, &Address::try_from("0x8C889222833F961FC991B31d15e25738c6732930").unwrap());
+        let owner = authenticator
+            .verify_signature(&chain, "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo")
+            .await
+            .unwrap();
+        let expected = &Address::try_from("0x8C889222833F961FC991B31d15e25738c6732930").unwrap();
+        assert_eq!(owner, expected);
+    }
+
+    #[tokio::test]
+    async fn test_should_validate_simple_personal_signatures() {
+        let authenticator = Authenticator::new();
+        let signer = Address::try_from("0xeC6E6c0841a2bA474E92Bf42BaF76bFe80e8657C").unwrap();
+        let payload = "QmWyFNeHbxXaPtUnzKvDZPpKSa4d5anZEZEFJ8TC1WgcfU";
+        let signature = "0xaaafb0368c13c42e401e71162cb55a062b3b0a5389e0740e7dc34e623b12f0fd65e2fadac51ab5f0de8f69b1311f23f1f218753e8a957043a2a789ba721141f91c";
+        let chain = AuthChain::simple(signer, payload, signature).unwrap();
+
+        let owner = authenticator
+            .verify_signature(&chain, "QmWyFNeHbxXaPtUnzKvDZPpKSa4d5anZEZEFJ8TC1WgcfU")
+            .await
+            .unwrap();
+        let expected = &Address::try_from("0xeC6E6c0841a2bA474E92Bf42BaF76bFe80e8657C").unwrap();
+        assert_eq!(owner, expected);
+    }
+
+    #[tokio::test]
+    async fn test_should_validate_simple_eip_1654_signatures() {
+        let endpoint = env::var("ETHEREUM_MAINNET_RPC").unwrap();
+        let transport = web3::transports::Http::new(&endpoint).unwrap();
+        let authenticator = Authenticator::with_transport(&transport);
+
+        let signer = Address::try_from("0x6b7d7e82c984a0F4489c722fd11906F017f57704").unwrap();
+        let payload = "QmNUd7Cyoo9CREGsACkvBrQSb3KjhWX379FVsdjTCGsTAz";
+        let signature = "0x7fba0fbe75d0b28a224ec49ad99f6025f9055880db9ed1a35bc527a372c54ebe2461406aa07097bc47017da4319e19e517c49952697f074bcdc702f36afa72b01c759138c6ca4675367458884eb9b820c51af60a79efe1904ebcf2c1950fc7a2c02f3595a82ea1cc9d67a680c2f9b34df6abf5b344e857773dfe4210c6f85405151b";
+        let chain = AuthChain::simple(signer, payload, signature).unwrap();
+
+        let owner = authenticator
+            .verify_signature(&chain, "QmNUd7Cyoo9CREGsACkvBrQSb3KjhWX379FVsdjTCGsTAz")
+            .await
+            .unwrap();
+        let expected = &Address::try_from("0x6b7d7e82c984a0F4489c722fd11906F017f57704").unwrap();
+        assert_eq!(owner, expected);
+    }
+
+    #[tokio::test]
+    async fn test_should_support_r_on_personal_signatures() {
+        let authenticator = Authenticator::new();
+        let chain = AuthChain::parse(r#"[
+            {
+              "type": "SIGNER",
+              "payload": "0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34",
+              "signature": ""
+            },
+            {
+              "type": "ECDSA_EPHEMERAL",
+              "payload": "Decentraland Login\r\nEphemeral address: 0xB80549D339DCe9834271EcF5F1F1bb141C70AbC2\r\nExpiration: 2123-03-20T12:36:25.522Z",
+              "signature": "0x76bf8d3c8ee6798bd488c4bc7ac1298d0ad78759669be39876e63ccfd9af81e31b8c6d8000b892ed2d17eb2f5a2b56fc3edbbf33c6089d3e5148d83cc70ce9001c"
+            },
+            {
+              "type": "ECDSA_SIGNED_ENTITY",
+              "payload": "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo",
+              "signature": "0xd71fb5511f7d9116d171a12754b2c6f4c795240bee982511049a14aba57f18684b48a08413ab00176801d773eab0436fff5d0c978877b6d05f483ee2ae36efb41b"
+            }
+          ]"#).unwrap();
+
+        let owner = authenticator
+            .verify_signature(&chain, "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo")
+            .await
+            .unwrap();
+        let expected = &Address::try_from("0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34").unwrap();
+        assert_eq!(owner, expected);
+    }
+
+    #[tokio::test]
+    async fn test_should_support_r_on_eip_1654_signatures() {
+        let endpoint = env::var("ETHEREUM_MAINNET_RPC").unwrap();
+        let transport = web3::transports::Http::new(&endpoint).unwrap();
+        let authenticator = Authenticator::with_transport(&transport);
+        let chain = AuthChain::parse(r#"[
+            {
+              "type": "SIGNER",
+              "payload": "0x8C889222833F961FC991B31d15e25738c6732930",
+              "signature": ""
+            },
+            {
+              "type": "ECDSA_EIP_1654_EPHEMERAL",
+              "payload": "Decentraland Login\r\nEphemeral address: 0x4A1b9FD363dE915145008C41FA217377B2C223F2\r\nExpiration: 2123-03-18T16:59:36.515Z",
+              "signature": "0x00050203596af90cecdbf9a768886e771178fd5561dd27ab005d000100019dde76f11e2c6aff01f6548f3046a9d0c569e13e79dec4218322068d3123e1162167fabd84dccfaabd350b93d2405f7b8a9cef4846b4d9a55d17838809a0e2591b020101c50adeadb7fe15bee45dcb820610cdedcd314eb0030102640dccefda3685e6c0dbeb70c1cf8018c27077eb00021cfbe892a1b29ac5e2fda1038c7965656be94aec57b658582f16447089bcf50b09df216a7e21d861cd7474723a7bfc70bf1caa55a962476cf78eb4b54471018b1b020103d9e87370ededc599df3bf9dd0e48586005f1a1bb"
+            },
+            {
+              "type": "ECDSA_SIGNED_ENTITY",
+              "payload": "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo",
+              "signature": "0xb962b57accc8e12083769339888f82752d13f280012b2c7b2aa2722eae103aea7a623dc88605bf7036ec8c23b0bb8f036b52f5e4e30ee913f6f2a077d5e5e3e01b"
+            }
+          ]"#).unwrap();
+
+        let owner = authenticator
+            .verify_signature(&chain, "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo")
+            .await
+            .unwrap();
+        let expected = &Address::try_from("0x8C889222833F961FC991B31d15e25738c6732930").unwrap();
+        assert_eq!(owner, expected);
+    }
+
+    #[tokio::test]
+    async fn test_should_fail_if_ephemeral_is_expired() {
+        let authenticator = Authenticator::new();
+        let chain = AuthChain::parse(r#"[
+            {
+              "type": "SIGNER",
+              "payload": "0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34",
+              "signature": ""
+            },
+            {
+              "type": "ECDSA_EPHEMERAL",
+              "payload": "Decentraland Login\nEphemeral address: 0xe94944439fAB988e5e14b128BbcF6D5502b05f9C\nExpiration: 2020-02-20T00:00:00.000Z",
+              "signature": "0x2d45e2a3e9e04614cf6bb822951b849458a78037733202d4bda12e60ef1ff4d266b02af7b72caa232c45052520fd440869672da2b0966b29fff21638e3d21ca01b"
+            },
+            {
+              "type": "ECDSA_SIGNED_ENTITY",
+              "payload": "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo",
+              "signature": "0x6ae9bbd2af56ea61db3afe188d78381f0cb3177376b12537a3cb01e5d242c3fc49955475615209f194d98f0c751a24f712ab1c0caa9f92fa222bd2e13e2efd611c"
+            }
+          ]"#).unwrap();
+
+        let result = authenticator
+            .verify_signature(&chain, "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo")
+            .await;
+
+        assert_eq!(result, Err(AuthenticatorError::ExpiredEntity { position: 1, kind: String::from("ECDSA_EPHEMERAL") }));
+
+        let time = chrono::DateTime::parse_from_rfc3339("2020-01-01T00:00:00.000Z").unwrap().with_timezone(&chrono::Utc);
+        let owner = authenticator
+            .verify_signature_at(&chain, "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo", &time)
+            .await
+            .unwrap();
+
+        let expected = &Address::try_from("0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34").unwrap();
+        assert_eq!(owner, expected);
     }
 }
