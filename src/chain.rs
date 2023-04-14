@@ -2,7 +2,7 @@ use std::ops::Deref;
 use serde::{Deserialize, Serialize};
 use serde_json::Error as SerdeError;
 
-use crate::account::{Address, EIP1271Signature, PersonalSignature, EphemeralPayload};
+use crate::{account::{Address, EIP1271Signature, PersonalSignature, EphemeralPayload, PERSONAL_SIGNATURE_SIZE, DecodeHexError}};
 
 
 static SIGNER: &str = "SIGNER";
@@ -115,21 +115,44 @@ impl AuthChain {
     ///
     /// ```rust
     /// use dcl_crypto::chain::AuthChain;
-    /// use dcl_crypto::account::{Address, PersonalSignature};
+    /// use dcl_crypto::account::Address;
     ///
-    /// let address = Address::try_from("0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34").unwrap();
-    /// let payload = String::from("signed message");
-    /// let signature = PersonalSignature::try_from("0x013e0b0b75bd8404d70a37d96bb893596814d8f29f517e383d9d1421111f83c32d4ca0d6e399349c7badd54261feaa39895d027880d28d806c01089677400b7c1b").unwrap();
+    /// let address = Address::try_from("0x4A1b9FD363dE915145008C41FA217377B2C223F2").unwrap();
+    /// let payload = "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo";
+    /// let signature = "0xb962b57accc8e12083769339888f82752d13f280012b2c7b2aa2722eae103aea7a623dc88605bf7036ec8c23b0bb8f036b52f5e4e30ee913f6f2a077d5e5e3e01b";
     ///
-    /// let chain = AuthChain::simple(address, payload, signature);
+    /// let chain = AuthChain::simple(address, payload, signature).unwrap();
     /// let owner = chain.owner().unwrap();
-    /// assert_eq!(owner, &Address::try_from("0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34").unwrap());
+    /// assert_eq!(owner, &Address::try_from("0x4A1b9FD363dE915145008C41FA217377B2C223F2").unwrap());
     /// ```
-    pub fn simple(signer: Address, payload: String, signature: PersonalSignature) -> Self {
-        AuthChain::from(vec![
-            AuthLink::signer(signer),
+    ///
+    /// ```rust
+    /// use dcl_crypto::chain::AuthChain;
+    /// use dcl_crypto::account::Address;
+    ///
+    /// let address = Address::try_from("0x8C889222833F961FC991B31d15e25738c6732930").unwrap();
+    /// let payload = "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo";
+    /// let signature = "0x00050203596af90cecdbf9a768886e771178fd5561dd27ab005d000100018d7c77aaeb3a8529951423128fa5b807192c27c4ce5af76bbf73ffc84eecd48c4a004c4b4db03cf04b269ad0f1fcf26c31b859cb0a693eeb3b8efd89dc9e3bea1b020101c50adeadb7fe15bee45dcb820610cdedcd314eb0030102640dccefda3685e6c0dbeb70c1cf8018c27077eb00020af67e80c0f311fddd79d3163c8ee840863a5a1eb3d236b10b8b6972164164236b32e13443e3cfe1be591534cb93607cf6e49e48e51f012e806c158819fa7b471c020103d9e87370ededc599df3bf9dd0e48586005f1a1bb";
+    ///
+    /// let chain = AuthChain::simple(address, payload, signature).unwrap();
+    /// let owner = chain.owner().unwrap();
+    /// assert_eq!(owner, &Address::try_from("0x8C889222833F961FC991B31d15e25738c6732930").unwrap());
+    /// ```
+    pub fn simple<P, T>(signer: Address, payload: P, signature: T) -> Result<Self, DecodeHexError> where P: AsRef<str>, T: AsRef<str> {
+        let signature = signature.as_ref();
+        let payload = payload.as_ref().to_string();
+        let entity = if signature.len() == (PERSONAL_SIGNATURE_SIZE * 2) + 2 {
+            let signature = PersonalSignature::try_from(signature)?;
             AuthLink::EcdsaPersonalSignedEntity { payload, signature }
-        ])
+        } else {
+            let signature = EIP1271Signature::try_from(signature)?;
+            AuthLink::EcdsaEip1654SignedEntity { payload, signature }
+        };
+
+        Ok(AuthChain::from(vec![
+            AuthLink::signer(signer),
+            entity
+        ]))
     }
 
     /// Parse a json string and returns an AuthChain
@@ -221,7 +244,6 @@ impl AuthChain {
             _ => None,
         }
     }
-
 
     pub fn is_expired(&self) -> bool {
         self.iter().any(|link| match link {
