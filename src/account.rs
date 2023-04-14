@@ -3,7 +3,7 @@ use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::{
-    fmt::{Display, LowerHex, UpperHex},
+    fmt::{Display, LowerHex, UpperHex, Debug},
     ops::Deref,
 };
 
@@ -288,13 +288,13 @@ impl Address {
     ///
     /// ```rust
     ///     use dcl_crypto::account::Address;
-    ///     assert_eq!(Address::try_from("0x0f5d2fb29fb7d3cfee444a200298f468908cc942").unwrap().to_string_checksum(), "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942");
-    ///     assert_eq!(Address::try_from("0x554bb6488ba955377359bed16b84ed0822679cdc").unwrap().to_string_checksum(), "0x554BB6488bA955377359bED16b84Ed0822679CDC");
-    ///     assert_eq!(Address::try_from("0x1784ef41af86e97f8d28afe95b573a24aeda966e").unwrap().to_string_checksum(), "0x1784Ef41af86e97f8D28aFe95b573a24aEDa966e");
-    ///     assert_eq!(Address::from([255; 20]).to_string_checksum(), "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF");
-    ///     assert_eq!(Address::from([0; 20]).to_string_checksum(), "0x0000000000000000000000000000000000000000");
+    ///     assert_eq!(Address::try_from("0x0f5d2fb29fb7d3cfee444a200298f468908cc942").unwrap().checksum(), "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942");
+    ///     assert_eq!(Address::try_from("0x554bb6488ba955377359bed16b84ed0822679cdc").unwrap().checksum(), "0x554BB6488bA955377359bED16b84Ed0822679CDC");
+    ///     assert_eq!(Address::try_from("0x1784ef41af86e97f8d28afe95b573a24aeda966e").unwrap().checksum(), "0x1784Ef41af86e97f8D28aFe95b573a24aEDa966e");
+    ///     assert_eq!(Address::from([255; 20]).checksum(), "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF");
+    ///     assert_eq!(Address::from([0; 20]).checksum(), "0x0000000000000000000000000000000000000000");
     /// ```
-    pub fn to_string_checksum(&self) -> String {
+    pub fn checksum(&self) -> String {
         let hash = keccak256(format!("{self:x}").as_bytes());
         let checksum = self
             .as_bytes()
@@ -633,7 +633,7 @@ impl Display for EphemeralPayload {
             f,
             "{}\nEphemeral address: {}\nExpiration: {}",
             self.title,
-            self.address.to_string_checksum(),
+            self.address.checksum(),
             self.expiration
                 .to_rfc3339_opts(chrono::SecondsFormat::Millis, true)
         )
