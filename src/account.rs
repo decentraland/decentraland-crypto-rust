@@ -669,7 +669,7 @@ impl EphemeralPayload {
         self.expiration < chrono::Utc::now()
     }
 
-    pub fn is_expired_at(&self, time: chrono::DateTime<chrono::Utc>) -> bool {
-        self.expiration < time
+    pub fn is_expired_at(&self, time: &chrono::DateTime<chrono::Utc>) -> bool {
+        self.expiration < *time
     }
 }
