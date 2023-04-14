@@ -157,7 +157,7 @@ impl std::cmp::PartialEq<H160> for &Address {
 impl From<Address> for String {
     /// Formats an `Address` into its `String` representation
     fn from(value: Address) -> Self {
-        value.to_string_checksum()
+        value.checksum()
     }
 }
 
@@ -328,12 +328,14 @@ impl Address {
     }
 }
 
+pub const PERSONAL_SIGNATURE_SIZE: usize = 65;
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 #[serde(try_from = "String", into = "String")]
-pub struct PersonalSignature([u8; 65]);
+pub struct PersonalSignature([u8; PERSONAL_SIGNATURE_SIZE]);
 
 impl Deref for PersonalSignature {
-    type Target = [u8; 65];
+    type Target = [u8; PERSONAL_SIGNATURE_SIZE];
     fn deref(&self) -> &Self::Target {
         &self.0
     }
@@ -341,19 +343,19 @@ impl Deref for PersonalSignature {
 
 impl Default for PersonalSignature {
     fn default() -> Self {
-        PersonalSignature([0; 65])
+        PersonalSignature([0; PERSONAL_SIGNATURE_SIZE])
     }
 }
 
-impl From<[u8; 65]> for PersonalSignature {
-    fn from(value: [u8; 65]) -> Self {
+impl From<[u8; PERSONAL_SIGNATURE_SIZE]> for PersonalSignature {
+    fn from(value: [u8; PERSONAL_SIGNATURE_SIZE]) -> Self {
         Self(value)
     }
 }
 
 impl From<web3::signing::Signature> for PersonalSignature {
     fn from(value: web3::signing::Signature) -> Self {
-        let mut bits: [u8; 65] = [0; 65];
+        let mut bits = [0u8; PERSONAL_SIGNATURE_SIZE];
         bits[..32].copy_from_slice(&value.r.0);
         bits[32..64].copy_from_slice(&value.s.0);
         bits[64] = (value.v * 0b1111) as u8;
@@ -369,7 +371,7 @@ impl TryFrom<&str> for PersonalSignature {
             return Err(DecodeHexError::InvalidLength);
         }
 
-        let mut bits: [u8; 65] = [0; 65];
+        let mut bits = [0u8; PERSONAL_SIGNATURE_SIZE];
         match decode_to_slice(value, &mut bits) {
             Ok(_) => Ok(Self::from(bits)),
             Err(err) => Err(err),
