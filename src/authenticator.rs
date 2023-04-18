@@ -75,7 +75,7 @@ impl Transport for WithoutTransport {
 
 /// Validates a message and has correspond to an address.
 ///
-/// ```
+/// ```rust
 /// use dcl_crypto::authenticator::Authenticator;
 /// use dcl_crypto::account::Address;
 /// use dcl_crypto::chain::AuthChain;
@@ -83,7 +83,7 @@ impl Transport for WithoutTransport {
 /// # tokio_test::block_on(async {
 ///     let authenticator = Authenticator::new();
 ///
-///     let chain = AuthChain::parse(r#"[
+///     let chain = AuthChain::from_json(r#"[
 ///       {
 ///         "type": "SIGNER",
 ///         "payload": "0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34",
@@ -405,7 +405,7 @@ mod test {
     #[tokio::test]
     async fn test_should_validate_personal_signature() {
         let authenticator = Authenticator::new();
-        let chain = AuthChain::parse(r#"[
+        let chain = AuthChain::from_json(r#"[
             {
               "type": "SIGNER",
               "payload": "0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34",
@@ -436,7 +436,7 @@ mod test {
         let endpoint = env::var("ETHEREUM_MAINNET_RPC").unwrap();
         let transport = web3::transports::Http::new(&endpoint).unwrap();
         let authenticator = Authenticator::with_transport(&transport);
-        let chain = AuthChain::parse(r#"[
+        let chain = AuthChain::from_json(r#"[
             {
               "type": "SIGNER",
               "payload": "0x8C889222833F961FC991B31d15e25738c6732930",
@@ -500,7 +500,7 @@ mod test {
     #[tokio::test]
     async fn test_should_support_r_on_personal_signatures() {
         let authenticator = Authenticator::new();
-        let chain = AuthChain::parse(r#"[
+        let chain = AuthChain::from_json(r#"[
             {
               "type": "SIGNER",
               "payload": "0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34",
@@ -531,7 +531,7 @@ mod test {
         let endpoint = env::var("ETHEREUM_MAINNET_RPC").unwrap();
         let transport = web3::transports::Http::new(&endpoint).unwrap();
         let authenticator = Authenticator::with_transport(&transport);
-        let chain = AuthChain::parse(r#"[
+        let chain = AuthChain::from_json(r#"[
             {
               "type": "SIGNER",
               "payload": "0x8C889222833F961FC991B31d15e25738c6732930",
@@ -560,7 +560,7 @@ mod test {
     #[tokio::test]
     async fn test_should_fail_if_ephemeral_is_expired() {
         let authenticator = Authenticator::new();
-        let chain = AuthChain::parse(r#"[
+        let chain = AuthChain::from_json(r#"[
             {
               "type": "SIGNER",
               "payload": "0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34",

@@ -162,7 +162,7 @@ impl AuthChain {
     /// use dcl_crypto::chain::AuthChain;
     /// use dcl_crypto::account::Address;
     ///
-    /// let chain = AuthChain::parse(r#"[
+    /// let chain = AuthChain::from_json(r#"[
     ///       {
     ///        "type": "SIGNER",
     ///        "payload": "0x3f17f1962b36e491b30a40b2405849e597ba5fb5",
@@ -183,7 +183,7 @@ impl AuthChain {
     ///
     /// let owner = chain.owner().unwrap();
     /// assert_eq!(owner, &Address::try_from("0x3f17f1962b36e491b30a40b2405849e597ba5fb5").unwrap());
-    pub fn parse(value: &str) -> Result<AuthChain, SerdeError> {
+    pub fn from_json(value: &str) -> Result<AuthChain, SerdeError> {
         serde_json::from_str::<AuthChain>(value)
     }
 
@@ -193,7 +193,7 @@ impl AuthChain {
     /// use dcl_crypto::account::Address;
     /// use dcl_crypto::chain::AuthChain;
     ///
-    /// let chain = AuthChain::parse_links(vec![
+    /// let chain = AuthChain::from_json_links(vec![
     ///      r#"{
     ///        "type": "SIGNER",
     ///        "payload": "0x3f17f1962b36e491b30a40b2405849e597ba5fb5",
@@ -213,7 +213,7 @@ impl AuthChain {
     /// let owner = chain.owner().unwrap();
     /// assert_eq!(owner, &Address::try_from("0x3f17f1962b36e491b30a40b2405849e597ba5fb5").unwrap());
     /// ```
-    pub fn parse_links(value: Vec<&str>) -> Result<AuthChain, SerdeError> {
+    pub fn from_json_links(value: Vec<&str>) -> Result<AuthChain, SerdeError> {
         let links = value
             .iter()
             .map(|link| {
@@ -231,7 +231,7 @@ impl AuthChain {
     /// use dcl_crypto::chain::AuthChain;
     /// use dcl_crypto::account::Address;
     ///
-    /// let chain = AuthChain::parse(r#"[
+    /// let chain = AuthChain::from_json(r#"[
     ///     { "type": "SIGNER", "payload": "0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34", "signature": ""},
     ///     { "type": "ECDSA_SIGNED_ENTITY", "payload": "signed message", "signature": "0x013e0b0b75bd8404d70a37d96bb893596814d8f29f517e383d9d1421111f83c32d4ca0d6e399349c7badd54261feaa39895d027880d28d806c01089677400b7c1b"}
     /// ]"#).unwrap();

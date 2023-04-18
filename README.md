@@ -1,12 +1,8 @@
 # Decentraland crypto (Rust)
 
-A rust library to create and verify Decentraland AuthChain
-
-## Install
-
-```bash
- cargo add dcl-crypto
-```
+This crate is a port of the original [`@dcl/crypto`](https://github.com/decentraland/decentraland-crypto)
+implemented on javascript and provides the necessary tools to create and validate
+Decentraland's Authentication Chains.
 
 ## Test
 
@@ -38,7 +34,7 @@ Use [Github Releases](https://github.com/decentraland/decentraland-crypto-rust/r
   - [x] ephemeral
 - [x] verify auth chain expiration
 - [x] verify personal signatures
-- [ ] verify [EIP-1271](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1271.md) signatures
+- [x] verify [EIP-1271](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1271.md) signatures
 - [ ] create identity
 - [ ] create auth chain from identity
 - [ ] load identity from file
