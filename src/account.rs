@@ -1,13 +1,16 @@
+use chrono::DateTime;
 use lazy_static::lazy_static;
 use regex::Regex;
-use std::{fmt::{Display, UpperHex, LowerHex}, ops::Deref};
-use chrono::DateTime;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
+use std::{
+    fmt::{Display, LowerHex, UpperHex, Debug},
+    ops::Deref,
+};
 
 use thiserror::Error;
 use web3::{
-    signing::{hash_message, recover, RecoveryError, keccak256},
-    types::{H256, H160},
+    signing::{hash_message, keccak256, recover, RecoveryError},
+    types::{H160, H256},
 };
 
 /// An error that can occur when decoding a hexadecimal string
@@ -33,7 +36,10 @@ impl From<hex::FromHexError> for DecodeHexError {
             hex::FromHexError::OddLength => DecodeHexError::OddLength,
             hex::FromHexError::InvalidStringLength => DecodeHexError::InvalidLength,
             hex::FromHexError::InvalidHexCharacter { c, index } => {
-                DecodeHexError::InvalidHexCharacter { c, index: index + 2 }
+                DecodeHexError::InvalidHexCharacter {
+                    c,
+                    index: index + 2,
+                }
             }
         }
     }
@@ -149,10 +155,9 @@ impl std::cmp::PartialEq<H160> for &Address {
 }
 
 impl From<Address> for String {
-
     /// Formats an `Address` into its `String` representation
     fn from(value: Address) -> Self {
-        value.to_string_checksum()
+        value.checksum()
     }
 }
 
@@ -237,7 +242,6 @@ impl UpperHex for Address {
 }
 
 impl LowerHex for Address {
-
     /// Formats the `Address` into its hexadecimal lowercase representation
     ///
     /// ```rust
@@ -284,13 +288,13 @@ impl Address {
     ///
     /// ```rust
     ///     use dcl_crypto::account::Address;
-    ///     assert_eq!(Address::try_from("0x0f5d2fb29fb7d3cfee444a200298f468908cc942").unwrap().to_string_checksum(), "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942");
-    ///     assert_eq!(Address::try_from("0x554bb6488ba955377359bed16b84ed0822679cdc").unwrap().to_string_checksum(), "0x554BB6488bA955377359bED16b84Ed0822679CDC");
-    ///     assert_eq!(Address::try_from("0x1784ef41af86e97f8d28afe95b573a24aeda966e").unwrap().to_string_checksum(), "0x1784Ef41af86e97f8D28aFe95b573a24aEDa966e");
-    ///     assert_eq!(Address::from([255; 20]).to_string_checksum(), "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF");
-    ///     assert_eq!(Address::from([0; 20]).to_string_checksum(), "0x0000000000000000000000000000000000000000");
+    ///     assert_eq!(Address::try_from("0x0f5d2fb29fb7d3cfee444a200298f468908cc942").unwrap().checksum(), "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942");
+    ///     assert_eq!(Address::try_from("0x554bb6488ba955377359bed16b84ed0822679cdc").unwrap().checksum(), "0x554BB6488bA955377359bED16b84Ed0822679CDC");
+    ///     assert_eq!(Address::try_from("0x1784ef41af86e97f8d28afe95b573a24aeda966e").unwrap().checksum(), "0x1784Ef41af86e97f8D28aFe95b573a24aEDa966e");
+    ///     assert_eq!(Address::from([255; 20]).checksum(), "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF");
+    ///     assert_eq!(Address::from([0; 20]).checksum(), "0x0000000000000000000000000000000000000000");
     /// ```
-    pub fn to_string_checksum(&self) -> String {
+    pub fn checksum(&self) -> String {
         let hash = keccak256(format!("{self:x}").as_bytes());
         let checksum = self
             .as_bytes()
@@ -324,12 +328,14 @@ impl Address {
     }
 }
 
+pub const PERSONAL_SIGNATURE_SIZE: usize = 65;
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 #[serde(try_from = "String", into = "String")]
-pub struct PersonalSignature([u8; 65]);
+pub struct PersonalSignature([u8; PERSONAL_SIGNATURE_SIZE]);
 
 impl Deref for PersonalSignature {
-    type Target = [u8; 65];
+    type Target = [u8; PERSONAL_SIGNATURE_SIZE];
     fn deref(&self) -> &Self::Target {
         &self.0
     }
@@ -337,19 +343,19 @@ impl Deref for PersonalSignature {
 
 impl Default for PersonalSignature {
     fn default() -> Self {
-        PersonalSignature([0; 65])
+        PersonalSignature([0; PERSONAL_SIGNATURE_SIZE])
     }
 }
 
-impl From<[u8; 65]> for PersonalSignature {
-    fn from(value: [u8; 65]) -> Self {
+impl From<[u8; PERSONAL_SIGNATURE_SIZE]> for PersonalSignature {
+    fn from(value: [u8; PERSONAL_SIGNATURE_SIZE]) -> Self {
         Self(value)
     }
 }
 
 impl From<web3::signing::Signature> for PersonalSignature {
     fn from(value: web3::signing::Signature) -> Self {
-        let mut bits: [u8; 65] = [0; 65];
+        let mut bits = [0u8; PERSONAL_SIGNATURE_SIZE];
         bits[..32].copy_from_slice(&value.r.0);
         bits[32..64].copy_from_slice(&value.s.0);
         bits[64] = (value.v * 0b1111) as u8;
@@ -365,7 +371,7 @@ impl TryFrom<&str> for PersonalSignature {
             return Err(DecodeHexError::InvalidLength);
         }
 
-        let mut bits: [u8; 65] = [0; 65];
+        let mut bits = [0u8; PERSONAL_SIGNATURE_SIZE];
         match decode_to_slice(value, &mut bits) {
             Ok(_) => Ok(Self::from(bits)),
             Err(err) => Err(err),
@@ -377,7 +383,7 @@ impl TryFrom<String> for PersonalSignature {
     type Error = DecodeHexError;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
-       Self::try_from(value.as_str())
+        Self::try_from(value.as_str())
     }
 }
 
@@ -388,7 +394,7 @@ impl From<PersonalSignature> for String {
 }
 
 impl From<PersonalSignature> for web3::signing::Signature {
-  fn from(value: PersonalSignature) -> Self {
+    fn from(value: PersonalSignature) -> Self {
         let mut r: [u8; 32] = [0; 32];
         r.copy_from_slice(&value[..32]);
 
@@ -397,8 +403,12 @@ impl From<PersonalSignature> for web3::signing::Signature {
 
         let v: u64 = value.0[64] as u64;
 
-    Self { v, r: H256(r), s: H256(s) }
-  }
+        Self {
+            v,
+            r: H256(r),
+            s: H256(s),
+        }
+    }
 }
 
 impl From<PersonalSignature> for Vec<u8> {
@@ -499,12 +509,10 @@ impl From<EIP1271Signature> for String {
     }
 }
 
-
 /// Alias of EIP1271Signature
 /// See <https://eips.ethereum.org/EIPS/eip-1271>
 /// See <https://github.com/ethereum/EIPs/issues/1654>
 pub type EIP1654Signature = EIP1271Signature;
-
 
 static DEFAULT_EPHEMERAL_PAYLOAD_TITLE: &str = "Decentraland Login";
 
@@ -516,11 +524,10 @@ static DEFAULT_EPHEMERAL_PAYLOAD_TITLE: &str = "Decentraland Login";
 ///     let payload = EphemeralPayload::try_from("Decentraland Login\nEphemeral address: 0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3\nExpiration: 2023-03-30T15:44:55.787Z").unwrap();
 ///     let expiration = chrono::DateTime::parse_from_rfc3339("2023-03-30T15:44:55.787Z").unwrap().with_timezone(&chrono::Utc);
 ///
-///     assert_eq!(payload, EphemeralPayload {
-///         title: String::from("Decentraland Login"),
-///         address: Address::try_from("0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3").unwrap(),
+///     assert_eq!(payload, EphemeralPayload::new(
+///         Address::try_from("0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3").unwrap(),
 ///         expiration,
-///     })
+///     ))
 /// ```
 #[derive(PartialEq, Debug, Serialize, Deserialize, Clone)]
 #[serde(try_from = "String", into = "String")]
@@ -531,7 +538,7 @@ pub struct EphemeralPayload {
 }
 
 #[derive(PartialEq, Debug, Error)]
-pub enum DelegationPayloadError {
+pub enum EphemeralPayloadError {
     #[error("invalid payload content")]
     InvalidPayload,
 
@@ -541,26 +548,17 @@ pub enum DelegationPayloadError {
     #[error("missing address line on payload")]
     MissingAddress,
 
-    #[error("invalid address: {0}")]
-    InvalidAddress(DecodeHexError),
+    #[error("invalid address: {err} (address: {value})")]
+    InvalidAddress { err: DecodeHexError, value: String },
 
     #[error("missing expiration line on payload")]
     MissingExpiration,
 
-    #[error("invalid expiration: {0}")]
-    InvalidExpiration(chrono::ParseError),
-}
-
-impl From<DecodeHexError> for DelegationPayloadError {
-    fn from(err: DecodeHexError) -> Self {
-        DelegationPayloadError::InvalidAddress(err)
-    }
-}
-
-impl From<chrono::ParseError> for DelegationPayloadError {
-    fn from(err: chrono::ParseError) -> Self {
-        DelegationPayloadError::InvalidExpiration(err)
-    }
+    #[error("invalid expiration: {err} (expiration: {value})")]
+    InvalidExpiration {
+        err: chrono::ParseError,
+        value: String,
+    },
 }
 
 static RE_TITLE_CAPTURE: &str = "title";
@@ -568,36 +566,48 @@ static RE_ADDRESS_CAPTURE: &str = "address";
 static RE_EXPIRATION_CAPTURE: &str = "expiration";
 
 impl TryFrom<&str> for EphemeralPayload {
-    type Error = DelegationPayloadError;
+    type Error = EphemeralPayloadError;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         lazy_static! {
             static ref EPHEMERAL_PAYLOAD_REGEX: Regex = Regex::new(&format!(
-                r"^(?P<{}>.*)\nEphemeral address: (?P<{}>.*)\nExpiration: (?P<{}>.*)$",
+                r"^(?P<{}>[^\r\n]*)\r?\nEphemeral address: (?P<{}>[^\r\n]*)\r?\nExpiration: (?P<{}>.*)$",
                 RE_TITLE_CAPTURE, RE_ADDRESS_CAPTURE, RE_EXPIRATION_CAPTURE
             ))
             .unwrap();
         }
 
         let captures = match EPHEMERAL_PAYLOAD_REGEX.captures(value) {
-            None => return Err(DelegationPayloadError::InvalidPayload),
+            None => return Err(EphemeralPayloadError::InvalidPayload),
             Some(captures) => captures,
         };
 
         let title = match captures.name(RE_TITLE_CAPTURE) {
-            None => return Err(DelegationPayloadError::MissingTitle),
+            None => return Err(EphemeralPayloadError::MissingTitle),
             Some(title) => title.as_str().to_string(),
         };
 
         let address = match captures.name(RE_ADDRESS_CAPTURE) {
-            None => return Err(DelegationPayloadError::MissingAddress),
-            Some(address) => Address::try_from(address.as_str())?,
+            None => return Err(EphemeralPayloadError::MissingAddress),
+            Some(address) => {
+                let value = address.as_str();
+                Address::try_from(value).map_err(|err| EphemeralPayloadError::InvalidAddress {
+                    value: value.to_string(),
+                    err,
+                })?
+            }
         };
 
         let expiration = match captures.name(RE_EXPIRATION_CAPTURE) {
-            None => return Err(DelegationPayloadError::MissingExpiration),
+            None => return Err(EphemeralPayloadError::MissingExpiration),
             Some(expiration) => {
-                DateTime::parse_from_rfc3339(expiration.as_str())?.with_timezone(&chrono::Utc)
+                let value = expiration.as_str();
+                DateTime::parse_from_rfc3339(value)
+                    .map_err(|err| EphemeralPayloadError::InvalidExpiration {
+                        value: value.to_string(),
+                        err,
+                    })?
+                    .with_timezone(&chrono::Utc)
             }
         };
 
@@ -610,7 +620,7 @@ impl TryFrom<&str> for EphemeralPayload {
 }
 
 impl TryFrom<String> for EphemeralPayload {
-    type Error = DelegationPayloadError;
+    type Error = EphemeralPayloadError;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
         Self::try_from(value.as_str())
@@ -621,9 +631,9 @@ impl Display for EphemeralPayload {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "{}\n{}\n{}",
+            "{}\nEphemeral address: {}\nExpiration: {}",
             self.title,
-            self.address.to_string_checksum(),
+            self.address.checksum(),
             self.expiration
                 .to_rfc3339_opts(chrono::SecondsFormat::Millis, true)
         )
@@ -638,11 +648,11 @@ impl From<EphemeralPayload> for String {
 
 impl EphemeralPayload {
     pub fn new(address: Address, expiration: chrono::DateTime<chrono::Utc>) -> Self {
-        Self {
-            title: String::from(DEFAULT_EPHEMERAL_PAYLOAD_TITLE),
+        Self::new_with_title(
+            String::from(DEFAULT_EPHEMERAL_PAYLOAD_TITLE),
             address,
             expiration,
-        }
+        )
     }
 
     pub fn new_with_title(
@@ -661,7 +671,7 @@ impl EphemeralPayload {
         self.expiration < chrono::Utc::now()
     }
 
-    pub fn is_expired_at(&self, time: chrono::DateTime<chrono::Utc>) -> bool {
-        self.expiration < time
+    pub fn is_expired_at(&self, time: &chrono::DateTime<chrono::Utc>) -> bool {
+        self.expiration < *time
     }
 }

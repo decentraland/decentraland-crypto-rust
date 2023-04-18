@@ -8,12 +8,19 @@ A rust library to create and verify Decentraland AuthChain
  cargo add dcl-crypto
 ```
 
-## Tes
+## Test
 
-To run test you need to provide a ethereum rpc endpoint using the environment ``
+To run all tests you need to provide a ethereum rpc endpoint.
+
+First, create a `.cargo/config.toml` file using the template provided in the repository and set your rpc provider.
 
 ```bash
-export ETHEREUM_MAINNET_RPC="https://mainnet.infura.io/v3/00000000000000000000000000000000"
+cp .cargo/config.toml.example .cargo/config.toml
+```
+
+Once configured you can run all tests
+
+```bash
 cargo test --doc
 ```
 
