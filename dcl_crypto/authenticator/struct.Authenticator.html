@@ -6,7 +6,7 @@
 
     <span class="kw">let </span>authenticator = Authenticator::new();
 
-    <span class="kw">let </span>chain = AuthChain::parse(<span class="string">r#&quot;[
+    <span class="kw">let </span>chain = AuthChain::from_json(<span class="string">r#&quot;[
       {
         &quot;type&quot;: &quot;SIGNER&quot;,
         &quot;payload&quot;: &quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;,

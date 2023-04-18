@@ -427,7 +427,7 @@
     /// use dcl_crypto::chain::AuthChain;
     /// use dcl_crypto::account::Address;
     ///
-    /// let chain = AuthChain::parse(r#&quot;[
+    /// let chain = AuthChain::from_json(r#&quot;[
     ///       {
     ///        &quot;type&quot;: &quot;SIGNER&quot;,
     ///        &quot;payload&quot;: &quot;0x3f17f1962b36e491b30a40b2405849e597ba5fb5&quot;,
@@ -448,8 +448,8 @@
     ///
     /// let owner = chain.owner().unwrap();
     /// assert_eq!(owner, &amp;Address::try_from(&quot;0x3f17f1962b36e491b30a40b2405849e597ba5fb5&quot;).unwrap());
-    </span><span class="kw">pub fn </span>parse(value: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;AuthChain, SerdeError&gt; {
-        serde_json::from_str::&lt;AuthChain&gt;(value)
+    </span><span class="kw">pub fn </span>from_json&lt;V&gt;(value: V) -&gt; <span class="prelude-ty">Result</span>&lt;AuthChain, SerdeError&gt; <span class="kw">where </span>V: AsRef&lt;str&gt; {
+        serde_json::from_str::&lt;AuthChain&gt;(value.as_ref())
     }
 
     <span class="doccomment">/// Parse a list of json strings and returns an AuthChain
@@ -458,7 +458,7 @@
     /// use dcl_crypto::account::Address;
     /// use dcl_crypto::chain::AuthChain;
     ///
-    /// let chain = AuthChain::parse_links(vec![
+    /// let chain = AuthChain::from_json_links(vec![
     ///      r#&quot;{
     ///        &quot;type&quot;: &quot;SIGNER&quot;,
     ///        &quot;payload&quot;: &quot;0x3f17f1962b36e491b30a40b2405849e597ba5fb5&quot;,
@@ -478,7 +478,7 @@
     /// let owner = chain.owner().unwrap();
     /// assert_eq!(owner, &amp;Address::try_from(&quot;0x3f17f1962b36e491b30a40b2405849e597ba5fb5&quot;).unwrap());
     /// ```
-    </span><span class="kw">pub fn </span>parse_links(value: Vec&lt;<span class="kw-2">&amp;</span>str&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;AuthChain, SerdeError&gt; {
+    </span><span class="kw">pub fn </span>from_json_links(value: Vec&lt;<span class="kw-2">&amp;</span>str&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;AuthChain, SerdeError&gt; {
         <span class="kw">let </span>links = value
             .iter()
             .map(|link| {
@@ -496,7 +496,7 @@
     /// use dcl_crypto::chain::AuthChain;
     /// use dcl_crypto::account::Address;
     ///
-    /// let chain = AuthChain::parse(r#&quot;[
+    /// let chain = AuthChain::from_json(r#&quot;[
     ///     { &quot;type&quot;: &quot;SIGNER&quot;, &quot;payload&quot;: &quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;, &quot;signature&quot;: &quot;&quot;},
     ///     { &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;, &quot;payload&quot;: &quot;signed message&quot;, &quot;signature&quot;: &quot;0x013e0b0b75bd8404d70a37d96bb893596814d8f29f517e383d9d1421111f83c32d4ca0d6e399349c7badd54261feaa39895d027880d28d806c01089677400b7c1b&quot;}
     /// ]&quot;#).unwrap();
