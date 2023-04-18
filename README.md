@@ -1,7 +1,7 @@
 # Decentraland crypto (Rust)
 
-This crate is a port of the original [`@dcl/crypto`](https://github.com/decentraland/decentraland-crypto)
-implemented on javascript and provides the necessary tools to create and validate
+This crate is a port of [`@dcl/crypto`](https://github.com/decentraland/decentraland-crypto)
+originally implemented on javascript and provides the necessary tools to create and validate
 Decentraland's Authentication Chains.
 
 ## Test
