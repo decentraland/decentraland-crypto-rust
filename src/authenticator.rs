@@ -103,7 +103,7 @@ impl Transport for WithoutTransport {
 ///
 ///     let address =  Address::try_from("0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34").unwrap();
 ///     let owner =  chain.owner().unwrap();
-///     let result = authenticator.verify(&chain, "signed message").await.unwrap();
+///     let result = authenticator.verify_signature(&chain, "signed message").await.unwrap();
 ///     assert_eq!(result, &address);
 ///     assert_eq!(result, owner);
 /// # })
@@ -157,7 +157,7 @@ impl<T: Transport> Authenticator<T> {
     ///     let message = "Decentraland Login\nEphemeral address: 0xF5E49370d9754924C9f082077ec6ad49F3113150\nExpiration: 2023-05-02T02:20:12.026Z".to_string();
     ///     let hash = PersonalSignature::try_from("0xb2985d12400f9ee87091156b5951ee0e745efda50f503bbdcee3a3e7fc8adbb051b20ce386f7b400ae5865e7263c6a7155decda1af433287bceff911994849e81c").unwrap().to_vec();
     ///
-    ///     let result = Authenticator::validate_personal(address, message, hash).unwrap();
+    ///     let result = Authenticator::new().validate_personal(address, message, hash).unwrap();
     ///     assert_eq!(result, true);
     /// # })
     /// ```
