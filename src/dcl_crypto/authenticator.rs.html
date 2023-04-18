@@ -295,19 +295,319 @@
 <a href="#295" id="295">295</a>
 <a href="#296" id="296">296</a>
 <a href="#297" id="297">297</a>
-</pre><pre class="rust"><code><span class="kw">use </span>futures::Future;
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
+<a href="#483" id="483">483</a>
+<a href="#484" id="484">484</a>
+<a href="#485" id="485">485</a>
+<a href="#486" id="486">486</a>
+<a href="#487" id="487">487</a>
+<a href="#488" id="488">488</a>
+<a href="#489" id="489">489</a>
+<a href="#490" id="490">490</a>
+<a href="#491" id="491">491</a>
+<a href="#492" id="492">492</a>
+<a href="#493" id="493">493</a>
+<a href="#494" id="494">494</a>
+<a href="#495" id="495">495</a>
+<a href="#496" id="496">496</a>
+<a href="#497" id="497">497</a>
+<a href="#498" id="498">498</a>
+<a href="#499" id="499">499</a>
+<a href="#500" id="500">500</a>
+<a href="#501" id="501">501</a>
+<a href="#502" id="502">502</a>
+<a href="#503" id="503">503</a>
+<a href="#504" id="504">504</a>
+<a href="#505" id="505">505</a>
+<a href="#506" id="506">506</a>
+<a href="#507" id="507">507</a>
+<a href="#508" id="508">508</a>
+<a href="#509" id="509">509</a>
+<a href="#510" id="510">510</a>
+<a href="#511" id="511">511</a>
+<a href="#512" id="512">512</a>
+<a href="#513" id="513">513</a>
+<a href="#514" id="514">514</a>
+<a href="#515" id="515">515</a>
+<a href="#516" id="516">516</a>
+<a href="#517" id="517">517</a>
+<a href="#518" id="518">518</a>
+<a href="#519" id="519">519</a>
+<a href="#520" id="520">520</a>
+<a href="#521" id="521">521</a>
+<a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
+<a href="#525" id="525">525</a>
+<a href="#526" id="526">526</a>
+<a href="#527" id="527">527</a>
+<a href="#528" id="528">528</a>
+<a href="#529" id="529">529</a>
+<a href="#530" id="530">530</a>
+<a href="#531" id="531">531</a>
+<a href="#532" id="532">532</a>
+<a href="#533" id="533">533</a>
+<a href="#534" id="534">534</a>
+<a href="#535" id="535">535</a>
+<a href="#536" id="536">536</a>
+<a href="#537" id="537">537</a>
+<a href="#538" id="538">538</a>
+<a href="#539" id="539">539</a>
+<a href="#540" id="540">540</a>
+<a href="#541" id="541">541</a>
+<a href="#542" id="542">542</a>
+<a href="#543" id="543">543</a>
+<a href="#544" id="544">544</a>
+<a href="#545" id="545">545</a>
+<a href="#546" id="546">546</a>
+<a href="#547" id="547">547</a>
+<a href="#548" id="548">548</a>
+<a href="#549" id="549">549</a>
+<a href="#550" id="550">550</a>
+<a href="#551" id="551">551</a>
+<a href="#552" id="552">552</a>
+<a href="#553" id="553">553</a>
+<a href="#554" id="554">554</a>
+<a href="#555" id="555">555</a>
+<a href="#556" id="556">556</a>
+<a href="#557" id="557">557</a>
+<a href="#558" id="558">558</a>
+<a href="#559" id="559">559</a>
+<a href="#560" id="560">560</a>
+<a href="#561" id="561">561</a>
+<a href="#562" id="562">562</a>
+<a href="#563" id="563">563</a>
+<a href="#564" id="564">564</a>
+<a href="#565" id="565">565</a>
+<a href="#566" id="566">566</a>
+<a href="#567" id="567">567</a>
+<a href="#568" id="568">568</a>
+<a href="#569" id="569">569</a>
+<a href="#570" id="570">570</a>
+<a href="#571" id="571">571</a>
+<a href="#572" id="572">572</a>
+<a href="#573" id="573">573</a>
+<a href="#574" id="574">574</a>
+<a href="#575" id="575">575</a>
+<a href="#576" id="576">576</a>
+<a href="#577" id="577">577</a>
+<a href="#578" id="578">578</a>
+<a href="#579" id="579">579</a>
+<a href="#580" id="580">580</a>
+<a href="#581" id="581">581</a>
+<a href="#582" id="582">582</a>
+<a href="#583" id="583">583</a>
+<a href="#584" id="584">584</a>
+<a href="#585" id="585">585</a>
+<a href="#586" id="586">586</a>
+<a href="#587" id="587">587</a>
+<a href="#588" id="588">588</a>
+<a href="#589" id="589">589</a>
+<a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+</pre><pre class="rust"><code><span class="kw">use </span>futures::future::BoxFuture;
 <span class="kw">use </span>thiserror::Error;
 <span class="kw">use </span>web3::{
     signing::{hash_message, recover, RecoveryError},
-    Error <span class="kw">as </span>Web3Error,
+    Error <span class="kw">as </span>Web3Error, RequestId, Transport, Web3,
 };
 
 <span class="kw">use crate</span>::{
     account::Address,
     chain::{AuthChain, AuthLink},
+    rpc::{rpc_call_is_valid_signature, RPCCallError},
 };
 
-<span class="attr">#[derive(Debug, Error)]
+<span class="attr">#[derive(Debug, Error, PartialEq)]
 </span><span class="kw">pub enum </span>AuthenticatorError {
     <span class="attr">#[error(<span class="string">&quot;malformed authchain: expecting at least 2 links, but is empty&quot;</span>)]
     </span>EmptyChain,
@@ -324,14 +624,12 @@
     <span class="attr">#[error(<span class="string">&quot;malformed authchain: expecting ECDSA_SIGNED_ENTITY or ECDSA_EIP_1654_SIGNED_ENTITY&quot;</span>)]
     </span>SignedEntityMissing,
 
-    <span class="attr">#[error(<span class="string">&quot;ECDSA_EPHEMERAL or ECDSA_SIGNED_ENTITY cannot be validated because personal validator is not implemented&quot;</span>)]
-    </span>PersonalValidatorNotImplemented,
-
-    <span class="attr">#[error(<span class="string">&quot;ECDSA_EIP_1654_EPHEMERAL or ECDSA_EIP_1654_SIGNED_ENTITY cannot be validated because eip1654 validator is not implemented&quot;</span>)]
-    </span>EIP1654ValidatorNotImplemented,
-
-    <span class="attr">#[error(<span class="string">&quot;validation error: {0}&quot;</span>)]
-    </span>ValidationError(String),
+    <span class="attr">#[error(<span class="string">&quot;fail to validate {kind} at position {position}: {message}&quot;</span>)]
+    </span>ValidationError {
+        position: usize,
+        kind: String,
+        message: String,
+    },
 
     <span class="attr">#[error(<span class="string">&quot;unexpected authority at position {position}: expected {expected}, but found {found}&quot;</span>)]
     </span>UnexpectedSigner {
@@ -348,24 +646,28 @@
         expected: String,
         found: String,
     },
+
+    <span class="attr">#[error(<span class="string">&quot;expired entity {kind} at position {position}&quot;</span>)]
+    </span>ExpiredEntity { position: usize, kind: String },
 }
 
-<span class="kw">impl </span>From&lt;RecoveryError&gt; <span class="kw">for </span>AuthenticatorError {
-    <span class="kw">fn </span>from(value: RecoveryError) -&gt; <span class="self">Self </span>{
-        AuthenticatorError::ValidationError(value.to_string())
+<span class="attr">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>WithoutTransport {}
+<span class="kw">impl </span>Transport <span class="kw">for </span>WithoutTransport {
+    <span class="kw">type </span>Out = BoxFuture&lt;<span class="lifetime">&#39;static</span>, <span class="prelude-ty">Result</span>&lt;serde_json::Value, Web3Error&gt;&gt;;
+
+    <span class="kw">fn </span>prepare(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        _method: <span class="kw-2">&amp;</span>str,
+        _params: Vec&lt;serde_json::Value&gt;,
+    ) -&gt; (usize, jsonrpc_core::types::request::Call) {
+        <span class="macro">unimplemented!</span>()
+    }
+
+    <span class="kw">fn </span>send(<span class="kw-2">&amp;</span><span class="self">self</span>, _id: RequestId, _request: jsonrpc_core::Call) -&gt; <span class="self">Self</span>::Out {
+        <span class="macro">unimplemented!</span>()
     }
 }
-
-<span class="kw">impl </span>From&lt;Web3Error&gt; <span class="kw">for </span>AuthenticatorError {
-    <span class="kw">fn </span>from(value: Web3Error) -&gt; <span class="self">Self </span>{
-        AuthenticatorError::ValidationError(value.to_string())
-    }
-}
-
-<span class="kw">type </span>SignatureValidator =
-    Box&lt;<span class="kw">dyn </span>Fn(Address, String, Vec&lt;u8&gt;) -&gt; SignatureValidatorResult + Send + Sync + <span class="lifetime">&#39;static</span>&gt;;
-<span class="kw">type </span>SignatureValidatorResult =
-    Box&lt;<span class="kw">dyn </span>Future&lt;Output = <span class="prelude-ty">Result</span>&lt;bool, AuthenticatorError&gt;&gt; + Send + <span class="lifetime">&#39;static</span>&gt;;
 
 <span class="doccomment">/// Validates a message and has correspond to an address.
 ///
@@ -375,7 +677,7 @@
 /// use dcl_crypto::chain::AuthChain;
 ///
 /// # tokio_test::block_on(async {
-///     let authenticator = Authenticator::default();
+///     let authenticator = Authenticator::new();
 ///
 ///     let chain = AuthChain::parse(r#&quot;[
 ///       {
@@ -397,37 +699,48 @@
 ///
 ///     let address =  Address::try_from(&quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;).unwrap();
 ///     let owner =  chain.owner().unwrap();
-///     let result = authenticator.verify(&amp;chain, &quot;signed message&quot;).await.unwrap();
+///     let result = authenticator.verify_signature(&amp;chain, &quot;signed message&quot;).await.unwrap();
 ///     assert_eq!(result, &amp;address);
 ///     assert_eq!(result, owner);
 /// # })
 /// ```
-</span><span class="attr">#[derive(Default)]
-</span><span class="kw">pub struct </span>Authenticator {
-    eip1654_validator: <span class="prelude-ty">Option</span>&lt;SignatureValidator&gt;,
+</span><span class="kw">pub struct </span>Authenticator&lt;T&gt; {
+    transport: <span class="prelude-ty">Option</span>&lt;T&gt;,
 }
 
-<span class="kw">impl </span>Authenticator {
-    <span class="kw">pub fn </span>with_eip1654_validator&lt;H, R&gt;(<span class="kw-2">mut </span><span class="self">self</span>, validator: H) -&gt; <span class="self">Self
-    </span><span class="kw">where
-        </span>H: Fn(Address, String, Vec&lt;u8&gt;) -&gt; R + Send + Sync + <span class="lifetime">&#39;static</span>,
-        R: Future&lt;Output = <span class="prelude-ty">Result</span>&lt;bool, AuthenticatorError&gt;&gt; + Send + <span class="lifetime">&#39;static</span>,
-    {
-        <span class="self">self</span>.eip1654_validator = <span class="prelude-val">Some</span>(Box::new(<span class="kw">move </span>|address, message, hash| {
-            Box::new(validator(address, message, hash))
-        }));
-        <span class="self">self
-    </span>}
+<span class="kw">impl </span>Authenticator&lt;()&gt; {
+    <span class="kw">pub fn </span>new() -&gt; Authenticator&lt;WithoutTransport&gt; {
+        Authenticator { transport: <span class="prelude-val">None </span>}
+    }
 
-    <span class="kw">async fn </span>validate_with(
-        validator: <span class="kw-2">&amp;</span>SignatureValidator,
+    <span class="kw">pub fn </span>with_transport&lt;T: Transport&gt;(transport: T) -&gt; Authenticator&lt;T&gt; {
+        Authenticator {
+            transport: <span class="prelude-val">Some</span>(transport),
+        }
+    }
+}
+
+<span class="kw">impl </span>Authenticator&lt;WithoutTransport&gt; {
+    <span class="kw">pub fn </span>add_transport&lt;T: Transport&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, transport: T) -&gt; Authenticator&lt;T&gt; {
+        Authenticator {
+            transport: <span class="prelude-val">Some</span>(transport),
+        }
+    }
+}
+
+<span class="kw">impl</span>&lt;T: Transport&gt; Authenticator&lt;T&gt; {
+    <span class="kw">async fn </span>validate_eip1654(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
         address: Address,
         message: String,
         hash: Vec&lt;u8&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;bool, AuthenticatorError&gt; {
-        <span class="kw">let </span>validation = validator(address, message, hash);
-        Box::into_pin(validation).<span class="kw">await
-    </span>}
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;bool, RPCCallError&gt; {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(transport) = <span class="kw-2">&amp;</span><span class="self">self</span>.transport {
+            rpc_call_is_valid_signature(<span class="kw-2">&amp;</span>Web3::new(transport).eth(), address, message, hash).<span class="kw">await
+        </span>} <span class="kw">else </span>{
+            <span class="prelude-val">Err</span>(RPCCallError::NotImplemented)
+        }
+    }
 
     <span class="doccomment">/// Validates a message and has correspond to an address.
     ///
@@ -440,17 +753,18 @@
     ///     let message = &quot;Decentraland Login\nEphemeral address: 0xF5E49370d9754924C9f082077ec6ad49F3113150\nExpiration: 2023-05-02T02:20:12.026Z&quot;.to_string();
     ///     let hash = PersonalSignature::try_from(&quot;0xb2985d12400f9ee87091156b5951ee0e745efda50f503bbdcee3a3e7fc8adbb051b20ce386f7b400ae5865e7263c6a7155decda1af433287bceff911994849e81c&quot;).unwrap().to_vec();
     ///
-    ///     let result = Authenticator::validate_personal(address, message, hash).unwrap();
+    ///     let result = Authenticator::new().validate_personal(address, message, hash).unwrap();
     ///     assert_eq!(result, true);
     /// # })
     /// ```
     </span><span class="kw">pub fn </span>validate_personal(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
         address: Address,
         message: String,
         hash: Vec&lt;u8&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;bool, AuthenticatorError&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;bool, RecoveryError&gt; {
         <span class="kw">if </span>hash.len() != <span class="number">65 </span>{
-            <span class="kw">return </span><span class="prelude-val">Err</span>(RecoveryError::InvalidSignature.into());
+            <span class="kw">return </span><span class="prelude-val">Err</span>(RecoveryError::InvalidSignature);
         }
 
         <span class="kw">let </span>signature = hash.get(..=<span class="number">63</span>).ok_or(RecoveryError::InvalidSignature)<span class="question-mark">?</span>;
@@ -464,7 +778,9 @@
         <span class="prelude-val">Ok</span>(address == h160)
     }
 
-    <span class="kw">async fn </span>verify_signer&lt;<span class="lifetime">&#39;a</span>&gt;(
+
+    <span class="doccomment">/// Verifies that and authlink is a signer and returns it as result. Otherwise, returns an error.
+    </span><span class="kw">async fn </span>verify_signer&lt;<span class="lifetime">&#39;a</span>&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         link: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AuthLink,
         position: usize,
@@ -478,35 +794,79 @@
         }
     }
 
-    <span class="kw">async fn </span>verify_ephemeral&lt;<span class="lifetime">&#39;a</span>&gt;(
+    <span class="doccomment">/// Verifies:
+    /// - the authlink is an ephemeral link (personal or eip1654)
+    /// - the ephemeral link is not expired
+    /// - the ephemeral payload is valid
+    /// - the ephemeral signature corresponds to the authority
+    ///
+    /// returns the address defined in the ephemeral payload, otherwise returns an error.
+    </span><span class="kw">async fn </span>verify_ephemeral&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;l</span>, <span class="lifetime">&#39;d</span>&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         authority: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Address,
-        link: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AuthLink,
+        link: <span class="kw-2">&amp;</span><span class="lifetime">&#39;l </span>AuthLink,
+        expiration: <span class="kw-2">&amp;</span><span class="lifetime">&#39;d </span>chrono::DateTime&lt;chrono::Utc&gt;,
         position: usize,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Address, AuthenticatorError&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;l </span>Address, AuthenticatorError&gt; {
         <span class="kw">match </span>link {
             AuthLink::EcdsaPersonalEphemeral { payload, signature } =&gt; {
-                Authenticator::validate_personal(
-                    authority.clone(),
-                    payload.to_string(),
-                    signature.to_vec(),
-                )<span class="question-mark">?</span>;
+                <span class="kw">if </span>payload.is_expired_at(expiration) {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(AuthenticatorError::ExpiredEntity {
+                        position,
+                        kind: link.kind().to_string(),
+                    });
+                }
+
+                <span class="kw">let </span>result = <span class="self">self
+                    </span>.validate_personal(authority.clone(), payload.to_string(), signature.to_vec())
+                    .map_err(|err| AuthenticatorError::ValidationError {
+                        position,
+                        kind: link.kind().to_string(),
+                        message: err.to_string(),
+                    })<span class="question-mark">?</span>;
+
+                <span class="kw">if </span>!result {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(AuthenticatorError::ValidationError {
+                        position,
+                        kind: link.kind().to_string(),
+                        message: <span class="macro">format!</span>(
+                            <span class="string">&quot;Signature {} couldn&#39;t be validated against address {}&quot;</span>,
+                            signature, authority
+                        ),
+                    });
+                }
 
                 <span class="prelude-val">Ok</span>(<span class="kw-2">&amp;</span>payload.address)
             }
             AuthLink::EcdsaEip1654Ephemeral { payload, signature } =&gt; {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(eip1654_validator) = <span class="kw-2">&amp;</span><span class="self">self</span>.eip1654_validator {
-                    Authenticator::validate_with(
-                        eip1654_validator,
-                        authority.clone(),
-                        payload.to_string(),
-                        signature.to_vec(),
-                    )
-                    .<span class="kw">await</span><span class="question-mark">?</span>;
-                    <span class="prelude-val">Ok</span>(<span class="kw-2">&amp;</span>payload.address)
-                } <span class="kw">else </span>{
-                    <span class="prelude-val">Err</span>(AuthenticatorError::EIP1654ValidatorNotImplemented)
+                <span class="kw">if </span>payload.is_expired_at(expiration) {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(AuthenticatorError::ExpiredEntity {
+                        position,
+                        kind: link.kind().to_string(),
+                    });
                 }
+
+                <span class="kw">let </span>result = <span class="self">self
+                    </span>.validate_eip1654(authority.clone(), payload.to_string(), signature.to_vec())
+                    .<span class="kw">await
+                    </span>.map_err(|err| AuthenticatorError::ValidationError {
+                        position,
+                        kind: link.kind().to_string(),
+                        message: err.to_string(),
+                    })<span class="question-mark">?</span>;
+
+                <span class="kw">if </span>!result {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(AuthenticatorError::ValidationError {
+                        position,
+                        kind: link.kind().to_string(),
+                        message: <span class="macro">format!</span>(
+                            <span class="string">&quot;Signature {} couldn&#39;t be validated against address {}&quot;</span>,
+                            signature, authority
+                        ),
+                    });
+                }
+
+                <span class="prelude-val">Ok</span>(<span class="kw-2">&amp;</span>payload.address)
             }
             <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(AuthenticatorError::EphemeralExpected {
                 position,
@@ -515,7 +875,13 @@
         }
     }
 
-    <span class="kw">async fn </span>verify_signed_entity&lt;<span class="lifetime">&#39;a</span>&gt;(
+    <span class="doccomment">/// Verifies:
+    /// - the authlink is an ephemeral link (personal or eip1654)
+    /// - the ephemeral link is not expired
+    /// - the ephemeral signature corresponds to the authority
+    ///
+    /// returns the signed payload, otherwise returns an error.
+    </span><span class="kw">async fn </span>verify_signed_entity&lt;<span class="lifetime">&#39;a</span>&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         authority: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Address,
         link: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AuthLink,
@@ -523,27 +889,49 @@
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str, AuthenticatorError&gt; {
         <span class="kw">match </span>link {
             AuthLink::EcdsaPersonalSignedEntity { payload, signature } =&gt; {
-                Authenticator::validate_personal(
-                    authority.clone(),
-                    payload.to_string(),
-                    signature.to_vec(),
-                )<span class="question-mark">?</span>;
+                <span class="kw">let </span>result = <span class="self">self
+                    </span>.validate_personal(authority.clone(), payload.to_string(), signature.to_vec())
+                    .map_err(|err| AuthenticatorError::ValidationError {
+                        position,
+                        kind: link.kind().to_string(),
+                        message: err.to_string(),
+                    })<span class="question-mark">?</span>;
+
+                <span class="kw">if </span>!result {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(AuthenticatorError::ValidationError {
+                        position,
+                        kind: link.kind().to_string(),
+                        message: <span class="macro">format!</span>(
+                            <span class="string">&quot;Signature {} couldn&#39;t be validated against address {}&quot;</span>,
+                            signature, authority
+                        ),
+                    });
+                }
 
                 <span class="prelude-val">Ok</span>(payload)
             }
             AuthLink::EcdsaEip1654SignedEntity { payload, signature } =&gt; {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(eip1654_validator) = <span class="kw-2">&amp;</span><span class="self">self</span>.eip1654_validator {
-                    Authenticator::validate_with(
-                        eip1654_validator,
-                        authority.clone(),
-                        payload.to_string(),
-                        signature.to_vec(),
-                    )
-                    .<span class="kw">await</span><span class="question-mark">?</span>;
-                    <span class="prelude-val">Ok</span>(payload)
-                } <span class="kw">else </span>{
-                    <span class="prelude-val">Err</span>(AuthenticatorError::EIP1654ValidatorNotImplemented)
+                <span class="kw">let </span>result = <span class="self">self
+                    </span>.validate_eip1654(authority.clone(), payload.to_string(), signature.to_vec())
+                    .<span class="kw">await
+                    </span>.map_err(|err| AuthenticatorError::ValidationError {
+                        position,
+                        kind: link.kind().to_string(),
+                        message: err.to_string(),
+                    })<span class="question-mark">?</span>;
+
+                <span class="kw">if </span>!result {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(AuthenticatorError::ValidationError {
+                        position,
+                        kind: link.kind().to_string(),
+                        message: <span class="macro">format!</span>(
+                            <span class="string">&quot;Signature {} couldn&#39;t be validated against address {}&quot;</span>,
+                            signature, authority
+                        ),
+                    });
                 }
+
+                <span class="prelude-val">Ok</span>(payload)
             }
             <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(AuthenticatorError::SignedEntityExpected {
                 position,
@@ -552,10 +940,12 @@
         }
     }
 
-    <span class="kw">pub async fn </span>verify&lt;<span class="lifetime">&#39;a</span>&gt;(
+    <span class="doccomment">/// Verifies and authchain is valid, not expired at a given date and corresponds to the last_authority, otherwise, returns an error.
+    </span><span class="kw">pub async fn </span>verify_signature_at&lt;<span class="lifetime">&#39;a</span>&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         chain: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AuthChain,
         last_authority: <span class="kw-2">&amp;</span>str,
+        expiration: <span class="kw-2">&amp;</span>chrono::DateTime&lt;chrono::Utc&gt;
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Address, AuthenticatorError&gt; {
         <span class="kw">let </span>owner = <span class="kw">match </span>chain.first() {
             <span class="prelude-val">Some</span>(link) =&gt; <span class="self">self</span>.verify_signer(link, <span class="number">0</span>).<span class="kw">await</span><span class="question-mark">?</span>,
@@ -563,13 +953,12 @@
         };
 
         <span class="kw">let </span>len = chain.len();
-
-        <span class="kw">let </span><span class="kw-2">mut </span>latest_authority = <span class="kw-2">&amp;</span>Address::default();
+        <span class="kw">let </span><span class="kw-2">mut </span>latest_authority = owner;
         <span class="kw">for </span>(position, link) <span class="kw">in </span>chain.iter().enumerate().skip(<span class="number">1</span>) {
             <span class="comment">// is not the last link
             </span><span class="kw">if </span>position != len - <span class="number">1 </span>{
                 latest_authority = <span class="self">self
-                    </span>.verify_ephemeral(latest_authority, link, position)
+                    </span>.verify_ephemeral(latest_authority, link, expiration, position)
                     .<span class="kw">await</span><span class="question-mark">?</span>;
 
                 <span class="comment">// is the last link
@@ -577,6 +966,7 @@
                 <span class="kw">let </span>signed_message = <span class="self">self
                     </span>.verify_signed_entity(latest_authority, link, position)
                     .<span class="kw">await</span><span class="question-mark">?</span>;
+
                 <span class="kw">if </span>signed_message == last_authority {
                     <span class="kw">return </span><span class="prelude-val">Ok</span>(owner);
                 } <span class="kw">else </span>{
@@ -590,6 +980,214 @@
         }
 
         <span class="prelude-val">Err</span>(AuthenticatorError::SignedEntityMissing)
+    }
+
+    <span class="doccomment">/// Verifies and authchain is valid, not expired and corresponds to the last_authority, otherwise, returns an error.
+    </span><span class="kw">pub async fn </span>verify_signature&lt;<span class="lifetime">&#39;a</span>&gt;(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        chain: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AuthChain,
+        last_authority: <span class="kw-2">&amp;</span>str
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Address, AuthenticatorError&gt; {
+        <span class="kw">let </span>now = <span class="kw-2">&amp;</span>chrono::Utc::now();
+        <span class="self">self</span>.verify_signature_at(chain, last_authority, now).<span class="kw">await
+    </span>}
+}
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>test {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span>std::env;
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_should_validate_personal_signature() {
+        <span class="kw">let </span>authenticator = Authenticator::new();
+        <span class="kw">let </span>chain = AuthChain::parse(<span class="string">r#&quot;[
+            {
+              &quot;type&quot;: &quot;SIGNER&quot;,
+              &quot;payload&quot;: &quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;,
+              &quot;signature&quot;: &quot;&quot;
+            },
+            {
+              &quot;type&quot;: &quot;ECDSA_EPHEMERAL&quot;,
+              &quot;payload&quot;: &quot;Decentraland Login\nEphemeral address: 0xB80549D339DCe9834271EcF5F1F1bb141C70AbC2\nExpiration: 2123-03-20T12:36:25.522Z&quot;,
+              &quot;signature&quot;: &quot;0x76bf8d3c8ee6798bd488c4bc7ac1298d0ad78759669be39876e63ccfd9af81e31b8c6d8000b892ed2d17eb2f5a2b56fc3edbbf33c6089d3e5148d83cc70ce9001c&quot;
+            },
+            {
+              &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;,
+              &quot;payload&quot;: &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;,
+              &quot;signature&quot;: &quot;0xd71fb5511f7d9116d171a12754b2c6f4c795240bee982511049a14aba57f18684b48a08413ab00176801d773eab0436fff5d0c978877b6d05f483ee2ae36efb41b&quot;
+            }
+          ]&quot;#</span>).unwrap();
+
+        <span class="kw">let </span>owner = authenticator
+            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">&quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;</span>)
+            .<span class="kw">await
+            </span>.unwrap();
+        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">&quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;</span>).unwrap();
+        <span class="macro">assert_eq!</span>(owner, expected);
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_should_validate_eip_1654_signatures() {
+        <span class="kw">let </span>endpoint = env::var(<span class="string">&quot;ETHEREUM_MAINNET_RPC&quot;</span>).unwrap();
+        <span class="kw">let </span>transport = web3::transports::Http::new(<span class="kw-2">&amp;</span>endpoint).unwrap();
+        <span class="kw">let </span>authenticator = Authenticator::with_transport(<span class="kw-2">&amp;</span>transport);
+        <span class="kw">let </span>chain = AuthChain::parse(<span class="string">r#&quot;[
+            {
+              &quot;type&quot;: &quot;SIGNER&quot;,
+              &quot;payload&quot;: &quot;0x8C889222833F961FC991B31d15e25738c6732930&quot;,
+              &quot;signature&quot;: &quot;&quot;
+            },
+            {
+              &quot;type&quot;: &quot;ECDSA_EIP_1654_EPHEMERAL&quot;,
+              &quot;payload&quot;: &quot;Decentraland Login\nEphemeral address: 0x4A1b9FD363dE915145008C41FA217377B2C223F2\nExpiration: 2123-03-18T16:59:36.515Z&quot;,
+              &quot;signature&quot;: &quot;0x00050203596af90cecdbf9a768886e771178fd5561dd27ab005d000100019dde76f11e2c6aff01f6548f3046a9d0c569e13e79dec4218322068d3123e1162167fabd84dccfaabd350b93d2405f7b8a9cef4846b4d9a55d17838809a0e2591b020101c50adeadb7fe15bee45dcb820610cdedcd314eb0030102640dccefda3685e6c0dbeb70c1cf8018c27077eb00021cfbe892a1b29ac5e2fda1038c7965656be94aec57b658582f16447089bcf50b09df216a7e21d861cd7474723a7bfc70bf1caa55a962476cf78eb4b54471018b1b020103d9e87370ededc599df3bf9dd0e48586005f1a1bb&quot;
+            },
+            {
+              &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;,
+              &quot;payload&quot;: &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;,
+              &quot;signature&quot;: &quot;0xb962b57accc8e12083769339888f82752d13f280012b2c7b2aa2722eae103aea7a623dc88605bf7036ec8c23b0bb8f036b52f5e4e30ee913f6f2a077d5e5e3e01b&quot;
+            }
+          ]&quot;#</span>).unwrap();
+
+        <span class="kw">let </span>owner = authenticator
+            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">&quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;</span>)
+            .<span class="kw">await
+            </span>.unwrap();
+        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">&quot;0x8C889222833F961FC991B31d15e25738c6732930&quot;</span>).unwrap();
+        <span class="macro">assert_eq!</span>(owner, expected);
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_should_validate_simple_personal_signatures() {
+        <span class="kw">let </span>authenticator = Authenticator::new();
+        <span class="kw">let </span>signer = Address::try_from(<span class="string">&quot;0xeC6E6c0841a2bA474E92Bf42BaF76bFe80e8657C&quot;</span>).unwrap();
+        <span class="kw">let </span>payload = <span class="string">&quot;QmWyFNeHbxXaPtUnzKvDZPpKSa4d5anZEZEFJ8TC1WgcfU&quot;</span>;
+        <span class="kw">let </span>signature = <span class="string">&quot;0xaaafb0368c13c42e401e71162cb55a062b3b0a5389e0740e7dc34e623b12f0fd65e2fadac51ab5f0de8f69b1311f23f1f218753e8a957043a2a789ba721141f91c&quot;</span>;
+        <span class="kw">let </span>chain = AuthChain::simple(signer, payload, signature).unwrap();
+
+        <span class="kw">let </span>owner = authenticator
+            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">&quot;QmWyFNeHbxXaPtUnzKvDZPpKSa4d5anZEZEFJ8TC1WgcfU&quot;</span>)
+            .<span class="kw">await
+            </span>.unwrap();
+        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">&quot;0xeC6E6c0841a2bA474E92Bf42BaF76bFe80e8657C&quot;</span>).unwrap();
+        <span class="macro">assert_eq!</span>(owner, expected);
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_should_validate_simple_eip_1654_signatures() {
+        <span class="kw">let </span>endpoint = env::var(<span class="string">&quot;ETHEREUM_MAINNET_RPC&quot;</span>).unwrap();
+        <span class="kw">let </span>transport = web3::transports::Http::new(<span class="kw-2">&amp;</span>endpoint).unwrap();
+        <span class="kw">let </span>authenticator = Authenticator::with_transport(<span class="kw-2">&amp;</span>transport);
+
+        <span class="kw">let </span>signer = Address::try_from(<span class="string">&quot;0x6b7d7e82c984a0F4489c722fd11906F017f57704&quot;</span>).unwrap();
+        <span class="kw">let </span>payload = <span class="string">&quot;QmNUd7Cyoo9CREGsACkvBrQSb3KjhWX379FVsdjTCGsTAz&quot;</span>;
+        <span class="kw">let </span>signature = <span class="string">&quot;0x7fba0fbe75d0b28a224ec49ad99f6025f9055880db9ed1a35bc527a372c54ebe2461406aa07097bc47017da4319e19e517c49952697f074bcdc702f36afa72b01c759138c6ca4675367458884eb9b820c51af60a79efe1904ebcf2c1950fc7a2c02f3595a82ea1cc9d67a680c2f9b34df6abf5b344e857773dfe4210c6f85405151b&quot;</span>;
+        <span class="kw">let </span>chain = AuthChain::simple(signer, payload, signature).unwrap();
+
+        <span class="kw">let </span>owner = authenticator
+            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">&quot;QmNUd7Cyoo9CREGsACkvBrQSb3KjhWX379FVsdjTCGsTAz&quot;</span>)
+            .<span class="kw">await
+            </span>.unwrap();
+        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">&quot;0x6b7d7e82c984a0F4489c722fd11906F017f57704&quot;</span>).unwrap();
+        <span class="macro">assert_eq!</span>(owner, expected);
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_should_support_r_on_personal_signatures() {
+        <span class="kw">let </span>authenticator = Authenticator::new();
+        <span class="kw">let </span>chain = AuthChain::parse(<span class="string">r#&quot;[
+            {
+              &quot;type&quot;: &quot;SIGNER&quot;,
+              &quot;payload&quot;: &quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;,
+              &quot;signature&quot;: &quot;&quot;
+            },
+            {
+              &quot;type&quot;: &quot;ECDSA_EPHEMERAL&quot;,
+              &quot;payload&quot;: &quot;Decentraland Login\r\nEphemeral address: 0xB80549D339DCe9834271EcF5F1F1bb141C70AbC2\r\nExpiration: 2123-03-20T12:36:25.522Z&quot;,
+              &quot;signature&quot;: &quot;0x76bf8d3c8ee6798bd488c4bc7ac1298d0ad78759669be39876e63ccfd9af81e31b8c6d8000b892ed2d17eb2f5a2b56fc3edbbf33c6089d3e5148d83cc70ce9001c&quot;
+            },
+            {
+              &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;,
+              &quot;payload&quot;: &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;,
+              &quot;signature&quot;: &quot;0xd71fb5511f7d9116d171a12754b2c6f4c795240bee982511049a14aba57f18684b48a08413ab00176801d773eab0436fff5d0c978877b6d05f483ee2ae36efb41b&quot;
+            }
+          ]&quot;#</span>).unwrap();
+
+        <span class="kw">let </span>owner = authenticator
+            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">&quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;</span>)
+            .<span class="kw">await
+            </span>.unwrap();
+        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">&quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;</span>).unwrap();
+        <span class="macro">assert_eq!</span>(owner, expected);
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_should_support_r_on_eip_1654_signatures() {
+        <span class="kw">let </span>endpoint = env::var(<span class="string">&quot;ETHEREUM_MAINNET_RPC&quot;</span>).unwrap();
+        <span class="kw">let </span>transport = web3::transports::Http::new(<span class="kw-2">&amp;</span>endpoint).unwrap();
+        <span class="kw">let </span>authenticator = Authenticator::with_transport(<span class="kw-2">&amp;</span>transport);
+        <span class="kw">let </span>chain = AuthChain::parse(<span class="string">r#&quot;[
+            {
+              &quot;type&quot;: &quot;SIGNER&quot;,
+              &quot;payload&quot;: &quot;0x8C889222833F961FC991B31d15e25738c6732930&quot;,
+              &quot;signature&quot;: &quot;&quot;
+            },
+            {
+              &quot;type&quot;: &quot;ECDSA_EIP_1654_EPHEMERAL&quot;,
+              &quot;payload&quot;: &quot;Decentraland Login\r\nEphemeral address: 0x4A1b9FD363dE915145008C41FA217377B2C223F2\r\nExpiration: 2123-03-18T16:59:36.515Z&quot;,
+              &quot;signature&quot;: &quot;0x00050203596af90cecdbf9a768886e771178fd5561dd27ab005d000100019dde76f11e2c6aff01f6548f3046a9d0c569e13e79dec4218322068d3123e1162167fabd84dccfaabd350b93d2405f7b8a9cef4846b4d9a55d17838809a0e2591b020101c50adeadb7fe15bee45dcb820610cdedcd314eb0030102640dccefda3685e6c0dbeb70c1cf8018c27077eb00021cfbe892a1b29ac5e2fda1038c7965656be94aec57b658582f16447089bcf50b09df216a7e21d861cd7474723a7bfc70bf1caa55a962476cf78eb4b54471018b1b020103d9e87370ededc599df3bf9dd0e48586005f1a1bb&quot;
+            },
+            {
+              &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;,
+              &quot;payload&quot;: &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;,
+              &quot;signature&quot;: &quot;0xb962b57accc8e12083769339888f82752d13f280012b2c7b2aa2722eae103aea7a623dc88605bf7036ec8c23b0bb8f036b52f5e4e30ee913f6f2a077d5e5e3e01b&quot;
+            }
+          ]&quot;#</span>).unwrap();
+
+        <span class="kw">let </span>owner = authenticator
+            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">&quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;</span>)
+            .<span class="kw">await
+            </span>.unwrap();
+        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">&quot;0x8C889222833F961FC991B31d15e25738c6732930&quot;</span>).unwrap();
+        <span class="macro">assert_eq!</span>(owner, expected);
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_should_fail_if_ephemeral_is_expired() {
+        <span class="kw">let </span>authenticator = Authenticator::new();
+        <span class="kw">let </span>chain = AuthChain::parse(<span class="string">r#&quot;[
+            {
+              &quot;type&quot;: &quot;SIGNER&quot;,
+              &quot;payload&quot;: &quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;,
+              &quot;signature&quot;: &quot;&quot;
+            },
+            {
+              &quot;type&quot;: &quot;ECDSA_EPHEMERAL&quot;,
+              &quot;payload&quot;: &quot;Decentraland Login\nEphemeral address: 0xe94944439fAB988e5e14b128BbcF6D5502b05f9C\nExpiration: 2020-02-20T00:00:00.000Z&quot;,
+              &quot;signature&quot;: &quot;0x2d45e2a3e9e04614cf6bb822951b849458a78037733202d4bda12e60ef1ff4d266b02af7b72caa232c45052520fd440869672da2b0966b29fff21638e3d21ca01b&quot;
+            },
+            {
+              &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;,
+              &quot;payload&quot;: &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;,
+              &quot;signature&quot;: &quot;0x6ae9bbd2af56ea61db3afe188d78381f0cb3177376b12537a3cb01e5d242c3fc49955475615209f194d98f0c751a24f712ab1c0caa9f92fa222bd2e13e2efd611c&quot;
+            }
+          ]&quot;#</span>).unwrap();
+
+        <span class="kw">let </span>result = authenticator
+            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">&quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;</span>)
+            .<span class="kw">await</span>;
+
+        <span class="macro">assert_eq!</span>(result, <span class="prelude-val">Err</span>(AuthenticatorError::ExpiredEntity { position: <span class="number">1</span>, kind: String::from(<span class="string">&quot;ECDSA_EPHEMERAL&quot;</span>) }));
+
+        <span class="kw">let </span>time = chrono::DateTime::parse_from_rfc3339(<span class="string">&quot;2020-01-01T00:00:00.000Z&quot;</span>).unwrap().with_timezone(<span class="kw-2">&amp;</span>chrono::Utc);
+        <span class="kw">let </span>owner = authenticator
+            .verify_signature_at(<span class="kw-2">&amp;</span>chain, <span class="string">&quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;</span>, <span class="kw-2">&amp;</span>time)
+            .<span class="kw">await
+            </span>.unwrap();
+
+        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">&quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;</span>).unwrap();
+        <span class="macro">assert_eq!</span>(owner, expected);
     }
 }
 </code></pre></div>

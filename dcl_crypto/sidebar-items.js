@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["account",""],["authenticator",""],["chain",""]]};
+window.SIDEBAR_ITEMS = {"mod":[["account",""],["authenticator",""],["chain",""],["rpc",""]]};

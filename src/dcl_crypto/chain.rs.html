@@ -239,11 +239,35 @@
 <a href="#239" id="239">239</a>
 <a href="#240" id="240">240</a>
 <a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::ops::Deref;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>serde_json::Error <span class="kw">as </span>SerdeError;
 
-<span class="kw">use </span><span class="kw">crate</span>::account::{Address, EIP1271Signature, PersonalSignature, EphemeralPayload};
+<span class="kw">use crate</span>::{account::{Address, EIP1271Signature, PersonalSignature, EphemeralPayload, PERSONAL_SIGNATURE_SIZE, DecodeHexError}};
 
 
 <span class="kw">static </span>SIGNER: <span class="kw-2">&amp;</span>str = <span class="string">&quot;SIGNER&quot;</span>;
@@ -352,25 +376,49 @@
 
 <span class="kw">impl </span>AuthChain {
 
+
     <span class="doccomment">/// Returns the original owner of the chain
     ///
     /// ```rust
     /// use dcl_crypto::chain::AuthChain;
-    /// use dcl_crypto::account::{Address, PersonalSignature};
+    /// use dcl_crypto::account::Address;
     ///
-    /// let address = Address::try_from(&quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;).unwrap();
-    /// let payload = String::from(&quot;signed message&quot;);
-    /// let signature = PersonalSignature::try_from(&quot;0x013e0b0b75bd8404d70a37d96bb893596814d8f29f517e383d9d1421111f83c32d4ca0d6e399349c7badd54261feaa39895d027880d28d806c01089677400b7c1b&quot;).unwrap();
+    /// let address = Address::try_from(&quot;0x4A1b9FD363dE915145008C41FA217377B2C223F2&quot;).unwrap();
+    /// let payload = &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;;
+    /// let signature = &quot;0xb962b57accc8e12083769339888f82752d13f280012b2c7b2aa2722eae103aea7a623dc88605bf7036ec8c23b0bb8f036b52f5e4e30ee913f6f2a077d5e5e3e01b&quot;;
     ///
-    /// let chain = AuthChain::simple(address, payload, signature);
+    /// let chain = AuthChain::simple(address, payload, signature).unwrap();
     /// let owner = chain.owner().unwrap();
-    /// assert_eq!(owner, &amp;Address::try_from(&quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;).unwrap());
+    /// assert_eq!(owner, &amp;Address::try_from(&quot;0x4A1b9FD363dE915145008C41FA217377B2C223F2&quot;).unwrap());
     /// ```
-    </span><span class="kw">pub fn </span>simple(signer: Address, payload: String, signature: PersonalSignature) -&gt; <span class="self">Self </span>{
-        AuthChain::from(<span class="macro">vec!</span>[
-            AuthLink::signer(signer),
+    ///
+    /// ```rust
+    /// use dcl_crypto::chain::AuthChain;
+    /// use dcl_crypto::account::Address;
+    ///
+    /// let address = Address::try_from(&quot;0x8C889222833F961FC991B31d15e25738c6732930&quot;).unwrap();
+    /// let payload = &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;;
+    /// let signature = &quot;0x00050203596af90cecdbf9a768886e771178fd5561dd27ab005d000100018d7c77aaeb3a8529951423128fa5b807192c27c4ce5af76bbf73ffc84eecd48c4a004c4b4db03cf04b269ad0f1fcf26c31b859cb0a693eeb3b8efd89dc9e3bea1b020101c50adeadb7fe15bee45dcb820610cdedcd314eb0030102640dccefda3685e6c0dbeb70c1cf8018c27077eb00020af67e80c0f311fddd79d3163c8ee840863a5a1eb3d236b10b8b6972164164236b32e13443e3cfe1be591534cb93607cf6e49e48e51f012e806c158819fa7b471c020103d9e87370ededc599df3bf9dd0e48586005f1a1bb&quot;;
+    ///
+    /// let chain = AuthChain::simple(address, payload, signature).unwrap();
+    /// let owner = chain.owner().unwrap();
+    /// assert_eq!(owner, &amp;Address::try_from(&quot;0x8C889222833F961FC991B31d15e25738c6732930&quot;).unwrap());
+    /// ```
+    </span><span class="kw">pub fn </span>simple&lt;P, T&gt;(signer: Address, payload: P, signature: T) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, DecodeHexError&gt; <span class="kw">where </span>P: AsRef&lt;str&gt;, T: AsRef&lt;str&gt; {
+        <span class="kw">let </span>signature = signature.as_ref();
+        <span class="kw">let </span>payload = payload.as_ref().to_string();
+        <span class="kw">let </span>entity = <span class="kw">if </span>signature.len() == (PERSONAL_SIGNATURE_SIZE * <span class="number">2</span>) + <span class="number">2 </span>{
+            <span class="kw">let </span>signature = PersonalSignature::try_from(signature)<span class="question-mark">?</span>;
             AuthLink::EcdsaPersonalSignedEntity { payload, signature }
-        ])
+        } <span class="kw">else </span>{
+            <span class="kw">let </span>signature = EIP1271Signature::try_from(signature)<span class="question-mark">?</span>;
+            AuthLink::EcdsaEip1654SignedEntity { payload, signature }
+        };
+
+        <span class="prelude-val">Ok</span>(AuthChain::from(<span class="macro">vec!</span>[
+            AuthLink::signer(signer),
+            entity
+        ]))
     }
 
     <span class="doccomment">/// Parse a json string and returns an AuthChain
@@ -463,16 +511,16 @@
         }
     }
 
-
     <span class="kw">pub fn </span>is_expired(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="kw">let </span>now = <span class="kw-2">&amp;</span>chrono::Utc::now();
         <span class="self">self</span>.iter().any(|link| <span class="kw">match </span>link {
-            AuthLink::EcdsaPersonalEphemeral { payload, .. } =&gt; payload.is_expired(),
-            AuthLink::EcdsaEip1654Ephemeral { payload, .. } =&gt; payload.is_expired(),
+            AuthLink::EcdsaPersonalEphemeral { payload, .. } =&gt; payload.is_expired_at(now),
+            AuthLink::EcdsaEip1654Ephemeral { payload, .. } =&gt; payload.is_expired_at(now),
             <span class="kw">_ </span>=&gt; <span class="bool-val">false</span>,
         })
     }
 
-    <span class="kw">pub fn </span>is_expired_at(<span class="kw-2">&amp;</span><span class="self">self</span>, time: chrono::DateTime&lt;chrono::Utc&gt;) -&gt; bool {
+    <span class="kw">pub fn </span>is_expired_at(<span class="kw-2">&amp;</span><span class="self">self</span>, time: <span class="kw-2">&amp;</span>chrono::DateTime&lt;chrono::Utc&gt;) -&gt; bool {
         <span class="self">self</span>.iter().any(|link| <span class="kw">match </span>link {
             AuthLink::EcdsaPersonalEphemeral { payload, .. } =&gt; payload.is_expired_at(time),
             AuthLink::EcdsaEip1654Ephemeral { payload, .. } =&gt; payload.is_expired_at(time),

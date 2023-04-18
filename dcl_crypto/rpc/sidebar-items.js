@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["RPCCallError",""]],"fn":[["rpc_call_is_valid_signature","A signature validator that receives an address, a message and a signature and validates it using local resources."]]};

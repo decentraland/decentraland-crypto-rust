@@ -665,16 +665,29 @@
 <a href="#665" id="665">665</a>
 <a href="#666" id="666">666</a>
 <a href="#667" id="667">667</a>
-</pre><pre class="rust"><code><span class="kw">use </span>lazy_static::lazy_static;
+<a href="#668" id="668">668</a>
+<a href="#669" id="669">669</a>
+<a href="#670" id="670">670</a>
+<a href="#671" id="671">671</a>
+<a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+</pre><pre class="rust"><code><span class="kw">use </span>chrono::DateTime;
+<span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>regex::Regex;
-<span class="kw">use </span>std::{fmt::{Display, UpperHex, LowerHex}, ops::Deref};
-<span class="kw">use </span>chrono::DateTime;
-<span class="kw">use </span>serde::{Serialize, Deserialize};
+<span class="kw">use </span>serde::{Deserialize, Serialize};
+<span class="kw">use </span>std::{
+    fmt::{Display, LowerHex, UpperHex, Debug},
+    ops::Deref,
+};
 
 <span class="kw">use </span>thiserror::Error;
 <span class="kw">use </span>web3::{
-    signing::{hash_message, recover, RecoveryError, keccak256},
-    types::{H256, H160},
+    signing::{hash_message, keccak256, recover, RecoveryError},
+    types::{H160, H256},
 };
 
 <span class="doccomment">/// An error that can occur when decoding a hexadecimal string
@@ -700,7 +713,10 @@
             hex::FromHexError::OddLength =&gt; DecodeHexError::OddLength,
             hex::FromHexError::InvalidStringLength =&gt; DecodeHexError::InvalidLength,
             hex::FromHexError::InvalidHexCharacter { c, index } =&gt; {
-                DecodeHexError::InvalidHexCharacter { c, index: index + <span class="number">2 </span>}
+                DecodeHexError::InvalidHexCharacter {
+                    c,
+                    index: index + <span class="number">2</span>,
+                }
             }
         }
     }
@@ -816,10 +832,9 @@
 }
 
 <span class="kw">impl </span>From&lt;Address&gt; <span class="kw">for </span>String {
-
     <span class="doccomment">/// Formats an `Address` into its `String` representation
     </span><span class="kw">fn </span>from(value: Address) -&gt; <span class="self">Self </span>{
-        value.to_string_checksum()
+        value.checksum()
     }
 }
 
@@ -904,7 +919,6 @@
 }
 
 <span class="kw">impl </span>LowerHex <span class="kw">for </span>Address {
-
     <span class="doccomment">/// Formats the `Address` into its hexadecimal lowercase representation
     ///
     /// ```rust
@@ -951,13 +965,13 @@
     ///
     /// ```rust
     ///     use dcl_crypto::account::Address;
-    ///     assert_eq!(Address::try_from(&quot;0x0f5d2fb29fb7d3cfee444a200298f468908cc942&quot;).unwrap().to_string_checksum(), &quot;0x0F5D2fB29fb7d3CFeE444a200298f468908cC942&quot;);
-    ///     assert_eq!(Address::try_from(&quot;0x554bb6488ba955377359bed16b84ed0822679cdc&quot;).unwrap().to_string_checksum(), &quot;0x554BB6488bA955377359bED16b84Ed0822679CDC&quot;);
-    ///     assert_eq!(Address::try_from(&quot;0x1784ef41af86e97f8d28afe95b573a24aeda966e&quot;).unwrap().to_string_checksum(), &quot;0x1784Ef41af86e97f8D28aFe95b573a24aEDa966e&quot;);
-    ///     assert_eq!(Address::from([255; 20]).to_string_checksum(), &quot;0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF&quot;);
-    ///     assert_eq!(Address::from([0; 20]).to_string_checksum(), &quot;0x0000000000000000000000000000000000000000&quot;);
+    ///     assert_eq!(Address::try_from(&quot;0x0f5d2fb29fb7d3cfee444a200298f468908cc942&quot;).unwrap().checksum(), &quot;0x0F5D2fB29fb7d3CFeE444a200298f468908cC942&quot;);
+    ///     assert_eq!(Address::try_from(&quot;0x554bb6488ba955377359bed16b84ed0822679cdc&quot;).unwrap().checksum(), &quot;0x554BB6488bA955377359bED16b84Ed0822679CDC&quot;);
+    ///     assert_eq!(Address::try_from(&quot;0x1784ef41af86e97f8d28afe95b573a24aeda966e&quot;).unwrap().checksum(), &quot;0x1784Ef41af86e97f8D28aFe95b573a24aEDa966e&quot;);
+    ///     assert_eq!(Address::from([255; 20]).checksum(), &quot;0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF&quot;);
+    ///     assert_eq!(Address::from([0; 20]).checksum(), &quot;0x0000000000000000000000000000000000000000&quot;);
     /// ```
-    </span><span class="kw">pub fn </span>to_string_checksum(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+    </span><span class="kw">pub fn </span>checksum(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
         <span class="kw">let </span>hash = keccak256(<span class="macro">format!</span>(<span class="string">&quot;{self:x}&quot;</span>).as_bytes());
         <span class="kw">let </span>checksum = <span class="self">self
             </span>.as_bytes()
@@ -991,12 +1005,14 @@
     }
 }
 
+<span class="kw">pub const </span>PERSONAL_SIGNATURE_SIZE: usize = <span class="number">65</span>;
+
 <span class="attr">#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 #[serde(try_from = <span class="string">&quot;String&quot;</span>, into = <span class="string">&quot;String&quot;</span>)]
-</span><span class="kw">pub struct </span>PersonalSignature([u8; <span class="number">65</span>]);
+</span><span class="kw">pub struct </span>PersonalSignature([u8; PERSONAL_SIGNATURE_SIZE]);
 
 <span class="kw">impl </span>Deref <span class="kw">for </span>PersonalSignature {
-    <span class="kw">type </span>Target = [u8; <span class="number">65</span>];
+    <span class="kw">type </span>Target = [u8; PERSONAL_SIGNATURE_SIZE];
     <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0
     </span>}
@@ -1004,19 +1020,19 @@
 
 <span class="kw">impl </span>Default <span class="kw">for </span>PersonalSignature {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        PersonalSignature([<span class="number">0</span>; <span class="number">65</span>])
+        PersonalSignature([<span class="number">0</span>; PERSONAL_SIGNATURE_SIZE])
     }
 }
 
-<span class="kw">impl </span>From&lt;[u8; <span class="number">65</span>]&gt; <span class="kw">for </span>PersonalSignature {
-    <span class="kw">fn </span>from(value: [u8; <span class="number">65</span>]) -&gt; <span class="self">Self </span>{
+<span class="kw">impl </span>From&lt;[u8; PERSONAL_SIGNATURE_SIZE]&gt; <span class="kw">for </span>PersonalSignature {
+    <span class="kw">fn </span>from(value: [u8; PERSONAL_SIGNATURE_SIZE]) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>(value)
     }
 }
 
 <span class="kw">impl </span>From&lt;web3::signing::Signature&gt; <span class="kw">for </span>PersonalSignature {
     <span class="kw">fn </span>from(value: web3::signing::Signature) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>bits: [u8; <span class="number">65</span>] = [<span class="number">0</span>; <span class="number">65</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>bits = [<span class="number">0u8</span>; PERSONAL_SIGNATURE_SIZE];
         bits[..<span class="number">32</span>].copy_from_slice(<span class="kw-2">&amp;</span>value.r.<span class="number">0</span>);
         bits[<span class="number">32</span>..<span class="number">64</span>].copy_from_slice(<span class="kw-2">&amp;</span>value.s.<span class="number">0</span>);
         bits[<span class="number">64</span>] = (value.v * <span class="number">0b1111</span>) <span class="kw">as </span>u8;
@@ -1032,7 +1048,7 @@
             <span class="kw">return </span><span class="prelude-val">Err</span>(DecodeHexError::InvalidLength);
         }
 
-        <span class="kw">let </span><span class="kw-2">mut </span>bits: [u8; <span class="number">65</span>] = [<span class="number">0</span>; <span class="number">65</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>bits = [<span class="number">0u8</span>; PERSONAL_SIGNATURE_SIZE];
         <span class="kw">match </span>decode_to_slice(value, <span class="kw-2">&amp;mut </span>bits) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="self">Self</span>::from(bits)),
             <span class="prelude-val">Err</span>(err) =&gt; <span class="prelude-val">Err</span>(err),
@@ -1044,7 +1060,7 @@
     <span class="kw">type </span>Error = DecodeHexError;
 
     <span class="kw">fn </span>try_from(value: String) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
-       <span class="self">Self</span>::try_from(value.as_str())
+        <span class="self">Self</span>::try_from(value.as_str())
     }
 }
 
@@ -1055,7 +1071,7 @@
 }
 
 <span class="kw">impl </span>From&lt;PersonalSignature&gt; <span class="kw">for </span>web3::signing::Signature {
-  <span class="kw">fn </span>from(value: PersonalSignature) -&gt; <span class="self">Self </span>{
+    <span class="kw">fn </span>from(value: PersonalSignature) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>r: [u8; <span class="number">32</span>] = [<span class="number">0</span>; <span class="number">32</span>];
         r.copy_from_slice(<span class="kw-2">&amp;</span>value[..<span class="number">32</span>]);
 
@@ -1064,8 +1080,12 @@
 
         <span class="kw">let </span>v: u64 = value.<span class="number">0</span>[<span class="number">64</span>] <span class="kw">as </span>u64;
 
-    <span class="self">Self </span>{ v, r: H256(r), s: H256(s) }
-  }
+        <span class="self">Self </span>{
+            v,
+            r: H256(r),
+            s: H256(s),
+        }
+    }
 }
 
 <span class="kw">impl </span>From&lt;PersonalSignature&gt; <span class="kw">for </span>Vec&lt;u8&gt; {
@@ -1166,12 +1186,10 @@
     }
 }
 
-
 <span class="doccomment">/// Alias of EIP1271Signature
 /// See &lt;https://eips.ethereum.org/EIPS/eip-1271&gt;
 /// See &lt;https://github.com/ethereum/EIPs/issues/1654&gt;
 </span><span class="kw">pub type </span>EIP1654Signature = EIP1271Signature;
-
 
 <span class="kw">static </span>DEFAULT_EPHEMERAL_PAYLOAD_TITLE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Decentraland Login&quot;</span>;
 
@@ -1183,11 +1201,10 @@
 ///     let payload = EphemeralPayload::try_from(&quot;Decentraland Login\nEphemeral address: 0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3\nExpiration: 2023-03-30T15:44:55.787Z&quot;).unwrap();
 ///     let expiration = chrono::DateTime::parse_from_rfc3339(&quot;2023-03-30T15:44:55.787Z&quot;).unwrap().with_timezone(&amp;chrono::Utc);
 ///
-///     assert_eq!(payload, EphemeralPayload {
-///         title: String::from(&quot;Decentraland Login&quot;),
-///         address: Address::try_from(&quot;0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3&quot;).unwrap(),
+///     assert_eq!(payload, EphemeralPayload::new(
+///         Address::try_from(&quot;0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3&quot;).unwrap(),
 ///         expiration,
-///     })
+///     ))
 /// ```
 </span><span class="attr">#[derive(PartialEq, Debug, Serialize, Deserialize, Clone)]
 #[serde(try_from = <span class="string">&quot;String&quot;</span>, into = <span class="string">&quot;String&quot;</span>)]
@@ -1198,7 +1215,7 @@
 }
 
 <span class="attr">#[derive(PartialEq, Debug, Error)]
-</span><span class="kw">pub enum </span>DelegationPayloadError {
+</span><span class="kw">pub enum </span>EphemeralPayloadError {
     <span class="attr">#[error(<span class="string">&quot;invalid payload content&quot;</span>)]
     </span>InvalidPayload,
 
@@ -1208,26 +1225,17 @@
     <span class="attr">#[error(<span class="string">&quot;missing address line on payload&quot;</span>)]
     </span>MissingAddress,
 
-    <span class="attr">#[error(<span class="string">&quot;invalid address: {0}&quot;</span>)]
-    </span>InvalidAddress(DecodeHexError),
+    <span class="attr">#[error(<span class="string">&quot;invalid address: {err} (address: {value})&quot;</span>)]
+    </span>InvalidAddress { err: DecodeHexError, value: String },
 
     <span class="attr">#[error(<span class="string">&quot;missing expiration line on payload&quot;</span>)]
     </span>MissingExpiration,
 
-    <span class="attr">#[error(<span class="string">&quot;invalid expiration: {0}&quot;</span>)]
-    </span>InvalidExpiration(chrono::ParseError),
-}
-
-<span class="kw">impl </span>From&lt;DecodeHexError&gt; <span class="kw">for </span>DelegationPayloadError {
-    <span class="kw">fn </span>from(err: DecodeHexError) -&gt; <span class="self">Self </span>{
-        DelegationPayloadError::InvalidAddress(err)
-    }
-}
-
-<span class="kw">impl </span>From&lt;chrono::ParseError&gt; <span class="kw">for </span>DelegationPayloadError {
-    <span class="kw">fn </span>from(err: chrono::ParseError) -&gt; <span class="self">Self </span>{
-        DelegationPayloadError::InvalidExpiration(err)
-    }
+    <span class="attr">#[error(<span class="string">&quot;invalid expiration: {err} (expiration: {value})&quot;</span>)]
+    </span>InvalidExpiration {
+        err: chrono::ParseError,
+        value: String,
+    },
 }
 
 <span class="kw">static </span>RE_TITLE_CAPTURE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;title&quot;</span>;
@@ -1235,36 +1243,48 @@
 <span class="kw">static </span>RE_EXPIRATION_CAPTURE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;expiration&quot;</span>;
 
 <span class="kw">impl </span>TryFrom&lt;<span class="kw-2">&amp;</span>str&gt; <span class="kw">for </span>EphemeralPayload {
-    <span class="kw">type </span>Error = DelegationPayloadError;
+    <span class="kw">type </span>Error = EphemeralPayloadError;
 
     <span class="kw">fn </span>try_from(value: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
         <span class="macro">lazy_static! </span>{
             <span class="kw">static </span><span class="kw-2">ref </span>EPHEMERAL_PAYLOAD_REGEX: Regex = Regex::new(<span class="kw-2">&amp;</span><span class="macro">format!</span>(
-                <span class="string">r&quot;^(?P&lt;{}&gt;.*)\nEphemeral address: (?P&lt;{}&gt;.*)\nExpiration: (?P&lt;{}&gt;.*)$&quot;</span>,
+                <span class="string">r&quot;^(?P&lt;{}&gt;[^\r\n]*)\r?\nEphemeral address: (?P&lt;{}&gt;[^\r\n]*)\r?\nExpiration: (?P&lt;{}&gt;.*)$&quot;</span>,
                 RE_TITLE_CAPTURE, RE_ADDRESS_CAPTURE, RE_EXPIRATION_CAPTURE
             ))
             .unwrap();
         }
 
         <span class="kw">let </span>captures = <span class="kw">match </span>EPHEMERAL_PAYLOAD_REGEX.captures(value) {
-            <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(DelegationPayloadError::InvalidPayload),
+            <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(EphemeralPayloadError::InvalidPayload),
             <span class="prelude-val">Some</span>(captures) =&gt; captures,
         };
 
         <span class="kw">let </span>title = <span class="kw">match </span>captures.name(RE_TITLE_CAPTURE) {
-            <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(DelegationPayloadError::MissingTitle),
+            <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(EphemeralPayloadError::MissingTitle),
             <span class="prelude-val">Some</span>(title) =&gt; title.as_str().to_string(),
         };
 
         <span class="kw">let </span>address = <span class="kw">match </span>captures.name(RE_ADDRESS_CAPTURE) {
-            <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(DelegationPayloadError::MissingAddress),
-            <span class="prelude-val">Some</span>(address) =&gt; Address::try_from(address.as_str())<span class="question-mark">?</span>,
+            <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(EphemeralPayloadError::MissingAddress),
+            <span class="prelude-val">Some</span>(address) =&gt; {
+                <span class="kw">let </span>value = address.as_str();
+                Address::try_from(value).map_err(|err| EphemeralPayloadError::InvalidAddress {
+                    value: value.to_string(),
+                    err,
+                })<span class="question-mark">?
+            </span>}
         };
 
         <span class="kw">let </span>expiration = <span class="kw">match </span>captures.name(RE_EXPIRATION_CAPTURE) {
-            <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(DelegationPayloadError::MissingExpiration),
+            <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(EphemeralPayloadError::MissingExpiration),
             <span class="prelude-val">Some</span>(expiration) =&gt; {
-                DateTime::parse_from_rfc3339(expiration.as_str())<span class="question-mark">?</span>.with_timezone(<span class="kw-2">&amp;</span>chrono::Utc)
+                <span class="kw">let </span>value = expiration.as_str();
+                DateTime::parse_from_rfc3339(value)
+                    .map_err(|err| EphemeralPayloadError::InvalidExpiration {
+                        value: value.to_string(),
+                        err,
+                    })<span class="question-mark">?
+                    </span>.with_timezone(<span class="kw-2">&amp;</span>chrono::Utc)
             }
         };
 
@@ -1277,7 +1297,7 @@
 }
 
 <span class="kw">impl </span>TryFrom&lt;String&gt; <span class="kw">for </span>EphemeralPayload {
-    <span class="kw">type </span>Error = DelegationPayloadError;
+    <span class="kw">type </span>Error = EphemeralPayloadError;
 
     <span class="kw">fn </span>try_from(value: String) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
         <span class="self">Self</span>::try_from(value.as_str())
@@ -1288,9 +1308,9 @@
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
         <span class="macro">write!</span>(
             f,
-            <span class="string">&quot;{}\n{}\n{}&quot;</span>,
+            <span class="string">&quot;{}\nEphemeral address: {}\nExpiration: {}&quot;</span>,
             <span class="self">self</span>.title,
-            <span class="self">self</span>.address.to_string_checksum(),
+            <span class="self">self</span>.address.checksum(),
             <span class="self">self</span>.expiration
                 .to_rfc3339_opts(chrono::SecondsFormat::Millis, <span class="bool-val">true</span>)
         )
@@ -1305,11 +1325,11 @@
 
 <span class="kw">impl </span>EphemeralPayload {
     <span class="kw">pub fn </span>new(address: Address, expiration: chrono::DateTime&lt;chrono::Utc&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            title: String::from(DEFAULT_EPHEMERAL_PAYLOAD_TITLE),
+        <span class="self">Self</span>::new_with_title(
+            String::from(DEFAULT_EPHEMERAL_PAYLOAD_TITLE),
             address,
             expiration,
-        }
+        )
     }
 
     <span class="kw">pub fn </span>new_with_title(
@@ -1328,8 +1348,9 @@
         <span class="self">self</span>.expiration &lt; chrono::Utc::now()
     }
 
-    <span class="kw">pub fn </span>is_expired_at(<span class="kw-2">&amp;</span><span class="self">self</span>, time: chrono::DateTime&lt;chrono::Utc&gt;) -&gt; bool {
-        <span class="self">self</span>.expiration &lt; time
+    <span class="kw">pub fn </span>is_expired_at(<span class="kw-2">&amp;</span><span class="self">self</span>, time: <span class="kw-2">&amp;</span>chrono::DateTime&lt;chrono::Utc&gt;) -&gt; bool {
+        <span class="self">self</span>.expiration &lt; <span class="kw-2">*</span>time
     }
-}</code></pre></div>
+}
+</code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="dcl_crypto" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.2 (9eb3afe9e 2023-03-27)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["AuthenticatorError",""]],"struct":[["Authenticator","Validates a message and has correspond to an address."]]};
+window.SIDEBAR_ITEMS = {"enum":[["AuthenticatorError",""]],"struct":[["Authenticator","Validates a message and has correspond to an address."],["WithoutTransport",""]]};
