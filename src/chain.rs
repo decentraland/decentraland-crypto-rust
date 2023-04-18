@@ -183,8 +183,8 @@ impl AuthChain {
     ///
     /// let owner = chain.owner().unwrap();
     /// assert_eq!(owner, &Address::try_from("0x3f17f1962b36e491b30a40b2405849e597ba5fb5").unwrap());
-    pub fn from_json(value: &str) -> Result<AuthChain, SerdeError> {
-        serde_json::from_str::<AuthChain>(value)
+    pub fn from_json<V>(value: V) -> Result<AuthChain, SerdeError> where V: AsRef<str> {
+        serde_json::from_str::<AuthChain>(value.as_ref())
     }
 
     /// Parse a list of json strings and returns an AuthChain

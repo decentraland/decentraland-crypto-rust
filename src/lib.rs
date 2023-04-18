@@ -29,7 +29,7 @@
  * ```rust
  * use dcl_crypto::Authenticator;
  *
- * let endpoint = env::var("ETHEREUM_MAINNET_RPC").unwrap();
+ * let endpoint = std::env::var("ETHEREUM_MAINNET_RPC").unwrap();
  * let transport = web3::transports::Http::new(&endpoint).unwrap();
  * let authenticator = Authenticator::with_transport(&transport);
  * ```
@@ -40,14 +40,14 @@
  *
  * ```rust
  * use dcl_crypto::Authenticator;
-
+ *
  * let authenticator = Authenticator::new();
  * ```
  *
  * Once you have an `Authenticator` you can verify if a given message was signed by the `AuthChain` using the [`verify_signature`](authenticator/struct.Authenticator.html#method.verify_signature) method.
  *
  * ```rust
- * use dcl_crypto::Authenticator;
+ * use dcl_crypto::{Authenticator, AuthChain};
  *
  * let authenticator = Authenticator::new();
  * let auth_chain = AuthChain::from_json(r#"[
@@ -68,7 +68,7 @@
  *   }
  * ]"#).unwrap();
  *
- * let owner = authenticator.verify_signature(&auth_chain, "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo").unwrap();
+ * authenticator.verify_signature(&auth_chain, "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo"); // future
  * ```
  */
 pub mod account;
