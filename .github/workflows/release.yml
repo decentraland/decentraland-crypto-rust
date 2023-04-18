@@ -44,9 +44,6 @@ jobs:
           args: ${{github.ref_name}}
 
       - name: publishing lib
-        uses: actions-rs/cargo@v1
-        with:
-          command: publish
-          args: --token ${CRATESIO_TOKEN} -p dcl-crypto --allow-dirty
+        run: cargo publish --token ${CRATES_TOKEN} -p dcl-crypto --allow-dirty
         env:
           CRATESIO_TOKEN: ${{ secrets.CRATESIO_TOKEN }}
