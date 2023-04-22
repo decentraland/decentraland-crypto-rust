@@ -42,27 +42,28 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-
 
-      - name: Test
+      - name: cargo test
         uses: actions-rs/cargo@v1
         with:
           command: test
           args: --doc
+        env:
+          ETHEREUM_MAINNET_RPC: ${{ secrets.ETHEREUM_MAINNET_RPC }}
 
-      - name: Build
+      - name: cargo build
         uses: actions-rs/cargo@v1
         with:
           command: build
           args: --release --all-features
 
-      - name: Build docs
+      - name: cargo doc (only on main branch)
         uses: actions-rs/cargo@v1
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           command: doc
           args: --no-deps
 
-      # publish to gh pages
-      - name: Publish docs
+      - name: publishing documents  (only on main branch)
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: peaceiris/actions-gh-pages@v3
         with:

@@ -31,22 +31,19 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-
 
-      - name: Intall cargo-edit
+      - name: installing cargo-edit
         uses: actions-rs/cargo@v1
         with:
           command: install
           args: cargo-edit
 
-      - name: Set version
+      - name: setting release version
         uses: actions-rs/cargo@v1
         with:
           command: set-version
           args: ${{github.ref_name}}
 
-      - name: Publish lib
-        uses: actions-rs/cargo@v1
-        with:
-          command: publish
-          args: --release --token ${CRATESIO_TOKEN} -p dcl-crypto --allow-dirty
+      - name: publishing lib
+        run: cargo publish --token ${CRATESIO_TOKEN} -p dcl-crypto --allow-dirty
         env:
           CRATESIO_TOKEN: ${{ secrets.CRATESIO_TOKEN }}

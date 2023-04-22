@@ -1,19 +1,22 @@
 # Decentraland crypto (Rust)
 
-A rust library to create and verify Decentraland AuthChain
+This crate is a port of [`@dcl/crypto`](https://github.com/decentraland/decentraland-crypto)
+originally implemented on javascript and provides the necessary tools to create and validate
+Decentraland's Authentication Chains.
 
-## Install
+## Test
+
+To run all tests you need to provide a ethereum rpc endpoint.
+
+First, create a `.cargo/config.toml` file using the template provided in the repository and set your rpc provider.
 
 ```bash
- cargo add dcl-crypto
+cp .cargo/config.toml.example .cargo/config.toml
 ```
 
-## Tes
-
-To run test you need to provide a ethereum rpc endpoint using the environment ``
+Once configured you can run all tests
 
 ```bash
-export ETHEREUM_MAINNET_RPC="https://mainnet.infura.io/v3/00000000000000000000000000000000"
 cargo test --doc
 ```
 
@@ -31,7 +34,7 @@ Use [Github Releases](https://github.com/decentraland/decentraland-crypto-rust/r
   - [x] ephemeral
 - [x] verify auth chain expiration
 - [x] verify personal signatures
-- [ ] verify [EIP-1271](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1271.md) signatures
+- [x] verify [EIP-1271](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1271.md) signatures
 - [ ] create identity
 - [ ] create auth chain from identity
 - [ ] load identity from file
