@@ -84,26 +84,26 @@ impl Transport for WithoutTransport {
 ///     let authenticator = Authenticator::new();
 ///
 ///     let chain = AuthChain::from_json(r#"[
-///       {
-///         "type": "SIGNER",
-///         "payload": "0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34",
-///         "signature": ""
-///       },
-///       {
-///         "type": "ECDSA_EPHEMERAL",
-///         "payload": "Decentraland Login\nEphemeral address: 0x8b7E12dBE632f22D6B2c5Fc6789E02d27896Cb43\nExpiration: 2023-05-03T11:52:56.132Z",
-///         "signature": "0x42f5f7bc74c2934e6608627fa72a6078d470bfb12eb75063f5e4c878e176a5f265389606415a8dbe1b0914e75d58a2440840c5de3f325b8a5026dd8db0b397451b"
-///       },
-///       {
-///         "type": "ECDSA_SIGNED_ENTITY",
-///         "payload": "signed message",
-///         "signature": "0x60d35a5a5d0bacc7d5439101b1c502b175c6f35b3f3dea00ed2d81445f3ece0e796e8175a90a2ec4826d7baea44fc297c881c9163c9247daa9c347cd81c41a781c"
-///       }
+///        {
+///            "type": "SIGNER",
+///            "payload": "0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34",
+///            "signature": ""
+///        },
+///        {
+///            "type": "ECDSA_EPHEMERAL",
+///            "payload": "Decentraland Login\r\nEphemeral address: 0xB80549D339DCe9834271EcF5F1F1bb141C70AbC2\r\nExpiration: 2123-03-20T12:36:25.522Z",
+///            "signature": "0x76bf8d3c8ee6798bd488c4bc7ac1298d0ad78759669be39876e63ccfd9af81e31b8c6d8000b892ed2d17eb2f5a2b56fc3edbbf33c6089d3e5148d83cc70ce9001c"
+///        },
+///        {
+///            "type": "ECDSA_SIGNED_ENTITY",
+///            "payload": "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo",
+///            "signature": "0xd71fb5511f7d9116d171a12754b2c6f4c795240bee982511049a14aba57f18684b48a08413ab00176801d773eab0436fff5d0c978877b6d05f483ee2ae36efb41b"
+///        }
 ///     ]"#).unwrap();
 ///
 ///     let address =  Address::try_from("0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34").unwrap();
 ///     let owner =  chain.owner().unwrap();
-///     let result = authenticator.verify_signature(&chain, "signed message").await.unwrap();
+///     let result = authenticator.verify_signature(&chain, "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo").await.unwrap();
 ///     assert_eq!(result, &address);
 ///     assert_eq!(result, owner);
 /// # })
@@ -153,19 +153,19 @@ impl<T: Transport> Authenticator<T> {
     /// use dcl_crypto::account::{Address, PersonalSignature};
     ///
     /// # tokio_test::block_on(async {
-    ///     let address = Address::try_from("0xb92702b3EeFB3c2049aEB845B0335b283e11E9c6").unwrap();
-    ///     let message = "Decentraland Login\nEphemeral address: 0xF5E49370d9754924C9f082077ec6ad49F3113150\nExpiration: 2023-05-02T02:20:12.026Z".to_string();
-    ///     let hash = PersonalSignature::try_from("0xb2985d12400f9ee87091156b5951ee0e745efda50f503bbdcee3a3e7fc8adbb051b20ce386f7b400ae5865e7263c6a7155decda1af433287bceff911994849e81c").unwrap().to_vec();
+    ///     let address = Address::try_from("0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34").unwrap();
+    ///     let message = "Decentraland Login\nEphemeral address: 0xe94944439fAB988e5e14b128BbcF6D5502b05f9C\nExpiration: 2020-02-20T00:00:00.000Z";
+    ///     let hash = PersonalSignature::try_from("0x2d45e2a3e9e04614cf6bb822951b849458a78037733202d4bda12e60ef1ff4d266b02af7b72caa232c45052520fd440869672da2b0966b29fff21638e3d21ca01b").unwrap().to_vec();
     ///
-    ///     let result = Authenticator::new().validate_personal(address, message, hash).unwrap();
+    ///     let result = Authenticator::new().validate_personal(&address, &message, &hash).unwrap();
     ///     assert_eq!(result, true);
     /// # })
     /// ```
-    pub fn validate_personal(
+    pub fn validate_personal<M: AsRef<[u8]>>(
         &self,
-        address: Address,
-        message: String,
-        hash: Vec<u8>,
+        address: &Address,
+        message: M,
+        hash: &[u8],
     ) -> Result<bool, RecoveryError> {
         if hash.len() != 65 {
             return Err(RecoveryError::InvalidSignature);
@@ -222,7 +222,7 @@ impl<T: Transport> Authenticator<T> {
                 }
 
                 let result = self
-                    .validate_personal(authority.clone(), payload.to_string(), signature.to_vec())
+                    .validate_personal(authority, payload.to_string(), signature.as_ref())
                     .map_err(|err| AuthenticatorError::ValidationError {
                         position,
                         kind: link.kind().to_string(),
@@ -294,7 +294,7 @@ impl<T: Transport> Authenticator<T> {
         match link {
             AuthLink::EcdsaPersonalSignedEntity { payload, signature } => {
                 let result = self
-                    .validate_personal(authority.clone(), payload.to_string(), signature.to_vec())
+                    .validate_personal(authority, payload, signature.as_ref())
                     .map_err(|err| AuthenticatorError::ValidationError {
                         position,
                         kind: link.kind().to_string(),
