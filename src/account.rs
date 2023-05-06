@@ -713,14 +713,20 @@ fn to_public_key(secret: &secp256k1::SecretKey) -> secp256k1::PublicKey {
 // Intermediary representation of a private key from an Identity
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct EphemeralAccount {
+struct EphemeralAccountRepresentation {
     address: String,
     public_key: String,
     pub private_key: Account,
 }
 
+impl From<EphemeralAccountRepresentation> for Account {
+    fn from(account: EphemeralAccountRepresentation) -> Self {
+        account.private_key
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(try_from = "EphemeralAccount", into = "EphemeralAccount")]
+#[serde(try_from = "EphemeralAccountRepresentation", into = "EphemeralAccountRepresentation")]
 pub struct Account(secp256k1::SecretKey);
 
 impl TryFrom<&str> for Account {
@@ -754,13 +760,7 @@ impl From<Account> for String {
     }
 }
 
-impl From<EphemeralAccount> for Account {
-    fn from(account: EphemeralAccount) -> Self {
-        account.private_key
-    }
-}
-
-impl From<Account> for EphemeralAccount {
+impl From<Account> for EphemeralAccountRepresentation {
     fn from(account: Account) -> Self {
         let public = to_public_key(&account.0).serialize_uncompressed();
         Self {
