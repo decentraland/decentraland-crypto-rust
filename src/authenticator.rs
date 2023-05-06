@@ -84,21 +84,21 @@ impl Transport for WithoutTransport {
 ///     let authenticator = Authenticator::new();
 ///
 ///     let chain = AuthChain::from_json(r#"[
-///       {
-///         "type": "SIGNER",
-///         "payload": "0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34",
-///         "signature": ""
-///       },
-///       {
-///         "type": "ECDSA_EPHEMERAL",
-///         "payload": "Decentraland Login\nEphemeral address: 0xe94944439fAB988e5e14b128BbcF6D5502b05f9C\nExpiration: 2020-02-20T00:00:00.000Z",
-///         "signature": "0x2d45e2a3e9e04614cf6bb822951b849458a78037733202d4bda12e60ef1ff4d266b02af7b72caa232c45052520fd440869672da2b0966b29fff21638e3d21ca01b"
-///       },
-///       {
-///         "type": "ECDSA_SIGNED_ENTITY",
-///         "payload": "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo",
-///         "signature": "0x6ae9bbd2af56ea61db3afe188d78381f0cb3177376b12537a3cb01e5d242c3fc49955475615209f194d98f0c751a24f712ab1c0caa9f92fa222bd2e13e2efd611c"
-///       }
+///        {
+///            "type": "SIGNER",
+///            "payload": "0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34",
+///            "signature": ""
+///        },
+///        {
+///            "type": "ECDSA_EPHEMERAL",
+///            "payload": "Decentraland Login\r\nEphemeral address: 0xB80549D339DCe9834271EcF5F1F1bb141C70AbC2\r\nExpiration: 2123-03-20T12:36:25.522Z",
+///            "signature": "0x76bf8d3c8ee6798bd488c4bc7ac1298d0ad78759669be39876e63ccfd9af81e31b8c6d8000b892ed2d17eb2f5a2b56fc3edbbf33c6089d3e5148d83cc70ce9001c"
+///        },
+///        {
+///            "type": "ECDSA_SIGNED_ENTITY",
+///            "payload": "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo",
+///            "signature": "0xd71fb5511f7d9116d171a12754b2c6f4c795240bee982511049a14aba57f18684b48a08413ab00176801d773eab0436fff5d0c978877b6d05f483ee2ae36efb41b"
+///        }
 ///     ]"#).unwrap();
 ///
 ///     let address =  Address::try_from("0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34").unwrap();
