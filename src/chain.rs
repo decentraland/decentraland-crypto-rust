@@ -18,7 +18,7 @@ static ECDSA_EIP_1654_SIGNED_ENTITY: &str = "ECDSA_EIP_1654_SIGNED_ENTITY";
 /// use dcl_crypto::chain::AuthLink;
 ///
 /// let signer = AuthLink::parse(r#"{"type": "SIGNER","payload": "0x3f17f1962b36e491b30a40b2405849e597ba5fb5","signature": ""}"#).unwrap();
-/// let expected = AuthLink::Signer{ payload: Address::try_from("0x3f17f1962b36e491b30a40b2405849e597ba5fb5").unwrap(), signature: String::new() };
+/// let expected = AuthLink::signer(Address::try_from("0x3f17f1962b36e491b30a40b2405849e597ba5fb5").unwrap());
 /// assert_eq!(signer, expected);
 /// ```
 ///
@@ -87,7 +87,7 @@ impl AuthLink {
     }
 
     pub fn signer(payload: Address) -> Self {
-        AuthLink::Signer{ payload, signature: String::new() }
+        AuthLink::Signer{ payload, signature: String::with_capacity(0) }
     }
 }
 
