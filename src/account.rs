@@ -764,7 +764,7 @@ impl From<Account> for EphemeralAccount {
     fn from(account: Account) -> Self {
         let public = to_public_key(&account.0).serialize_uncompressed();
         Self {
-            address: account.address().to_string_checksum(),
+            address: account.address().checksum(),
             public_key: format!("0x{}", hex::encode(public)),
             private_key: account,
         }
