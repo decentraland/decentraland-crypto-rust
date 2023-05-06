@@ -222,7 +222,7 @@ impl<T: Transport> Authenticator<T> {
                 }
 
                 let result = self
-                    .validate_personal(&authority, payload.to_string(), signature.as_ref())
+                    .validate_personal(authority, payload.to_string(), signature.as_ref())
                     .map_err(|err| AuthenticatorError::ValidationError {
                         position,
                         kind: link.kind().to_string(),
