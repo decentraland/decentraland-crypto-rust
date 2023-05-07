@@ -841,7 +841,7 @@ impl Signer for Account {
     /// Return the address of the account.
     ///
     /// ```rust
-    /// use dcl_crypto::account::{Account, Address};
+    /// use dcl_crypto::account::{Account, Address, Signer};
     ///
     /// let account = Account::try_from("0xbc453a92d9baeb3d10294cbc1d48ef6738f718fd31b4eb8085efe7b311299399").unwrap();
     /// assert_eq!(account.address(), Address::try_from("0x84452bbFA4ca14B7828e2F3BBd106A2bD495CD34").unwrap());
@@ -857,7 +857,7 @@ impl Signer for Account {
     /// Sign a message with the account.
     ///
     /// ```rust
-    /// use dcl_crypto::account::{Account, PersonalSignature};
+    /// use dcl_crypto::account::{Account, PersonalSignature, Signer};
     ///
     /// let account = Account::try_from("0xbc453a92d9baeb3d10294cbc1d48ef6738f718fd31b4eb8085efe7b311299399").unwrap();
     /// let message = account.sign("signed message");
