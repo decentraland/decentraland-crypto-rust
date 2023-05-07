@@ -252,7 +252,7 @@ impl<T: Transport> Authenticator<T> {
                 }
 
                 let result = self
-                    .validate_eip1654(authority.clone(), payload.to_string(), signature.to_vec())
+                    .validate_eip1654(*authority, payload.to_string(), signature.to_vec())
                     .await
                     .map_err(|err| AuthenticatorError::ValidationError {
                         position,
@@ -317,7 +317,7 @@ impl<T: Transport> Authenticator<T> {
             }
             AuthLink::EcdsaEip1654SignedEntity { payload, signature } => {
                 let result = self
-                    .validate_eip1654(authority.clone(), payload.to_string(), signature.to_vec())
+                    .validate_eip1654(*authority, payload.to_string(), signature.to_vec())
                     .await
                     .map_err(|err| AuthenticatorError::ValidationError {
                         position,
