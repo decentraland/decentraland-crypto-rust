@@ -109,7 +109,7 @@ pub fn decode_to_slice(value: &str, bits: &mut [u8]) -> Result<(), DecodeHexErro
     Ok(hex::decode_to_slice(&value[2..], bits)?)
 }
 
-#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Copy)]
 #[serde(try_from = "String", into = "String")]
 pub struct Address(H160);
 
@@ -525,7 +525,7 @@ impl From<EIP1271Signature> for String {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, PartialOrd, Copy)]
 #[serde(try_from = "String", into = "String")]
 pub struct Expiration(DateTime<Utc>);
 
@@ -822,6 +822,12 @@ impl From<Account> for EphemeralAccountRepresentation {
 
 impl Account {
 
+pub trait Signer {
+    fn address(&self) -> Address;
+    fn sign<M: AsRef<[u8]>>(&self, message: M) ->PersonalSignature;
+}
+
+impl Signer for Account {
     /// Return the address of the account.
     ///
     /// ```rust
@@ -830,7 +836,7 @@ impl Account {
     /// let account = Account::try_from("0xbc453a92d9baeb3d10294cbc1d48ef6738f718fd31b4eb8085efe7b311299399").unwrap();
     /// assert_eq!(account.address(), Address::try_from("0x84452bbFA4ca14B7828e2F3BBd106A2bD495CD34").unwrap());
     /// ```
-    pub fn address(&self) -> Address {
+    fn address(&self) -> Address {
         let public = to_public_key(&self.0).serialize_uncompressed();
         let hash = keccak256(&public[1..]);
         let mut bytes = [0u8; 20];
@@ -847,10 +853,11 @@ impl Account {
     /// let message = account.sign("signed message");
     /// assert_eq!(message, PersonalSignature::try_from("0x013e0b0b75bd8404d70a37d96bb893596814d8f29f517e383d9d1421111f83c32d4ca0d6e399349c7badd54261feaa39895d027880d28d806c01089677400b7c1b").unwrap());
     /// ```
-    pub fn sign(&self, message: &str) -> PersonalSignature {
-        let data = hash_message(message.as_bytes());
-        let message = secp256k1::Message::from(Hash(data));
-        let bytes = self.0.sign_ecdsa(message);
-        bytes.into()
+    ///
+    fn sign<M: AsRef<[u8]>>(&self, message: M) -> PersonalSignature {
+        let hash = Hash(hash_message(message.as_ref()));
+        let message = secp256k1::Message::from(hash);
+        let signature: PersonalSignature = self.0.sign_ecdsa(message).into();
+        signature
     }
 }
