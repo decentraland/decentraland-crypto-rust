@@ -372,12 +372,13 @@ impl From<web3::signing::Signature> for PersonalSignature {
 
 impl From<secp256k1::ecdsa::Signature> for PersonalSignature {
     fn from(value: secp256k1::ecdsa::Signature) -> Self {
-        let mut bits: [u8; 65] = [0; 65];
+        let mut bits = [0u8; PERSONAL_SIGNATURE_SIZE];
         bits[..64].copy_from_slice(&value.serialize_compact());
         bits[64] = 0x1b;
         Self(bits)
     }
 }
+
 
 impl TryFrom<&str> for PersonalSignature {
     type Error = DecodeHexError;
@@ -821,6 +822,15 @@ impl From<Account> for EphemeralAccountRepresentation {
 }
 
 impl Account {
+
+    pub fn random() -> Self {
+        Self::from_rng(&mut rand::thread_rng())
+    }
+
+    pub fn from_rng<R: rand::Rng + ?Sized>(r: &mut R) -> Self {
+        Self(secp256k1::SecretKey::new(r))
+    }
+}
 
 pub trait Signer {
     fn address(&self) -> Address;
