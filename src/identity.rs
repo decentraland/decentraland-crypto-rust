@@ -1,22 +1,10 @@
-use std::{time::Instant};
+use serde::{Serialize, Deserialize};
+use crate::account::{Account, Expiration};
+use crate::chain::AuthChain;
 
-use web3::{
-    types::{H256, H512},
-};
-
-use crate::{account::Address, chain::AuthChain};
-
-pub type PublicKey = H512;
-pub type PrivateKey = H256;
-
-pub struct EphemeralIdentity {
-    pub address: Address,
-    pub public_key: PublicKey,
-    pub private_key: PrivateKey,
-}
-
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Identity {
-    ephemeral_identity: EphemeralIdentity,
+    ephemeral_identity: Account,
     auth_chain: AuthChain,
-    expiration: Instant,
+    expiration: Expiration,
 }

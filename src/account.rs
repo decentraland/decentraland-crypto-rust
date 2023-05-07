@@ -1,5 +1,5 @@
 use hex::encode;
-use chrono::DateTime;
+use chrono::{DateTime, Utc, SecondsFormat, ParseError, TimeZone};
 use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -525,6 +525,58 @@ impl From<EIP1271Signature> for String {
     }
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[serde(try_from = "String", into = "String")]
+pub struct Expiration(DateTime<Utc>);
+
+impl Deref for Expiration {
+    type Target = DateTime<Utc>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl<T: chrono::TimeZone> From<DateTime<T>> for Expiration {
+    fn from(value: DateTime<T>) -> Self {
+        Expiration(value.with_timezone(&Utc))
+    }
+}
+
+impl TryFrom<&str> for Expiration {
+    type Error = ParseError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        let expiration = DateTime::parse_from_rfc3339(value)?;
+        Ok(Self(expiration.with_timezone(&Utc)))
+    }
+}
+
+impl TryFrom<String> for Expiration {
+    type Error = ParseError;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        Self::try_from(value.as_str())
+    }
+}
+
+impl From<Expiration> for String {
+    fn from(value: Expiration) -> Self {
+        value.to_string()
+    }
+}
+
+impl Display for Expiration {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0.to_rfc3339_opts(SecondsFormat::Millis, true))
+    }
+}
+
+impl From<Expiration> for DateTime<Utc> {
+    fn from(value: Expiration) -> Self {
+        value.0
+    }
+}
+
 /// Alias of EIP1271Signature
 /// See <https://eips.ethereum.org/EIPS/eip-1271>
 /// See <https://github.com/ethereum/EIPs/issues/1654>
@@ -535,10 +587,10 @@ static DEFAULT_EPHEMERAL_PAYLOAD_TITLE: &str = "Decentraland Login";
 /// An `EphemeralPayload` is a message that delegates the right to sign a message to a specific address until an expiration date.
 ///
 /// ```rust
-///     use dcl_crypto::account::{Address, EphemeralPayload};
+///     use dcl_crypto::account::{Address, EphemeralPayload, Expiration};
 ///
 ///     let payload = EphemeralPayload::try_from("Decentraland Login\nEphemeral address: 0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3\nExpiration: 2023-03-30T15:44:55.787Z").unwrap();
-///     let expiration = chrono::DateTime::parse_from_rfc3339("2023-03-30T15:44:55.787Z").unwrap().with_timezone(&chrono::Utc);
+///     let expiration = Expiration::try_from("2023-03-30T15:44:55.787Z").unwrap();
 ///
 ///     assert_eq!(payload, EphemeralPayload::new(
 ///         Address::try_from("0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3").unwrap(),
@@ -550,7 +602,7 @@ static DEFAULT_EPHEMERAL_PAYLOAD_TITLE: &str = "Decentraland Login";
 pub struct EphemeralPayload {
     pub title: String,
     pub address: Address,
-    pub expiration: chrono::DateTime<chrono::Utc>,
+    pub expiration: Expiration,
 }
 
 #[derive(PartialEq, Debug, Error)]
@@ -572,7 +624,7 @@ pub enum EphemeralPayloadError {
 
     #[error("invalid expiration: {err} (expiration: {value})")]
     InvalidExpiration {
-        err: chrono::ParseError,
+        err: ParseError,
         value: String,
     },
 }
@@ -618,12 +670,10 @@ impl TryFrom<&str> for EphemeralPayload {
             None => return Err(EphemeralPayloadError::MissingExpiration),
             Some(expiration) => {
                 let value = expiration.as_str();
-                DateTime::parse_from_rfc3339(value)
-                    .map_err(|err| EphemeralPayloadError::InvalidExpiration {
-                        value: value.to_string(),
-                        err,
-                    })?
-                    .with_timezone(&chrono::Utc)
+                Expiration::try_from(value).map_err(|err| EphemeralPayloadError::InvalidExpiration {
+                    value: value.to_string(),
+                    err,
+                })?
             }
         };
 
@@ -651,7 +701,6 @@ impl Display for EphemeralPayload {
             self.title,
             self.address.checksum(),
             self.expiration
-                .to_rfc3339_opts(chrono::SecondsFormat::Millis, true)
         )
     }
 }
@@ -663,7 +712,7 @@ impl From<EphemeralPayload> for String {
 }
 
 impl EphemeralPayload {
-    pub fn new(address: Address, expiration: chrono::DateTime<chrono::Utc>) -> Self {
+    pub fn new(address: Address, expiration: Expiration) -> Self {
         Self::new_with_title(
             String::from(DEFAULT_EPHEMERAL_PAYLOAD_TITLE),
             address,
@@ -674,7 +723,7 @@ impl EphemeralPayload {
     pub fn new_with_title(
         title: String,
         address: Address,
-        expiration: chrono::DateTime<chrono::Utc>,
+        expiration: Expiration,
     ) -> Self {
         Self {
             title,
@@ -684,11 +733,11 @@ impl EphemeralPayload {
     }
 
     pub fn is_expired(&self) -> bool {
-        self.expiration < chrono::Utc::now()
+        *self.expiration < Utc::now()
     }
 
-    pub fn is_expired_at(&self, time: &chrono::DateTime<chrono::Utc>) -> bool {
-        self.expiration < *time
+    pub fn is_expired_at<Z: TimeZone>(&self, time: &DateTime<Z>) -> bool {
+        *self.expiration < *time
     }
 }
 

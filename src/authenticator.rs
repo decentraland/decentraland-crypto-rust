@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use futures::future::BoxFuture;
 use thiserror::Error;
 use web3::{
@@ -8,7 +9,7 @@ use web3::{
 use crate::{
     account::Address,
     chain::{AuthChain, AuthLink},
-    rpc::{rpc_call_is_valid_signature, RPCCallError},
+    util::{rpc_call_is_valid_signature, RPCCallError},
 };
 
 #[derive(Debug, Error, PartialEq)]
@@ -209,7 +210,7 @@ impl<T: Transport> Authenticator<T> {
         &self,
         authority: &'a Address,
         link: &'l AuthLink,
-        expiration: &'d chrono::DateTime<chrono::Utc>,
+        expiration: &'d DateTime<Utc>,
         position: usize,
     ) -> Result<&'l Address, AuthenticatorError> {
         match link {
@@ -349,7 +350,7 @@ impl<T: Transport> Authenticator<T> {
         &self,
         chain: &'a AuthChain,
         last_authority: &str,
-        expiration: &chrono::DateTime<chrono::Utc>
+        expiration: &DateTime<Utc>
     ) -> Result<&'a Address, AuthenticatorError> {
         let owner = match chain.first() {
             Some(link) => self.verify_signer(link, 0).await?,
@@ -392,7 +393,7 @@ impl<T: Transport> Authenticator<T> {
         chain: &'a AuthChain,
         last_authority: &str
     ) -> Result<&'a Address, AuthenticatorError> {
-        let now = &chrono::Utc::now();
+        let now = &Utc::now();
         self.verify_signature_at(chain, last_authority, now).await
     }
 }
@@ -584,7 +585,7 @@ mod test {
 
         assert_eq!(result, Err(AuthenticatorError::ExpiredEntity { position: 1, kind: String::from("ECDSA_EPHEMERAL") }));
 
-        let time = chrono::DateTime::parse_from_rfc3339("2020-01-01T00:00:00.000Z").unwrap().with_timezone(&chrono::Utc);
+        let time = DateTime::parse_from_rfc3339("2020-01-01T00:00:00.000Z").unwrap().with_timezone(&Utc);
         let owner = authenticator
             .verify_signature_at(&chain, "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo", &time)
             .await

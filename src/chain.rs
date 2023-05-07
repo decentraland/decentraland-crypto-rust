@@ -1,4 +1,5 @@
 use std::ops::Deref;
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::Error as SerdeError;
 
@@ -247,7 +248,7 @@ impl AuthChain {
     }
 
     pub fn is_expired(&self) -> bool {
-        let now = &chrono::Utc::now();
+        let now = &Utc::now();
         self.iter().any(|link| match link {
             AuthLink::EcdsaPersonalEphemeral { payload, .. } => payload.is_expired_at(now),
             AuthLink::EcdsaEip1654Ephemeral { payload, .. } => payload.is_expired_at(now),
@@ -255,7 +256,7 @@ impl AuthChain {
         })
     }
 
-    pub fn is_expired_at(&self, time: &chrono::DateTime<chrono::Utc>) -> bool {
+    pub fn is_expired_at(&self, time: &DateTime<Utc>) -> bool {
         self.iter().any(|link| match link {
             AuthLink::EcdsaPersonalEphemeral { payload, .. } => payload.is_expired_at(time),
             AuthLink::EcdsaEip1654Ephemeral { payload, .. } => payload.is_expired_at(time),
