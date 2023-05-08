@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
-use crate::AuthLink;
-use crate::account::{Account, Expiration, Signer, EphemeralPayload};
+use crate::{AuthLink, AuthChain};
+use crate::account::{Account, Expiration, Signer, EphemeralPayload, PersonalSignature};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Identity {
@@ -60,7 +60,23 @@ impl Identity {
             expiration,
             auth_chain
         }
+    }
 
+    /// Creates a PersonalSignature for the given payload
+    pub fn create_signature<M: AsRef<str>>(&self, payload: M) -> PersonalSignature {
+        self.ephemeral_identity.sign(payload.as_ref())
+    }
+
+    /// Creates an AuthChain signing the the given payload
+    pub fn sign_payload<M: AsRef<str>>(&self, payload: M) -> AuthChain {
+        let entity = AuthLink::EcdsaPersonalSignedEntity {
+            payload: payload.as_ref().to_string(),
+            signature: self.create_signature(payload.as_ref())
+        };
+
+        let mut links = self.auth_chain.clone();
+        links.push(entity);
+        AuthChain::from(links)
     }
 
 }

@@ -7,9 +7,9 @@ use web3::{
 };
 
 use crate::{
-    account::Address,
+    account::{Address, PersonalSignature},
     chain::{AuthChain, AuthLink},
-    util::{rpc_call_is_valid_signature, RPCCallError},
+    util::{rpc_call_is_valid_signature, RPCCallError}, Identity,
 };
 
 #[derive(Debug, Error, PartialEq)]
@@ -395,6 +395,18 @@ impl<T: Transport> Authenticator<T> {
     ) -> Result<&'a Address, AuthenticatorError> {
         let now = &Utc::now();
         self.verify_signature_at(chain, last_authority, now).await
+    }
+
+    /// Creates a personal signature from a given identity and payload.
+    /// This method is intended to maintain parity with the [JS implementation](https://github.com/decentraland/decentraland-crypto/blob/680d7cceb52a75bfae38269005614e577f48561a/src/Authenticator.ts#L185).
+    pub fn create_signature<M: AsRef<str>>(&self, identity: &Identity, payload: M) -> PersonalSignature {
+        identity.create_signature(payload)
+    }
+
+    /// Creates an authchain from a given identity and payload.
+    /// This method is intended to maintain parity with the [JS implementation](https://github.com/decentraland/decentraland-crypto/blob/680d7cceb52a75bfae38269005614e577f48561a/src/Authenticator.ts#L171).
+    pub fn sign_payload<M: AsRef<str>>(&self, identity: &Identity, payload: M) -> AuthChain {
+        identity.sign_payload(payload)
     }
 }
 
