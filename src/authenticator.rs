@@ -9,7 +9,8 @@ use web3::{
 use crate::{
     account::{Address, PersonalSignature},
     chain::{AuthChain, AuthLink},
-    util::{rpc_call_is_valid_signature, RPCCallError}, Identity,
+    util::{rpc_call_is_valid_signature, RPCCallError},
+    Identity,
 };
 
 #[derive(Debug, Error, PartialEq)]
@@ -172,17 +173,14 @@ impl<T: Transport> Authenticator<T> {
             return Err(RecoveryError::InvalidSignature);
         }
 
-        let signature = hash.get(..=63).ok_or(RecoveryError::InvalidSignature)?;
-        let recovery_id = *hash.last().ok_or(RecoveryError::InvalidSignature)?;
-        let h160 = recover(
-            hash_message(message).as_bytes(),
-            signature,
-            (recovery_id as i32) - 27,
-        )?;
+        let signature = &hash[..64];
+        let recovery_id = &hash[64];
+
+        let recovery_number = (recovery_id - 27) as i32;
+        let h160 = recover(hash_message(message).as_bytes(), signature, recovery_number)?;
 
         Ok(address == h160)
     }
-
 
     /// Verifies that and authlink is a signer and returns it as result. Otherwise, returns an error.
     async fn verify_signer<'a>(
@@ -350,7 +348,7 @@ impl<T: Transport> Authenticator<T> {
         &self,
         chain: &'a AuthChain,
         last_authority: &str,
-        expiration: &DateTime<Utc>
+        expiration: &DateTime<Utc>,
     ) -> Result<&'a Address, AuthenticatorError> {
         let owner = match chain.first() {
             Some(link) => self.verify_signer(link, 0).await?,
@@ -391,7 +389,7 @@ impl<T: Transport> Authenticator<T> {
     pub async fn verify_signature<'a>(
         &self,
         chain: &'a AuthChain,
-        last_authority: &str
+        last_authority: &str,
     ) -> Result<&'a Address, AuthenticatorError> {
         let now = &Utc::now();
         self.verify_signature_at(chain, last_authority, now).await
@@ -399,7 +397,11 @@ impl<T: Transport> Authenticator<T> {
 
     /// Creates a personal signature from a given identity and payload.
     /// This method is intended to maintain parity with the [JS implementation](https://github.com/decentraland/decentraland-crypto/blob/680d7cceb52a75bfae38269005614e577f48561a/src/Authenticator.ts#L185).
-    pub fn create_signature<M: AsRef<str>>(&self, identity: &Identity, payload: M) -> PersonalSignature {
+    pub fn create_signature<M: AsRef<str>>(
+        &self,
+        identity: &Identity,
+        payload: M,
+    ) -> PersonalSignature {
         identity.create_signature(payload)
     }
 
@@ -412,6 +414,8 @@ impl<T: Transport> Authenticator<T> {
 
 #[cfg(test)]
 mod test {
+    use crate::account::{Account, Signer};
+
     use super::*;
     use std::env;
 
@@ -595,15 +599,48 @@ mod test {
             .verify_signature(&chain, "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo")
             .await;
 
-        assert_eq!(result, Err(AuthenticatorError::ExpiredEntity { position: 1, kind: String::from("ECDSA_EPHEMERAL") }));
+        assert_eq!(
+            result,
+            Err(AuthenticatorError::ExpiredEntity {
+                position: 1,
+                kind: String::from("ECDSA_EPHEMERAL")
+            })
+        );
 
-        let time = DateTime::parse_from_rfc3339("2020-01-01T00:00:00.000Z").unwrap().with_timezone(&Utc);
+        let time = DateTime::parse_from_rfc3339("2020-01-01T00:00:00.000Z")
+            .unwrap()
+            .with_timezone(&Utc);
         let owner = authenticator
-            .verify_signature_at(&chain, "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo", &time)
+            .verify_signature_at(
+                &chain,
+                "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo",
+                &time,
+            )
             .await
             .unwrap();
 
         let expected = &Address::try_from("0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34").unwrap();
         assert_eq!(owner, expected);
+    }
+
+    #[tokio::test]
+    async fn test_should_recover_address_from_signature() {
+        let account = Account::random();
+        let payload = "QmWyFNeHbxXaPtUnzKvDZPpKSa4d5anZEZEFJ8TC1WgcfU";
+        let signature = account.sign(payload);
+        let authenticator = Authenticator::new();
+        let result =
+            authenticator.validate_personal(&account.address(), payload, &signature.to_vec());
+
+        assert!(result.is_ok());
+        assert!(result.unwrap());
+
+        let chain = AuthChain::simple(account.address(), payload, signature.to_string()).unwrap();
+        let owner = authenticator
+            .verify_signature(&chain, payload)
+            .await
+            .unwrap();
+
+        assert_eq!(owner, &account.address());
     }
 }

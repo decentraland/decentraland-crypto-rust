@@ -1,10 +1,11 @@
+use chrono::{DateTime, ParseError, SecondsFormat, TimeZone, Utc};
 use hex::encode;
-use chrono::{DateTime, Utc, SecondsFormat, ParseError, TimeZone};
 use lazy_static::lazy_static;
 use regex::Regex;
+use secp256k1::Secp256k1;
 use serde::{Deserialize, Serialize};
 use std::{
-    fmt::{Display, LowerHex, UpperHex, Debug},
+    fmt::{Debug, Display, LowerHex, UpperHex},
     ops::Deref,
 };
 
@@ -373,13 +374,26 @@ impl From<web3::signing::Signature> for PersonalSignature {
 impl From<secp256k1::ecdsa::Signature> for PersonalSignature {
     fn from(value: secp256k1::ecdsa::Signature) -> Self {
         let mut bits = [0u8; PERSONAL_SIGNATURE_SIZE];
-        bits[..64].copy_from_slice(&value.serialize_compact());
+        let signature = value.serialize_compact();
+        bits[..64].copy_from_slice(&signature);
         bits[64] = 0x1c;
         Self(bits)
     }
 }
 
-
+impl From<secp256k1::ecdsa::RecoverableSignature> for PersonalSignature {
+    fn from(value: secp256k1::ecdsa::RecoverableSignature) -> Self {
+        let mut bits = [0u8; PERSONAL_SIGNATURE_SIZE];
+        let (recovery_id, signature) = value.serialize_compact();
+        bits[..64].copy_from_slice(&signature);
+        bits[64] = if recovery_id.to_i32() == 1 {
+            0x1c
+        } else {
+            0x1b
+        };
+        Self(bits)
+    }
+}
 impl TryFrom<&str> for PersonalSignature {
     type Error = DecodeHexError;
 
@@ -624,10 +638,7 @@ pub enum EphemeralPayloadError {
     MissingExpiration,
 
     #[error("invalid expiration: {err} (expiration: {value})")]
-    InvalidExpiration {
-        err: ParseError,
-        value: String,
-    },
+    InvalidExpiration { err: ParseError, value: String },
 }
 
 static RE_TITLE_CAPTURE: &str = "title";
@@ -671,9 +682,11 @@ impl TryFrom<&str> for EphemeralPayload {
             None => return Err(EphemeralPayloadError::MissingExpiration),
             Some(expiration) => {
                 let value = expiration.as_str();
-                Expiration::try_from(value).map_err(|err| EphemeralPayloadError::InvalidExpiration {
-                    value: value.to_string(),
-                    err,
+                Expiration::try_from(value).map_err(|err| {
+                    EphemeralPayloadError::InvalidExpiration {
+                        value: value.to_string(),
+                        err,
+                    }
                 })?
             }
         };
@@ -721,11 +734,7 @@ impl EphemeralPayload {
         )
     }
 
-    pub fn new_with_title(
-        title: String,
-        address: Address,
-        expiration: Expiration,
-    ) -> Self {
+    pub fn new_with_title(title: String, address: Address, expiration: Expiration) -> Self {
         Self {
             title,
             address,
@@ -747,13 +756,13 @@ struct Hash(H256);
 
 impl secp256k1::ThirtyTwoByteHash for Hash {
     fn into_32(self) -> [u8; 32] {
-        self.0.0
+        self.0 .0
     }
 }
 
 // Calculate the public key from a secret key
 fn to_public_key(secret: &secp256k1::SecretKey) -> secp256k1::PublicKey {
-    lazy_static!{
+    lazy_static! {
         static ref SECP256K1: secp256k1::Secp256k1<secp256k1::All> = secp256k1::Secp256k1::new();
     }
 
@@ -776,7 +785,10 @@ impl From<EphemeralAccountRepresentation> for Account {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(try_from = "EphemeralAccountRepresentation", into = "EphemeralAccountRepresentation")]
+#[serde(
+    try_from = "EphemeralAccountRepresentation",
+    into = "EphemeralAccountRepresentation"
+)]
 pub struct Account(secp256k1::SecretKey);
 
 impl TryFrom<&str> for Account {
@@ -822,7 +834,6 @@ impl From<Account> for EphemeralAccountRepresentation {
 }
 
 impl Account {
-
     pub fn random() -> Self {
         Self::from_rng(&mut rand::thread_rng())
     }
@@ -834,7 +845,7 @@ impl Account {
 
 pub trait Signer {
     fn address(&self) -> Address;
-    fn sign<M: AsRef<[u8]>>(&self, message: M) ->PersonalSignature;
+    fn sign<M: AsRef<[u8]>>(&self, message: M) -> PersonalSignature;
 }
 
 impl Signer for Account {
@@ -867,7 +878,7 @@ impl Signer for Account {
     fn sign<M: AsRef<[u8]>>(&self, message: M) -> PersonalSignature {
         let hash = Hash(hash_message(message.as_ref()));
         let message = secp256k1::Message::from(hash);
-        let signature: PersonalSignature = self.0.sign_ecdsa(message).into();
-        signature
+        let secp = Secp256k1::new();
+        secp.sign_ecdsa_recoverable(&message, &self.0).into()
     }
 }
