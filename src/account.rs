@@ -374,7 +374,7 @@ impl From<secp256k1::ecdsa::Signature> for PersonalSignature {
     fn from(value: secp256k1::ecdsa::Signature) -> Self {
         let mut bits = [0u8; PERSONAL_SIGNATURE_SIZE];
         bits[..64].copy_from_slice(&value.serialize_compact());
-        bits[64] = 0x1b;
+        bits[64] = 0x1c;
         Self(bits)
     }
 }
