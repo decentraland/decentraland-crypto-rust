@@ -386,11 +386,7 @@ impl From<secp256k1::ecdsa::RecoverableSignature> for PersonalSignature {
         let mut bits = [0u8; PERSONAL_SIGNATURE_SIZE];
         let (recovery_id, signature) = value.serialize_compact();
         bits[..64].copy_from_slice(&signature);
-        bits[64] = if recovery_id.to_i32() == 1 {
-            0x1c
-        } else {
-            0x1b
-        };
+        bits[64] = 27 + recovery_id.to_i32() as u8;
         Self(bits)
     }
 }
