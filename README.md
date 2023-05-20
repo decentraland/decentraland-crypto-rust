@@ -36,7 +36,7 @@ Use [Github Releases](https://github.com/decentraland/decentraland-crypto-rust/r
 - [x] verify personal signatures
 - [x] verify [EIP-1271](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1271.md) signatures
 - [x] create identity
-- [ ] create auth chain from identity
+- [x] create auth chain from identity
 - [x] load identity from file
 - [ ] release process
   - [x] build cache
