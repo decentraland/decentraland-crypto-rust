@@ -371,16 +371,6 @@ impl From<web3::signing::Signature> for PersonalSignature {
     }
 }
 
-impl From<secp256k1::ecdsa::Signature> for PersonalSignature {
-    fn from(value: secp256k1::ecdsa::Signature) -> Self {
-        let mut bits = [0u8; PERSONAL_SIGNATURE_SIZE];
-        let signature = value.serialize_compact();
-        bits[..64].copy_from_slice(&signature);
-        bits[64] = 0x1c;
-        Self(bits)
-    }
-}
-
 impl From<secp256k1::ecdsa::RecoverableSignature> for PersonalSignature {
     fn from(value: secp256k1::ecdsa::RecoverableSignature) -> Self {
         let mut bits = [0u8; PERSONAL_SIGNATURE_SIZE];
