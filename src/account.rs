@@ -769,14 +769,16 @@ fn to_public_key(secret: &secp256k1::SecretKey) -> secp256k1::PublicKey {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct EphemeralAccountRepresentation {
-    address: String,
-    public_key: String,
-    pub private_key: Account,
+    pub address: String,
+    pub public_key: String,
+    pub private_key: String,
 }
 
-impl From<EphemeralAccountRepresentation> for Account {
-    fn from(account: EphemeralAccountRepresentation) -> Self {
-        account.private_key
+impl TryFrom<EphemeralAccountRepresentation> for Account {
+    type Error = DecodeHexError;
+
+    fn try_from(value: EphemeralAccountRepresentation) -> Result<Self, Self::Error> {
+        Account::try_from(value.private_key)
     }
 }
 
@@ -824,7 +826,7 @@ impl From<Account> for EphemeralAccountRepresentation {
         Self {
             address: account.address().checksum(),
             public_key: format!("0x{}", hex::encode(public)),
-            private_key: account,
+            private_key: account.into(),
         }
     }
 }
