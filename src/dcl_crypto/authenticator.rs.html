@@ -594,7 +594,58 @@
 <a href="#594" id="594">594</a>
 <a href="#595" id="595">595</a>
 <a href="#596" id="596">596</a>
-</pre><pre class="rust"><code><span class="kw">use </span>futures::future::BoxFuture;
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
+<a href="#602" id="602">602</a>
+<a href="#603" id="603">603</a>
+<a href="#604" id="604">604</a>
+<a href="#605" id="605">605</a>
+<a href="#606" id="606">606</a>
+<a href="#607" id="607">607</a>
+<a href="#608" id="608">608</a>
+<a href="#609" id="609">609</a>
+<a href="#610" id="610">610</a>
+<a href="#611" id="611">611</a>
+<a href="#612" id="612">612</a>
+<a href="#613" id="613">613</a>
+<a href="#614" id="614">614</a>
+<a href="#615" id="615">615</a>
+<a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
+<a href="#619" id="619">619</a>
+<a href="#620" id="620">620</a>
+<a href="#621" id="621">621</a>
+<a href="#622" id="622">622</a>
+<a href="#623" id="623">623</a>
+<a href="#624" id="624">624</a>
+<a href="#625" id="625">625</a>
+<a href="#626" id="626">626</a>
+<a href="#627" id="627">627</a>
+<a href="#628" id="628">628</a>
+<a href="#629" id="629">629</a>
+<a href="#630" id="630">630</a>
+<a href="#631" id="631">631</a>
+<a href="#632" id="632">632</a>
+<a href="#633" id="633">633</a>
+<a href="#634" id="634">634</a>
+<a href="#635" id="635">635</a>
+<a href="#636" id="636">636</a>
+<a href="#637" id="637">637</a>
+<a href="#638" id="638">638</a>
+<a href="#639" id="639">639</a>
+<a href="#640" id="640">640</a>
+<a href="#641" id="641">641</a>
+<a href="#642" id="642">642</a>
+<a href="#643" id="643">643</a>
+<a href="#644" id="644">644</a>
+<a href="#645" id="645">645</a>
+<a href="#646" id="646">646</a>
+</pre><pre class="rust"><code><span class="kw">use </span>chrono::{DateTime, Utc};
+<span class="kw">use </span>futures::future::BoxFuture;
 <span class="kw">use </span>thiserror::Error;
 <span class="kw">use </span>web3::{
     signing::{hash_message, recover, RecoveryError},
@@ -602,9 +653,10 @@
 };
 
 <span class="kw">use crate</span>::{
-    account::Address,
+    account::{Address, PersonalSignature},
     chain::{AuthChain, AuthLink},
-    rpc::{rpc_call_is_valid_signature, RPCCallError},
+    util::{rpc_call_is_valid_signature, RPCCallError},
+    Identity,
 };
 
 <span class="attr">#[derive(Debug, Error, PartialEq)]
@@ -767,17 +819,14 @@
             <span class="kw">return </span><span class="prelude-val">Err</span>(RecoveryError::InvalidSignature);
         }
 
-        <span class="kw">let </span>signature = hash.get(..=<span class="number">63</span>).ok_or(RecoveryError::InvalidSignature)<span class="question-mark">?</span>;
-        <span class="kw">let </span>recovery_id = <span class="kw-2">*</span>hash.last().ok_or(RecoveryError::InvalidSignature)<span class="question-mark">?</span>;
-        <span class="kw">let </span>h160 = recover(
-            hash_message(message).as_bytes(),
-            signature,
-            (recovery_id <span class="kw">as </span>i32) - <span class="number">27</span>,
-        )<span class="question-mark">?</span>;
+        <span class="kw">let </span>signature = <span class="kw-2">&amp;</span>hash[..<span class="number">64</span>];
+        <span class="kw">let </span>recovery_id = <span class="kw-2">&amp;</span>hash[<span class="number">64</span>];
+
+        <span class="kw">let </span>recovery_number = (recovery_id - <span class="number">27</span>) <span class="kw">as </span>i32;
+        <span class="kw">let </span>h160 = recover(hash_message(message).as_bytes(), signature, recovery_number)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(address == h160)
     }
-
 
     <span class="doccomment">/// Verifies that and authlink is a signer and returns it as result. Otherwise, returns an error.
     </span><span class="kw">async fn </span>verify_signer&lt;<span class="lifetime">&#39;a</span>&gt;(
@@ -805,7 +854,7 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         authority: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Address,
         link: <span class="kw-2">&amp;</span><span class="lifetime">&#39;l </span>AuthLink,
-        expiration: <span class="kw-2">&amp;</span><span class="lifetime">&#39;d </span>chrono::DateTime&lt;chrono::Utc&gt;,
+        expiration: <span class="kw-2">&amp;</span><span class="lifetime">&#39;d </span>DateTime&lt;Utc&gt;,
         position: usize,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;l </span>Address, AuthenticatorError&gt; {
         <span class="kw">match </span>link {
@@ -847,7 +896,7 @@
                 }
 
                 <span class="kw">let </span>result = <span class="self">self
-                    </span>.validate_eip1654(authority.clone(), payload.to_string(), signature.to_vec())
+                    </span>.validate_eip1654(<span class="kw-2">*</span>authority, payload.to_string(), signature.to_vec())
                     .<span class="kw">await
                     </span>.map_err(|err| AuthenticatorError::ValidationError {
                         position,
@@ -912,7 +961,7 @@
             }
             AuthLink::EcdsaEip1654SignedEntity { payload, signature } =&gt; {
                 <span class="kw">let </span>result = <span class="self">self
-                    </span>.validate_eip1654(authority.clone(), payload.to_string(), signature.to_vec())
+                    </span>.validate_eip1654(<span class="kw-2">*</span>authority, payload.to_string(), signature.to_vec())
                     .<span class="kw">await
                     </span>.map_err(|err| AuthenticatorError::ValidationError {
                         position,
@@ -945,7 +994,7 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         chain: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AuthChain,
         last_authority: <span class="kw-2">&amp;</span>str,
-        expiration: <span class="kw-2">&amp;</span>chrono::DateTime&lt;chrono::Utc&gt;
+        expiration: <span class="kw-2">&amp;</span>DateTime&lt;Utc&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Address, AuthenticatorError&gt; {
         <span class="kw">let </span>owner = <span class="kw">match </span>chain.first() {
             <span class="prelude-val">Some</span>(link) =&gt; <span class="self">self</span>.verify_signer(link, <span class="number">0</span>).<span class="kw">await</span><span class="question-mark">?</span>,
@@ -986,15 +1035,33 @@
     </span><span class="kw">pub async fn </span>verify_signature&lt;<span class="lifetime">&#39;a</span>&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         chain: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AuthChain,
-        last_authority: <span class="kw-2">&amp;</span>str
+        last_authority: <span class="kw-2">&amp;</span>str,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Address, AuthenticatorError&gt; {
-        <span class="kw">let </span>now = <span class="kw-2">&amp;</span>chrono::Utc::now();
+        <span class="kw">let </span>now = <span class="kw-2">&amp;</span>Utc::now();
         <span class="self">self</span>.verify_signature_at(chain, last_authority, now).<span class="kw">await
     </span>}
+
+    <span class="doccomment">/// Creates a personal signature from a given identity and payload.
+    /// This method is intended to maintain parity with the [JS implementation](https://github.com/decentraland/decentraland-crypto/blob/680d7cceb52a75bfae38269005614e577f48561a/src/Authenticator.ts#L185).
+    </span><span class="kw">pub fn </span>create_signature&lt;M: AsRef&lt;str&gt;&gt;(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        identity: <span class="kw-2">&amp;</span>Identity,
+        payload: M,
+    ) -&gt; PersonalSignature {
+        identity.create_signature(payload)
+    }
+
+    <span class="doccomment">/// Creates an authchain from a given identity and payload.
+    /// This method is intended to maintain parity with the [JS implementation](https://github.com/decentraland/decentraland-crypto/blob/680d7cceb52a75bfae38269005614e577f48561a/src/Authenticator.ts#L171).
+    </span><span class="kw">pub fn </span>sign_payload&lt;M: AsRef&lt;str&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, identity: <span class="kw-2">&amp;</span>Identity, payload: M) -&gt; AuthChain {
+        identity.sign_payload(payload)
+    }
 }
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>test {
+    <span class="kw">use </span><span class="kw">crate</span>::account::{Account, Signer};
+
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span>std::env;
 
@@ -1178,16 +1245,49 @@
             .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">&quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;</span>)
             .<span class="kw">await</span>;
 
-        <span class="macro">assert_eq!</span>(result, <span class="prelude-val">Err</span>(AuthenticatorError::ExpiredEntity { position: <span class="number">1</span>, kind: String::from(<span class="string">&quot;ECDSA_EPHEMERAL&quot;</span>) }));
+        <span class="macro">assert_eq!</span>(
+            result,
+            <span class="prelude-val">Err</span>(AuthenticatorError::ExpiredEntity {
+                position: <span class="number">1</span>,
+                kind: String::from(<span class="string">&quot;ECDSA_EPHEMERAL&quot;</span>)
+            })
+        );
 
-        <span class="kw">let </span>time = chrono::DateTime::parse_from_rfc3339(<span class="string">&quot;2020-01-01T00:00:00.000Z&quot;</span>).unwrap().with_timezone(<span class="kw-2">&amp;</span>chrono::Utc);
+        <span class="kw">let </span>time = DateTime::parse_from_rfc3339(<span class="string">&quot;2020-01-01T00:00:00.000Z&quot;</span>)
+            .unwrap()
+            .with_timezone(<span class="kw-2">&amp;</span>Utc);
         <span class="kw">let </span>owner = authenticator
-            .verify_signature_at(<span class="kw-2">&amp;</span>chain, <span class="string">&quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;</span>, <span class="kw-2">&amp;</span>time)
+            .verify_signature_at(
+                <span class="kw-2">&amp;</span>chain,
+                <span class="string">&quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;</span>,
+                <span class="kw-2">&amp;</span>time,
+            )
             .<span class="kw">await
             </span>.unwrap();
 
         <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">&quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;</span>).unwrap();
         <span class="macro">assert_eq!</span>(owner, expected);
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_should_recover_address_from_signature() {
+        <span class="kw">let </span>account = Account::random();
+        <span class="kw">let </span>payload = <span class="string">&quot;QmWyFNeHbxXaPtUnzKvDZPpKSa4d5anZEZEFJ8TC1WgcfU&quot;</span>;
+        <span class="kw">let </span>signature = account.sign(payload);
+        <span class="kw">let </span>authenticator = Authenticator::new();
+        <span class="kw">let </span>result =
+            authenticator.validate_personal(<span class="kw-2">&amp;</span>account.address(), payload, <span class="kw-2">&amp;</span>signature.to_vec());
+
+        <span class="macro">assert!</span>(result.is_ok());
+        <span class="macro">assert!</span>(result.unwrap());
+
+        <span class="kw">let </span>chain = AuthChain::simple(account.address(), payload, signature.to_string()).unwrap();
+        <span class="kw">let </span>owner = authenticator
+            .verify_signature(<span class="kw-2">&amp;</span>chain, payload)
+            .<span class="kw">await
+            </span>.unwrap();
+
+        <span class="macro">assert_eq!</span>(owner, <span class="kw-2">&amp;</span>account.address());
     }
 }
 </code></pre></div>

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["PERSONAL_SIGNATURE_SIZE"],"enum":["DecodeHexError","EphemeralPayloadError"],"fn":["decode","decode_to_slice"],"struct":["Address","EIP1271Signature","EphemeralPayload","PersonalSignature"],"type":["EIP1654Signature"]};
+window.SIDEBAR_ITEMS = {"constant":["PERSONAL_SIGNATURE_SIZE"],"enum":["DecodeHexError","EphemeralPayloadError"],"fn":["decode","decode_to_slice"],"struct":["Account","Address","EIP1271Signature","EphemeralPayload","Expiration","PersonalSignature"],"trait":["Signer"],"type":["EIP1654Signature"]};

@@ -675,12 +675,222 @@
 <a href="#675" id="675">675</a>
 <a href="#676" id="676">676</a>
 <a href="#677" id="677">677</a>
-</pre><pre class="rust"><code><span class="kw">use </span>chrono::DateTime;
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
+<a href="#684" id="684">684</a>
+<a href="#685" id="685">685</a>
+<a href="#686" id="686">686</a>
+<a href="#687" id="687">687</a>
+<a href="#688" id="688">688</a>
+<a href="#689" id="689">689</a>
+<a href="#690" id="690">690</a>
+<a href="#691" id="691">691</a>
+<a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
+<a href="#697" id="697">697</a>
+<a href="#698" id="698">698</a>
+<a href="#699" id="699">699</a>
+<a href="#700" id="700">700</a>
+<a href="#701" id="701">701</a>
+<a href="#702" id="702">702</a>
+<a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
+<a href="#705" id="705">705</a>
+<a href="#706" id="706">706</a>
+<a href="#707" id="707">707</a>
+<a href="#708" id="708">708</a>
+<a href="#709" id="709">709</a>
+<a href="#710" id="710">710</a>
+<a href="#711" id="711">711</a>
+<a href="#712" id="712">712</a>
+<a href="#713" id="713">713</a>
+<a href="#714" id="714">714</a>
+<a href="#715" id="715">715</a>
+<a href="#716" id="716">716</a>
+<a href="#717" id="717">717</a>
+<a href="#718" id="718">718</a>
+<a href="#719" id="719">719</a>
+<a href="#720" id="720">720</a>
+<a href="#721" id="721">721</a>
+<a href="#722" id="722">722</a>
+<a href="#723" id="723">723</a>
+<a href="#724" id="724">724</a>
+<a href="#725" id="725">725</a>
+<a href="#726" id="726">726</a>
+<a href="#727" id="727">727</a>
+<a href="#728" id="728">728</a>
+<a href="#729" id="729">729</a>
+<a href="#730" id="730">730</a>
+<a href="#731" id="731">731</a>
+<a href="#732" id="732">732</a>
+<a href="#733" id="733">733</a>
+<a href="#734" id="734">734</a>
+<a href="#735" id="735">735</a>
+<a href="#736" id="736">736</a>
+<a href="#737" id="737">737</a>
+<a href="#738" id="738">738</a>
+<a href="#739" id="739">739</a>
+<a href="#740" id="740">740</a>
+<a href="#741" id="741">741</a>
+<a href="#742" id="742">742</a>
+<a href="#743" id="743">743</a>
+<a href="#744" id="744">744</a>
+<a href="#745" id="745">745</a>
+<a href="#746" id="746">746</a>
+<a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
+<a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a>
+<a href="#779" id="779">779</a>
+<a href="#780" id="780">780</a>
+<a href="#781" id="781">781</a>
+<a href="#782" id="782">782</a>
+<a href="#783" id="783">783</a>
+<a href="#784" id="784">784</a>
+<a href="#785" id="785">785</a>
+<a href="#786" id="786">786</a>
+<a href="#787" id="787">787</a>
+<a href="#788" id="788">788</a>
+<a href="#789" id="789">789</a>
+<a href="#790" id="790">790</a>
+<a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
+<a href="#794" id="794">794</a>
+<a href="#795" id="795">795</a>
+<a href="#796" id="796">796</a>
+<a href="#797" id="797">797</a>
+<a href="#798" id="798">798</a>
+<a href="#799" id="799">799</a>
+<a href="#800" id="800">800</a>
+<a href="#801" id="801">801</a>
+<a href="#802" id="802">802</a>
+<a href="#803" id="803">803</a>
+<a href="#804" id="804">804</a>
+<a href="#805" id="805">805</a>
+<a href="#806" id="806">806</a>
+<a href="#807" id="807">807</a>
+<a href="#808" id="808">808</a>
+<a href="#809" id="809">809</a>
+<a href="#810" id="810">810</a>
+<a href="#811" id="811">811</a>
+<a href="#812" id="812">812</a>
+<a href="#813" id="813">813</a>
+<a href="#814" id="814">814</a>
+<a href="#815" id="815">815</a>
+<a href="#816" id="816">816</a>
+<a href="#817" id="817">817</a>
+<a href="#818" id="818">818</a>
+<a href="#819" id="819">819</a>
+<a href="#820" id="820">820</a>
+<a href="#821" id="821">821</a>
+<a href="#822" id="822">822</a>
+<a href="#823" id="823">823</a>
+<a href="#824" id="824">824</a>
+<a href="#825" id="825">825</a>
+<a href="#826" id="826">826</a>
+<a href="#827" id="827">827</a>
+<a href="#828" id="828">828</a>
+<a href="#829" id="829">829</a>
+<a href="#830" id="830">830</a>
+<a href="#831" id="831">831</a>
+<a href="#832" id="832">832</a>
+<a href="#833" id="833">833</a>
+<a href="#834" id="834">834</a>
+<a href="#835" id="835">835</a>
+<a href="#836" id="836">836</a>
+<a href="#837" id="837">837</a>
+<a href="#838" id="838">838</a>
+<a href="#839" id="839">839</a>
+<a href="#840" id="840">840</a>
+<a href="#841" id="841">841</a>
+<a href="#842" id="842">842</a>
+<a href="#843" id="843">843</a>
+<a href="#844" id="844">844</a>
+<a href="#845" id="845">845</a>
+<a href="#846" id="846">846</a>
+<a href="#847" id="847">847</a>
+<a href="#848" id="848">848</a>
+<a href="#849" id="849">849</a>
+<a href="#850" id="850">850</a>
+<a href="#851" id="851">851</a>
+<a href="#852" id="852">852</a>
+<a href="#853" id="853">853</a>
+<a href="#854" id="854">854</a>
+<a href="#855" id="855">855</a>
+<a href="#856" id="856">856</a>
+<a href="#857" id="857">857</a>
+<a href="#858" id="858">858</a>
+<a href="#859" id="859">859</a>
+<a href="#860" id="860">860</a>
+<a href="#861" id="861">861</a>
+<a href="#862" id="862">862</a>
+<a href="#863" id="863">863</a>
+<a href="#864" id="864">864</a>
+<a href="#865" id="865">865</a>
+<a href="#866" id="866">866</a>
+<a href="#867" id="867">867</a>
+<a href="#868" id="868">868</a>
+<a href="#869" id="869">869</a>
+<a href="#870" id="870">870</a>
+<a href="#871" id="871">871</a>
+<a href="#872" id="872">872</a>
+<a href="#873" id="873">873</a>
+<a href="#874" id="874">874</a>
+<a href="#875" id="875">875</a>
+<a href="#876" id="876">876</a>
+<a href="#877" id="877">877</a>
+<a href="#878" id="878">878</a>
+<a href="#879" id="879">879</a>
+<a href="#880" id="880">880</a>
+<a href="#881" id="881">881</a>
+<a href="#882" id="882">882</a>
+<a href="#883" id="883">883</a>
+<a href="#884" id="884">884</a>
+<a href="#885" id="885">885</a>
+</pre><pre class="rust"><code><span class="kw">use </span>chrono::{DateTime, ParseError, SecondsFormat, TimeZone, Utc};
+<span class="kw">use </span>hex::encode;
 <span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>regex::Regex;
+<span class="kw">use </span>secp256k1::Secp256k1;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>std::{
-    fmt::{Display, LowerHex, UpperHex, Debug},
+    fmt::{Debug, Display, LowerHex, UpperHex},
     ops::Deref,
 };
 
@@ -719,6 +929,12 @@
                 }
             }
         }
+    }
+}
+
+<span class="kw">impl </span>From&lt;secp256k1::Error&gt; <span class="kw">for </span>DecodeHexError {
+    <span class="kw">fn </span>from(_value: secp256k1::Error) -&gt; <span class="self">Self </span>{
+        DecodeHexError::InvalidLength
     }
 }
 
@@ -779,7 +995,7 @@
     <span class="prelude-val">Ok</span>(hex::decode_to_slice(<span class="kw-2">&amp;</span>value[<span class="number">2</span>..], bits)<span class="question-mark">?</span>)
 }
 
-<span class="attr">#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+<span class="attr">#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Copy)]
 #[serde(try_from = <span class="string">&quot;String&quot;</span>, into = <span class="string">&quot;String&quot;</span>)]
 </span><span class="kw">pub struct </span>Address(H160);
 
@@ -1040,6 +1256,15 @@
     }
 }
 
+<span class="kw">impl </span>From&lt;secp256k1::ecdsa::RecoverableSignature&gt; <span class="kw">for </span>PersonalSignature {
+    <span class="kw">fn </span>from(value: secp256k1::ecdsa::RecoverableSignature) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>bits = [<span class="number">0u8</span>; PERSONAL_SIGNATURE_SIZE];
+        <span class="kw">let </span>(recovery_id, signature) = value.serialize_compact();
+        bits[..<span class="number">64</span>].copy_from_slice(<span class="kw-2">&amp;</span>signature);
+        bits[<span class="number">64</span>] = <span class="number">27 </span>+ recovery_id.to_i32() <span class="kw">as </span>u8;
+        <span class="self">Self</span>(bits)
+    }
+}
 <span class="kw">impl </span>TryFrom&lt;<span class="kw-2">&amp;</span>str&gt; <span class="kw">for </span>PersonalSignature {
     <span class="kw">type </span>Error = DecodeHexError;
 
@@ -1186,32 +1411,56 @@
     }
 }
 
-<span class="doccomment">/// Alias of EIP1271Signature
-/// See &lt;https://eips.ethereum.org/EIPS/eip-1271&gt;
-/// See &lt;https://github.com/ethereum/EIPs/issues/1654&gt;
-</span><span class="kw">pub type </span>EIP1654Signature = EIP1271Signature;
-
-<span class="kw">static </span>DEFAULT_EPHEMERAL_PAYLOAD_TITLE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Decentraland Login&quot;</span>;
-
-<span class="doccomment">/// An `EphemeralPayload` is a message that delegates the right to sign a message to a specific address until an expiration date.
-///
-/// ```rust
-///     use dcl_crypto::account::{Address, EphemeralPayload};
-///
-///     let payload = EphemeralPayload::try_from(&quot;Decentraland Login\nEphemeral address: 0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3\nExpiration: 2023-03-30T15:44:55.787Z&quot;).unwrap();
-///     let expiration = chrono::DateTime::parse_from_rfc3339(&quot;2023-03-30T15:44:55.787Z&quot;).unwrap().with_timezone(&amp;chrono::Utc);
-///
-///     assert_eq!(payload, EphemeralPayload::new(
-///         Address::try_from(&quot;0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3&quot;).unwrap(),
-///         expiration,
-///     ))
-/// ```
-</span><span class="attr">#[derive(PartialEq, Debug, Serialize, Deserialize, Clone)]
+<span class="attr">#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, PartialOrd, Copy)]
 #[serde(try_from = <span class="string">&quot;String&quot;</span>, into = <span class="string">&quot;String&quot;</span>)]
-</span><span class="kw">pub struct </span>EphemeralPayload {
-    <span class="kw">pub </span>title: String,
-    <span class="kw">pub </span>address: Address,
-    <span class="kw">pub </span>expiration: chrono::DateTime&lt;chrono::Utc&gt;,
+</span><span class="kw">pub struct </span>Expiration(DateTime&lt;Utc&gt;);
+
+<span class="kw">impl </span>Deref <span class="kw">for </span>Expiration {
+    <span class="kw">type </span>Target = DateTime&lt;Utc&gt;;
+    <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0
+    </span>}
+}
+
+<span class="kw">impl</span>&lt;T: chrono::TimeZone&gt; From&lt;DateTime&lt;T&gt;&gt; <span class="kw">for </span>Expiration {
+    <span class="kw">fn </span>from(value: DateTime&lt;T&gt;) -&gt; <span class="self">Self </span>{
+        Expiration(value.with_timezone(<span class="kw-2">&amp;</span>Utc))
+    }
+}
+
+<span class="kw">impl </span>TryFrom&lt;<span class="kw-2">&amp;</span>str&gt; <span class="kw">for </span>Expiration {
+    <span class="kw">type </span>Error = ParseError;
+
+    <span class="kw">fn </span>try_from(value: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+        <span class="kw">let </span>expiration = DateTime::parse_from_rfc3339(value)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(<span class="self">Self</span>(expiration.with_timezone(<span class="kw-2">&amp;</span>Utc)))
+    }
+}
+
+<span class="kw">impl </span>TryFrom&lt;String&gt; <span class="kw">for </span>Expiration {
+    <span class="kw">type </span>Error = ParseError;
+
+    <span class="kw">fn </span>try_from(value: String) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+        <span class="self">Self</span>::try_from(value.as_str())
+    }
+}
+
+<span class="kw">impl </span>From&lt;Expiration&gt; <span class="kw">for </span>String {
+    <span class="kw">fn </span>from(value: Expiration) -&gt; <span class="self">Self </span>{
+        value.to_string()
+    }
+}
+
+<span class="kw">impl </span>Display <span class="kw">for </span>Expiration {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="number">0</span>.to_rfc3339_opts(SecondsFormat::Millis, <span class="bool-val">true</span>))
+    }
+}
+
+<span class="kw">impl </span>From&lt;Expiration&gt; <span class="kw">for </span>DateTime&lt;Utc&gt; {
+    <span class="kw">fn </span>from(value: Expiration) -&gt; <span class="self">Self </span>{
+        value.<span class="number">0
+    </span>}
 }
 
 <span class="attr">#[derive(PartialEq, Debug, Error)]
@@ -1232,10 +1481,35 @@
     </span>MissingExpiration,
 
     <span class="attr">#[error(<span class="string">&quot;invalid expiration: {err} (expiration: {value})&quot;</span>)]
-    </span>InvalidExpiration {
-        err: chrono::ParseError,
-        value: String,
-    },
+    </span>InvalidExpiration { err: ParseError, value: String },
+}
+
+<span class="doccomment">/// Alias of EIP1271Signature
+/// See &lt;https://eips.ethereum.org/EIPS/eip-1271&gt;
+/// See &lt;https://github.com/ethereum/EIPs/issues/1654&gt;
+</span><span class="kw">pub type </span>EIP1654Signature = EIP1271Signature;
+
+<span class="kw">static </span>DEFAULT_EPHEMERAL_PAYLOAD_TITLE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Decentraland Login&quot;</span>;
+
+<span class="doccomment">/// An `EphemeralPayload` is a message that delegates the right to sign a message to a specific address until an expiration date.
+///
+/// ```rust
+///     use dcl_crypto::account::{Address, EphemeralPayload, Expiration};
+///
+///     let payload = EphemeralPayload::try_from(&quot;Decentraland Login\nEphemeral address: 0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3\nExpiration: 2023-03-30T15:44:55.787Z&quot;).unwrap();
+///     let expiration = Expiration::try_from(&quot;2023-03-30T15:44:55.787Z&quot;).unwrap();
+///
+///     assert_eq!(payload, EphemeralPayload::new(
+///         Address::try_from(&quot;0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3&quot;).unwrap(),
+///         expiration,
+///     ))
+/// ```
+</span><span class="attr">#[derive(PartialEq, Debug, Serialize, Deserialize, Clone)]
+#[serde(try_from = <span class="string">&quot;String&quot;</span>, into = <span class="string">&quot;String&quot;</span>)]
+</span><span class="kw">pub struct </span>EphemeralPayload {
+    <span class="kw">pub </span>title: String,
+    <span class="kw">pub </span>address: Address,
+    <span class="kw">pub </span>expiration: Expiration,
 }
 
 <span class="kw">static </span>RE_TITLE_CAPTURE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;title&quot;</span>;
@@ -1279,13 +1553,13 @@
             <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(EphemeralPayloadError::MissingExpiration),
             <span class="prelude-val">Some</span>(expiration) =&gt; {
                 <span class="kw">let </span>value = expiration.as_str();
-                DateTime::parse_from_rfc3339(value)
-                    .map_err(|err| EphemeralPayloadError::InvalidExpiration {
+                Expiration::try_from(value).map_err(|err| {
+                    EphemeralPayloadError::InvalidExpiration {
                         value: value.to_string(),
                         err,
-                    })<span class="question-mark">?
-                    </span>.with_timezone(<span class="kw-2">&amp;</span>chrono::Utc)
-            }
+                    }
+                })<span class="question-mark">?
+            </span>}
         };
 
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
@@ -1312,7 +1586,6 @@
             <span class="self">self</span>.title,
             <span class="self">self</span>.address.checksum(),
             <span class="self">self</span>.expiration
-                .to_rfc3339_opts(chrono::SecondsFormat::Millis, <span class="bool-val">true</span>)
         )
     }
 }
@@ -1324,7 +1597,7 @@
 }
 
 <span class="kw">impl </span>EphemeralPayload {
-    <span class="kw">pub fn </span>new(address: Address, expiration: chrono::DateTime&lt;chrono::Utc&gt;) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub fn </span>new(address: Address, expiration: Expiration) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new_with_title(
             String::from(DEFAULT_EPHEMERAL_PAYLOAD_TITLE),
             address,
@@ -1332,11 +1605,7 @@
         )
     }
 
-    <span class="kw">pub fn </span>new_with_title(
-        title: String,
-        address: Address,
-        expiration: chrono::DateTime&lt;chrono::Utc&gt;,
-    ) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub fn </span>new_with_title(title: String, address: Address, expiration: Expiration) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             title,
             address,
@@ -1345,11 +1614,158 @@
     }
 
     <span class="kw">pub fn </span>is_expired(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.expiration &lt; chrono::Utc::now()
+        <span class="kw-2">*</span><span class="self">self</span>.expiration &lt; Utc::now()
     }
 
-    <span class="kw">pub fn </span>is_expired_at(<span class="kw-2">&amp;</span><span class="self">self</span>, time: <span class="kw-2">&amp;</span>chrono::DateTime&lt;chrono::Utc&gt;) -&gt; bool {
-        <span class="self">self</span>.expiration &lt; <span class="kw-2">*</span>time
+    <span class="kw">pub fn </span>is_expired_at&lt;Z: TimeZone&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, time: <span class="kw-2">&amp;</span>DateTime&lt;Z&gt;) -&gt; bool {
+        <span class="kw-2">*</span><span class="self">self</span>.expiration &lt; <span class="kw-2">*</span>time
+    }
+}
+
+<span class="comment">// Abstraction to implement secp256k1::ThirtyTwoByteHash for H256
+</span><span class="kw">struct </span>Hash(H256);
+
+<span class="kw">impl </span>secp256k1::ThirtyTwoByteHash <span class="kw">for </span>Hash {
+    <span class="kw">fn </span>into_32(<span class="self">self</span>) -&gt; [u8; <span class="number">32</span>] {
+        <span class="self">self</span>.<span class="number">0 </span>.<span class="number">0
+    </span>}
+}
+
+<span class="comment">// Calculate the public key from a secret key
+</span><span class="kw">fn </span>to_public_key(secret: <span class="kw-2">&amp;</span>secp256k1::SecretKey) -&gt; secp256k1::PublicKey {
+    <span class="macro">lazy_static! </span>{
+        <span class="kw">static </span><span class="kw-2">ref </span>SECP256K1: secp256k1::Secp256k1&lt;secp256k1::All&gt; = secp256k1::Secp256k1::new();
+    }
+
+    secret.public_key(<span class="kw-2">&amp;</span>SECP256K1)
+}
+
+<span class="comment">// Intermediary representation of a private key from an Identity
+</span><span class="attr">#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = <span class="string">&quot;camelCase&quot;</span>)]
+</span><span class="kw">struct </span>EphemeralAccountRepresentation {
+    <span class="kw">pub </span>address: String,
+    <span class="kw">pub </span>public_key: String,
+    <span class="kw">pub </span>private_key: String,
+}
+
+<span class="kw">impl </span>TryFrom&lt;EphemeralAccountRepresentation&gt; <span class="kw">for </span>Account {
+    <span class="kw">type </span>Error = DecodeHexError;
+
+    <span class="kw">fn </span>try_from(value: EphemeralAccountRepresentation) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+        Account::try_from(value.private_key)
+    }
+}
+
+
+<span class="doccomment">/// A Struct that allows us to sign messages and serialize and deserialize it easily
+</span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(
+    try_from = <span class="string">&quot;EphemeralAccountRepresentation&quot;</span>,
+    into = <span class="string">&quot;EphemeralAccountRepresentation&quot;
+</span>)]
+</span><span class="kw">pub struct </span>Account(secp256k1::SecretKey);
+
+<span class="kw">impl </span>TryFrom&lt;<span class="kw-2">&amp;</span>str&gt; <span class="kw">for </span>Account {
+    <span class="kw">type </span>Error = DecodeHexError;
+
+    <span class="doccomment">/// Creates a new account from a private key in hex format.
+    ///
+    /// ```rust
+    /// use dcl_crypto::account::Account;
+    ///
+    /// ```
+    </span><span class="kw">fn </span>try_from(value: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>bytes = [<span class="number">0u8</span>; <span class="number">32</span>];
+        decode_to_slice(value, <span class="kw-2">&amp;mut </span>bytes)<span class="question-mark">?</span>;
+        <span class="kw">let </span>key = secp256k1::SecretKey::from_slice(<span class="kw-2">&amp;</span>bytes)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(<span class="self">Self</span>(key))
+    }
+}
+
+<span class="doccomment">/// Creates an account from a private key in hex format.
+</span><span class="kw">impl </span>TryFrom&lt;String&gt; <span class="kw">for </span>Account {
+    <span class="kw">type </span>Error = DecodeHexError;
+
+    <span class="kw">fn </span>try_from(value: String) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+        <span class="self">Self</span>::try_from(value.as_str())
+    }
+}
+
+<span class="doccomment">/// Converts an account into the hexadecimal representation of its private key.
+</span><span class="kw">impl </span>From&lt;Account&gt; <span class="kw">for </span>String {
+    <span class="kw">fn </span>from(account: Account) -&gt; <span class="self">Self </span>{
+        <span class="macro">format!</span>(<span class="string">&quot;0x{}&quot;</span>, encode(account.<span class="number">0</span>.secret_bytes()))
+    }
+}
+
+<span class="doccomment">/// Converts an account into a representation that can be serialized.
+</span><span class="kw">impl </span>From&lt;Account&gt; <span class="kw">for </span>EphemeralAccountRepresentation {
+    <span class="kw">fn </span>from(account: Account) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>public = to_public_key(<span class="kw-2">&amp;</span>account.<span class="number">0</span>).serialize_uncompressed();
+        <span class="self">Self </span>{
+            address: account.address().checksum(),
+            public_key: <span class="macro">format!</span>(<span class="string">&quot;0x{}&quot;</span>, hex::encode(public)),
+            private_key: account.into(),
+        }
+    }
+}
+
+<span class="kw">impl </span>Account {
+
+    <span class="doccomment">/// Creates a new account generating a random private key.
+    </span><span class="kw">pub fn </span>random() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::from_rng(<span class="kw-2">&amp;mut </span>rand::thread_rng())
+    }
+
+    <span class="doccomment">/// Creates a new account using a custom RNG (Random Number Generator) to create the private key.
+    </span><span class="kw">pub fn </span>from_rng&lt;R: rand::Rng + <span class="question-mark">?</span>Sized&gt;(r: <span class="kw-2">&amp;mut </span>R) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>(secp256k1::SecretKey::new(r))
+    }
+}
+
+<span class="doccomment">/// A trait for signing messages with an associated address.
+</span><span class="kw">pub trait </span>Signer {
+
+    <span class="doccomment">/// Return the address of the signer.
+    </span><span class="kw">fn </span>address(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Address;
+
+    <span class="doccomment">/// Sign a message with the Address&#39;s private key.
+    </span><span class="kw">fn </span>sign&lt;M: AsRef&lt;[u8]&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, message: M) -&gt; PersonalSignature;
+}
+
+<span class="kw">impl </span>Signer <span class="kw">for </span>Account {
+    <span class="doccomment">/// Return the address of the account.
+    ///
+    /// ```rust
+    /// use dcl_crypto::account::{Account, Address, Signer};
+    ///
+    /// let account = Account::try_from(&quot;0xbc453a92d9baeb3d10294cbc1d48ef6738f718fd31b4eb8085efe7b311299399&quot;).unwrap();
+    /// assert_eq!(account.address(), Address::try_from(&quot;0x84452bbFA4ca14B7828e2F3BBd106A2bD495CD34&quot;).unwrap());
+    /// ```
+    </span><span class="kw">fn </span>address(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Address {
+        <span class="kw">let </span>public = to_public_key(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>).serialize_uncompressed();
+        <span class="kw">let </span>hash = keccak256(<span class="kw-2">&amp;</span>public[<span class="number">1</span>..]);
+        <span class="kw">let </span><span class="kw-2">mut </span>bytes = [<span class="number">0u8</span>; <span class="number">20</span>];
+        bytes.copy_from_slice(<span class="kw-2">&amp;</span>hash[<span class="number">12</span>..]);
+        Address::from(bytes)
+    }
+
+    <span class="doccomment">/// Sign a message with the account.
+    ///
+    /// ```rust
+    /// use dcl_crypto::account::{Account, PersonalSignature, Signer};
+    ///
+    /// let account = Account::try_from(&quot;0xbc453a92d9baeb3d10294cbc1d48ef6738f718fd31b4eb8085efe7b311299399&quot;).unwrap();
+    /// let message = account.sign(&quot;signed message&quot;);
+    /// assert_eq!(message, PersonalSignature::try_from(&quot;0x013e0b0b75bd8404d70a37d96bb893596814d8f29f517e383d9d1421111f83c32d4ca0d6e399349c7badd54261feaa39895d027880d28d806c01089677400b7c1b&quot;).unwrap());
+    /// ```
+    ///
+    </span><span class="kw">fn </span>sign&lt;M: AsRef&lt;[u8]&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, message: M) -&gt; PersonalSignature {
+        <span class="kw">let </span>hash = Hash(hash_message(message.as_ref()));
+        <span class="kw">let </span>message = secp256k1::Message::from(hash);
+        <span class="kw">let </span>secp = Secp256k1::new();
+        secp.sign_ecdsa_recoverable(<span class="kw-2">&amp;</span>message, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>).into()
     }
 }
 </code></pre></div>
