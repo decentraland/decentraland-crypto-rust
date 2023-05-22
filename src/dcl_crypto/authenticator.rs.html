@@ -644,6 +644,38 @@
 <a href="#644" id="644">644</a>
 <a href="#645" id="645">645</a>
 <a href="#646" id="646">646</a>
+<a href="#647" id="647">647</a>
+<a href="#648" id="648">648</a>
+<a href="#649" id="649">649</a>
+<a href="#650" id="650">650</a>
+<a href="#651" id="651">651</a>
+<a href="#652" id="652">652</a>
+<a href="#653" id="653">653</a>
+<a href="#654" id="654">654</a>
+<a href="#655" id="655">655</a>
+<a href="#656" id="656">656</a>
+<a href="#657" id="657">657</a>
+<a href="#658" id="658">658</a>
+<a href="#659" id="659">659</a>
+<a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a>
+<a href="#663" id="663">663</a>
+<a href="#664" id="664">664</a>
+<a href="#665" id="665">665</a>
+<a href="#666" id="666">666</a>
+<a href="#667" id="667">667</a>
+<a href="#668" id="668">668</a>
+<a href="#669" id="669">669</a>
+<a href="#670" id="670">670</a>
+<a href="#671" id="671">671</a>
+<a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
 </pre><pre class="rust"><code><span class="kw">use </span>chrono::{DateTime, Utc};
 <span class="kw">use </span>futures::future::BoxFuture;
 <span class="kw">use </span>thiserror::Error;
@@ -1218,6 +1250,38 @@
             </span>.unwrap();
         <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">&quot;0x8C889222833F961FC991B31d15e25738c6732930&quot;</span>).unwrap();
         <span class="macro">assert_eq!</span>(owner, expected);
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_should_fail_it_tries_to_verify_a_eip_1654_signatures_without_a_transport() {
+        <span class="kw">let </span>chain = AuthChain::from_json(<span class="string">r#&quot;[
+            {
+              &quot;type&quot;: &quot;SIGNER&quot;,
+              &quot;payload&quot;: &quot;0x8C889222833F961FC991B31d15e25738c6732930&quot;,
+              &quot;signature&quot;: &quot;&quot;
+            },
+            {
+              &quot;type&quot;: &quot;ECDSA_EIP_1654_EPHEMERAL&quot;,
+              &quot;payload&quot;: &quot;Decentraland Login\r\nEphemeral address: 0x4A1b9FD363dE915145008C41FA217377B2C223F2\r\nExpiration: 2123-03-18T16:59:36.515Z&quot;,
+              &quot;signature&quot;: &quot;0x00050203596af90cecdbf9a768886e771178fd5561dd27ab005d000100019dde76f11e2c6aff01f6548f3046a9d0c569e13e79dec4218322068d3123e1162167fabd84dccfaabd350b93d2405f7b8a9cef4846b4d9a55d17838809a0e2591b020101c50adeadb7fe15bee45dcb820610cdedcd314eb0030102640dccefda3685e6c0dbeb70c1cf8018c27077eb00021cfbe892a1b29ac5e2fda1038c7965656be94aec57b658582f16447089bcf50b09df216a7e21d861cd7474723a7bfc70bf1caa55a962476cf78eb4b54471018b1b020103d9e87370ededc599df3bf9dd0e48586005f1a1bb&quot;
+            },
+            {
+              &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;,
+              &quot;payload&quot;: &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;,
+              &quot;signature&quot;: &quot;0xb962b57accc8e12083769339888f82752d13f280012b2c7b2aa2722eae103aea7a623dc88605bf7036ec8c23b0bb8f036b52f5e4e30ee913f6f2a077d5e5e3e01b&quot;
+            }
+          ]&quot;#</span>).unwrap();
+
+        <span class="kw">let </span>authenticator = Authenticator::new();
+        <span class="kw">let </span>result = authenticator
+            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">&quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;</span>)
+            .<span class="kw">await</span>;
+
+        <span class="macro">assert_eq!</span>(result, <span class="prelude-val">Err</span>(AuthenticatorError::ValidationError {
+            position: <span class="number">1</span>,
+            kind: <span class="string">&quot;ECDSA_EIP_1654_EPHEMERAL&quot;</span>.to_string(),
+            message: <span class="string">&quot;rpc resolver not implemented&quot;</span>.to_string()
+        }));
     }
 
     <span class="attr">#[tokio::test]
