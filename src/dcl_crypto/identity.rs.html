@@ -232,11 +232,17 @@
 <a href="#232" id="232">232</a>
 <a href="#233" id="233">233</a>
 <a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
 </pre><pre class="rust"><code><span class="kw">use </span>serde::{Serialize, Deserialize};
 <span class="kw">use crate</span>::{AuthLink, AuthChain};
 <span class="kw">use </span><span class="kw">crate</span>::account::{Account, Expiration, Signer, EphemeralPayload, PersonalSignature};
 
-<span class="attr">#[derive(Debug, Clone, Serialize, Deserialize)]
+<span class="doccomment">/// An `Identity` is and abstraction where an Account that you don&#39;t control delegates the
+/// ability to sign messages to a new address (encapsulated in the `Identity`) for a limited
+/// amount of time using a signature.
+</span><span class="attr">#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = <span class="string">&quot;camelCase&quot;</span>)]
 </span><span class="kw">pub struct </span>Identity {
     ephemeral_identity: Account,
