@@ -81,6 +81,7 @@
 <a href="#81" id="81">81</a>
 <a href="#82" id="82">82</a>
 <a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
 </pre><pre class="rust"><code><span class="doccomment">/*!
  * This crate is a port of the original [`@dcl/crypto`](https://github.com/decentraland/decentraland-crypto)
  * implemented on javascript and provides the necessary tools to create and validate
@@ -155,13 +156,15 @@
  * ```
  */
 </span><span class="kw">pub mod </span>account;
-<span class="kw">pub mod </span>identity;
 <span class="kw">pub mod </span>authenticator;
 <span class="kw">pub mod </span>chain;
+<span class="kw">pub mod </span>identity;
 <span class="kw">pub mod </span>util;
 
-<span class="kw">pub use </span>account::{Address, Account, Signer, Expiration};
+<span class="kw">pub use </span>account::{Account, Address, Expiration, Signer};
+<span class="kw">pub use </span>authenticator::Authenticator;
 <span class="kw">pub use </span>chain::{AuthChain, AuthLink};
 <span class="kw">pub use </span>identity::Identity;
-<span class="kw">pub use </span>authenticator::Authenticator;</code></pre></div>
+<span class="kw">pub use </span>web3::Transport <span class="kw">as </span>Web3Transport;
+</code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="dcl_crypto" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
