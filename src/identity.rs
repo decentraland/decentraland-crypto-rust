@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use crate::{AuthLink, AuthChain};
 use crate::account::{Account, Expiration, Signer, EphemeralPayload, PersonalSignature};
 
-/// An `Identity` is and abstraction where an Account that you don't control delegates the
+/// An `Identity` is an abstraction where an Account that you don't control delegates the
 /// ability to sign messages to a new address (encapsulated in the `Identity`) for a limited
 /// amount of time using a signature.
 #[derive(Debug, Clone, Serialize, Deserialize)]
