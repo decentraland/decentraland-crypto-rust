@@ -578,6 +578,27 @@ impl From<Expiration> for DateTime<Utc> {
     }
 }
 
+#[derive(PartialEq, Debug, Error)]
+pub enum EphemeralPayloadError {
+    #[error("invalid payload content")]
+    InvalidPayload,
+
+    #[error("missing title line on payload")]
+    MissingTitle,
+
+    #[error("missing address line on payload")]
+    MissingAddress,
+
+    #[error("invalid address: {err} (address: {value})")]
+    InvalidAddress { err: DecodeHexError, value: String },
+
+    #[error("missing expiration line on payload")]
+    MissingExpiration,
+
+    #[error("invalid expiration: {err} (expiration: {value})")]
+    InvalidExpiration { err: ParseError, value: String },
+}
+
 /// Alias of EIP1271Signature
 /// See <https://eips.ethereum.org/EIPS/eip-1271>
 /// See <https://github.com/ethereum/EIPs/issues/1654>
@@ -604,27 +625,6 @@ pub struct EphemeralPayload {
     pub title: String,
     pub address: Address,
     pub expiration: Expiration,
-}
-
-#[derive(PartialEq, Debug, Error)]
-pub enum EphemeralPayloadError {
-    #[error("invalid payload content")]
-    InvalidPayload,
-
-    #[error("missing title line on payload")]
-    MissingTitle,
-
-    #[error("missing address line on payload")]
-    MissingAddress,
-
-    #[error("invalid address: {err} (address: {value})")]
-    InvalidAddress { err: DecodeHexError, value: String },
-
-    #[error("missing expiration line on payload")]
-    MissingExpiration,
-
-    #[error("invalid expiration: {err} (expiration: {value})")]
-    InvalidExpiration { err: ParseError, value: String },
 }
 
 static RE_TITLE_CAPTURE: &str = "title";
@@ -737,7 +737,7 @@ impl EphemeralPayload {
     }
 }
 
-// abstraction to implement secp256k1::ThirtyTwoByteHash for H256
+// Abstraction to implement secp256k1::ThirtyTwoByteHash for H256
 struct Hash(H256);
 
 impl secp256k1::ThirtyTwoByteHash for Hash {
@@ -772,6 +772,8 @@ impl TryFrom<EphemeralAccountRepresentation> for Account {
     }
 }
 
+
+/// A Struct that allows us to sign messages and serialize and deserialize it easily
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(
     try_from = "EphemeralAccountRepresentation",
@@ -796,6 +798,7 @@ impl TryFrom<&str> for Account {
     }
 }
 
+/// Creates an account from a private key in hex format.
 impl TryFrom<String> for Account {
     type Error = DecodeHexError;
 
@@ -804,12 +807,14 @@ impl TryFrom<String> for Account {
     }
 }
 
+/// Converts an account into the hexadecimal representation of its private key.
 impl From<Account> for String {
     fn from(account: Account) -> Self {
         format!("0x{}", encode(account.0.secret_bytes()))
     }
 }
 
+/// Converts an account into a representation that can be serialized.
 impl From<Account> for EphemeralAccountRepresentation {
     fn from(account: Account) -> Self {
         let public = to_public_key(&account.0).serialize_uncompressed();
@@ -822,17 +827,25 @@ impl From<Account> for EphemeralAccountRepresentation {
 }
 
 impl Account {
+
+    /// Creates a new account generating a random private key.
     pub fn random() -> Self {
         Self::from_rng(&mut rand::thread_rng())
     }
 
+    /// Creates a new account using a custom RNG (Random Number Generator) to create the private key.
     pub fn from_rng<R: rand::Rng + ?Sized>(r: &mut R) -> Self {
         Self(secp256k1::SecretKey::new(r))
     }
 }
 
+/// A trait for signing messages with an associated address.
 pub trait Signer {
+
+    /// Return the address of the signer.
     fn address(&self) -> Address;
+
+    /// Sign a message with the Address's private key.
     fn sign<M: AsRef<[u8]>>(&self, message: M) -> PersonalSignature;
 }
 
