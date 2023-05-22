@@ -31,7 +31,7 @@ pub enum RPCCallError {
 /// ```
 /// use ethabi::Contract;
 /// use web3::{Web3, transports::Http};
-/// use dcl_crypto::rpc::rpc_call_is_valid_signature;
+/// use dcl_crypto::util::rpc_call_is_valid_signature;
 /// use dcl_crypto::account::{Address, EIP1271Signature};
 ///
 /// # tokio_test::block_on(async {

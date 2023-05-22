@@ -72,10 +72,12 @@
  * ```
  */
 pub mod account;
+pub mod identity;
 pub mod authenticator;
 pub mod chain;
-pub mod rpc;
+pub mod util;
 
-pub use account::Address;
+pub use account::{Address, Account, Signer, Expiration};
 pub use chain::{AuthChain, AuthLink};
+pub use identity::Identity;
 pub use authenticator::Authenticator;

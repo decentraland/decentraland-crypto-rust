@@ -1,9 +1,11 @@
-use chrono::DateTime;
+use chrono::{DateTime, ParseError, SecondsFormat, TimeZone, Utc};
+use hex::encode;
 use lazy_static::lazy_static;
 use regex::Regex;
+use secp256k1::Secp256k1;
 use serde::{Deserialize, Serialize};
 use std::{
-    fmt::{Display, LowerHex, UpperHex, Debug},
+    fmt::{Debug, Display, LowerHex, UpperHex},
     ops::Deref,
 };
 
@@ -42,6 +44,12 @@ impl From<hex::FromHexError> for DecodeHexError {
                 }
             }
         }
+    }
+}
+
+impl From<secp256k1::Error> for DecodeHexError {
+    fn from(_value: secp256k1::Error) -> Self {
+        DecodeHexError::InvalidLength
     }
 }
 
@@ -102,7 +110,7 @@ pub fn decode_to_slice(value: &str, bits: &mut [u8]) -> Result<(), DecodeHexErro
     Ok(hex::decode_to_slice(&value[2..], bits)?)
 }
 
-#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Copy)]
 #[serde(try_from = "String", into = "String")]
 pub struct Address(H160);
 
@@ -363,6 +371,15 @@ impl From<web3::signing::Signature> for PersonalSignature {
     }
 }
 
+impl From<secp256k1::ecdsa::RecoverableSignature> for PersonalSignature {
+    fn from(value: secp256k1::ecdsa::RecoverableSignature) -> Self {
+        let mut bits = [0u8; PERSONAL_SIGNATURE_SIZE];
+        let (recovery_id, signature) = value.serialize_compact();
+        bits[..64].copy_from_slice(&signature);
+        bits[64] = 27 + recovery_id.to_i32() as u8;
+        Self(bits)
+    }
+}
 impl TryFrom<&str> for PersonalSignature {
     type Error = DecodeHexError;
 
@@ -509,32 +526,56 @@ impl From<EIP1271Signature> for String {
     }
 }
 
-/// Alias of EIP1271Signature
-/// See <https://eips.ethereum.org/EIPS/eip-1271>
-/// See <https://github.com/ethereum/EIPs/issues/1654>
-pub type EIP1654Signature = EIP1271Signature;
-
-static DEFAULT_EPHEMERAL_PAYLOAD_TITLE: &str = "Decentraland Login";
-
-/// An `EphemeralPayload` is a message that delegates the right to sign a message to a specific address until an expiration date.
-///
-/// ```rust
-///     use dcl_crypto::account::{Address, EphemeralPayload};
-///
-///     let payload = EphemeralPayload::try_from("Decentraland Login\nEphemeral address: 0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3\nExpiration: 2023-03-30T15:44:55.787Z").unwrap();
-///     let expiration = chrono::DateTime::parse_from_rfc3339("2023-03-30T15:44:55.787Z").unwrap().with_timezone(&chrono::Utc);
-///
-///     assert_eq!(payload, EphemeralPayload::new(
-///         Address::try_from("0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3").unwrap(),
-///         expiration,
-///     ))
-/// ```
-#[derive(PartialEq, Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, PartialOrd, Copy)]
 #[serde(try_from = "String", into = "String")]
-pub struct EphemeralPayload {
-    pub title: String,
-    pub address: Address,
-    pub expiration: chrono::DateTime<chrono::Utc>,
+pub struct Expiration(DateTime<Utc>);
+
+impl Deref for Expiration {
+    type Target = DateTime<Utc>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl<T: chrono::TimeZone> From<DateTime<T>> for Expiration {
+    fn from(value: DateTime<T>) -> Self {
+        Expiration(value.with_timezone(&Utc))
+    }
+}
+
+impl TryFrom<&str> for Expiration {
+    type Error = ParseError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        let expiration = DateTime::parse_from_rfc3339(value)?;
+        Ok(Self(expiration.with_timezone(&Utc)))
+    }
+}
+
+impl TryFrom<String> for Expiration {
+    type Error = ParseError;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        Self::try_from(value.as_str())
+    }
+}
+
+impl From<Expiration> for String {
+    fn from(value: Expiration) -> Self {
+        value.to_string()
+    }
+}
+
+impl Display for Expiration {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0.to_rfc3339_opts(SecondsFormat::Millis, true))
+    }
+}
+
+impl From<Expiration> for DateTime<Utc> {
+    fn from(value: Expiration) -> Self {
+        value.0
+    }
 }
 
 #[derive(PartialEq, Debug, Error)]
@@ -555,10 +596,35 @@ pub enum EphemeralPayloadError {
     MissingExpiration,
 
     #[error("invalid expiration: {err} (expiration: {value})")]
-    InvalidExpiration {
-        err: chrono::ParseError,
-        value: String,
-    },
+    InvalidExpiration { err: ParseError, value: String },
+}
+
+/// Alias of EIP1271Signature
+/// See <https://eips.ethereum.org/EIPS/eip-1271>
+/// See <https://github.com/ethereum/EIPs/issues/1654>
+pub type EIP1654Signature = EIP1271Signature;
+
+static DEFAULT_EPHEMERAL_PAYLOAD_TITLE: &str = "Decentraland Login";
+
+/// An `EphemeralPayload` is a message that delegates the right to sign a message to a specific address until an expiration date.
+///
+/// ```rust
+///     use dcl_crypto::account::{Address, EphemeralPayload, Expiration};
+///
+///     let payload = EphemeralPayload::try_from("Decentraland Login\nEphemeral address: 0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3\nExpiration: 2023-03-30T15:44:55.787Z").unwrap();
+///     let expiration = Expiration::try_from("2023-03-30T15:44:55.787Z").unwrap();
+///
+///     assert_eq!(payload, EphemeralPayload::new(
+///         Address::try_from("0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3").unwrap(),
+///         expiration,
+///     ))
+/// ```
+#[derive(PartialEq, Debug, Serialize, Deserialize, Clone)]
+#[serde(try_from = "String", into = "String")]
+pub struct EphemeralPayload {
+    pub title: String,
+    pub address: Address,
+    pub expiration: Expiration,
 }
 
 static RE_TITLE_CAPTURE: &str = "title";
@@ -602,12 +668,12 @@ impl TryFrom<&str> for EphemeralPayload {
             None => return Err(EphemeralPayloadError::MissingExpiration),
             Some(expiration) => {
                 let value = expiration.as_str();
-                DateTime::parse_from_rfc3339(value)
-                    .map_err(|err| EphemeralPayloadError::InvalidExpiration {
+                Expiration::try_from(value).map_err(|err| {
+                    EphemeralPayloadError::InvalidExpiration {
                         value: value.to_string(),
                         err,
-                    })?
-                    .with_timezone(&chrono::Utc)
+                    }
+                })?
             }
         };
 
@@ -635,7 +701,6 @@ impl Display for EphemeralPayload {
             self.title,
             self.address.checksum(),
             self.expiration
-                .to_rfc3339_opts(chrono::SecondsFormat::Millis, true)
         )
     }
 }
@@ -647,7 +712,7 @@ impl From<EphemeralPayload> for String {
 }
 
 impl EphemeralPayload {
-    pub fn new(address: Address, expiration: chrono::DateTime<chrono::Utc>) -> Self {
+    pub fn new(address: Address, expiration: Expiration) -> Self {
         Self::new_with_title(
             String::from(DEFAULT_EPHEMERAL_PAYLOAD_TITLE),
             address,
@@ -655,11 +720,7 @@ impl EphemeralPayload {
         )
     }
 
-    pub fn new_with_title(
-        title: String,
-        address: Address,
-        expiration: chrono::DateTime<chrono::Utc>,
-    ) -> Self {
+    pub fn new_with_title(title: String, address: Address, expiration: Expiration) -> Self {
         Self {
             title,
             address,
@@ -668,10 +729,157 @@ impl EphemeralPayload {
     }
 
     pub fn is_expired(&self) -> bool {
-        self.expiration < chrono::Utc::now()
+        *self.expiration < Utc::now()
     }
 
-    pub fn is_expired_at(&self, time: &chrono::DateTime<chrono::Utc>) -> bool {
-        self.expiration < *time
+    pub fn is_expired_at<Z: TimeZone>(&self, time: &DateTime<Z>) -> bool {
+        *self.expiration < *time
+    }
+}
+
+// Abstraction to implement secp256k1::ThirtyTwoByteHash for H256
+struct Hash(H256);
+
+impl secp256k1::ThirtyTwoByteHash for Hash {
+    fn into_32(self) -> [u8; 32] {
+        self.0 .0
+    }
+}
+
+// Calculate the public key from a secret key
+fn to_public_key(secret: &secp256k1::SecretKey) -> secp256k1::PublicKey {
+    lazy_static! {
+        static ref SECP256K1: secp256k1::Secp256k1<secp256k1::All> = secp256k1::Secp256k1::new();
+    }
+
+    secret.public_key(&SECP256K1)
+}
+
+// Intermediary representation of a private key from an Identity
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct EphemeralAccountRepresentation {
+    pub address: String,
+    pub public_key: String,
+    pub private_key: String,
+}
+
+impl TryFrom<EphemeralAccountRepresentation> for Account {
+    type Error = DecodeHexError;
+
+    fn try_from(value: EphemeralAccountRepresentation) -> Result<Self, Self::Error> {
+        Account::try_from(value.private_key)
+    }
+}
+
+
+/// A Struct that allows us to sign messages and serialize and deserialize it easily
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(
+    try_from = "EphemeralAccountRepresentation",
+    into = "EphemeralAccountRepresentation"
+)]
+pub struct Account(secp256k1::SecretKey);
+
+impl TryFrom<&str> for Account {
+    type Error = DecodeHexError;
+
+    /// Creates a new account from a private key in hex format.
+    ///
+    /// ```rust
+    /// use dcl_crypto::account::Account;
+    ///
+    /// ```
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        let mut bytes = [0u8; 32];
+        decode_to_slice(value, &mut bytes)?;
+        let key = secp256k1::SecretKey::from_slice(&bytes)?;
+        Ok(Self(key))
+    }
+}
+
+/// Creates an account from a private key in hex format.
+impl TryFrom<String> for Account {
+    type Error = DecodeHexError;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        Self::try_from(value.as_str())
+    }
+}
+
+/// Converts an account into the hexadecimal representation of its private key.
+impl From<Account> for String {
+    fn from(account: Account) -> Self {
+        format!("0x{}", encode(account.0.secret_bytes()))
+    }
+}
+
+/// Converts an account into a representation that can be serialized.
+impl From<Account> for EphemeralAccountRepresentation {
+    fn from(account: Account) -> Self {
+        let public = to_public_key(&account.0).serialize_uncompressed();
+        Self {
+            address: account.address().checksum(),
+            public_key: format!("0x{}", hex::encode(public)),
+            private_key: account.into(),
+        }
+    }
+}
+
+impl Account {
+
+    /// Creates a new account generating a random private key.
+    pub fn random() -> Self {
+        Self::from_rng(&mut rand::thread_rng())
+    }
+
+    /// Creates a new account using a custom RNG (Random Number Generator) to create the private key.
+    pub fn from_rng<R: rand::Rng + ?Sized>(r: &mut R) -> Self {
+        Self(secp256k1::SecretKey::new(r))
+    }
+}
+
+/// A trait for signing messages with an associated address.
+pub trait Signer {
+
+    /// Return the address of the signer.
+    fn address(&self) -> Address;
+
+    /// Sign a message with the Address's private key.
+    fn sign<M: AsRef<[u8]>>(&self, message: M) -> PersonalSignature;
+}
+
+impl Signer for Account {
+    /// Return the address of the account.
+    ///
+    /// ```rust
+    /// use dcl_crypto::account::{Account, Address, Signer};
+    ///
+    /// let account = Account::try_from("0xbc453a92d9baeb3d10294cbc1d48ef6738f718fd31b4eb8085efe7b311299399").unwrap();
+    /// assert_eq!(account.address(), Address::try_from("0x84452bbFA4ca14B7828e2F3BBd106A2bD495CD34").unwrap());
+    /// ```
+    fn address(&self) -> Address {
+        let public = to_public_key(&self.0).serialize_uncompressed();
+        let hash = keccak256(&public[1..]);
+        let mut bytes = [0u8; 20];
+        bytes.copy_from_slice(&hash[12..]);
+        Address::from(bytes)
+    }
+
+    /// Sign a message with the account.
+    ///
+    /// ```rust
+    /// use dcl_crypto::account::{Account, PersonalSignature, Signer};
+    ///
+    /// let account = Account::try_from("0xbc453a92d9baeb3d10294cbc1d48ef6738f718fd31b4eb8085efe7b311299399").unwrap();
+    /// let message = account.sign("signed message");
+    /// assert_eq!(message, PersonalSignature::try_from("0x013e0b0b75bd8404d70a37d96bb893596814d8f29f517e383d9d1421111f83c32d4ca0d6e399349c7badd54261feaa39895d027880d28d806c01089677400b7c1b").unwrap());
+    /// ```
+    ///
+    fn sign<M: AsRef<[u8]>>(&self, message: M) -> PersonalSignature {
+        let hash = Hash(hash_message(message.as_ref()));
+        let message = secp256k1::Message::from(hash);
+        let secp = Secp256k1::new();
+        secp.sign_ecdsa_recoverable(&message, &self.0).into()
     }
 }
