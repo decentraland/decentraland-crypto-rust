@@ -575,6 +575,38 @@ mod test {
     }
 
     #[tokio::test]
+    async fn test_should_fail_it_tries_to_verify_a_eip_1654_signatures_without_a_transport() {
+        let chain = AuthChain::from_json(r#"[
+            {
+              "type": "SIGNER",
+              "payload": "0x8C889222833F961FC991B31d15e25738c6732930",
+              "signature": ""
+            },
+            {
+              "type": "ECDSA_EIP_1654_EPHEMERAL",
+              "payload": "Decentraland Login\r\nEphemeral address: 0x4A1b9FD363dE915145008C41FA217377B2C223F2\r\nExpiration: 2123-03-18T16:59:36.515Z",
+              "signature": "0x00050203596af90cecdbf9a768886e771178fd5561dd27ab005d000100019dde76f11e2c6aff01f6548f3046a9d0c569e13e79dec4218322068d3123e1162167fabd84dccfaabd350b93d2405f7b8a9cef4846b4d9a55d17838809a0e2591b020101c50adeadb7fe15bee45dcb820610cdedcd314eb0030102640dccefda3685e6c0dbeb70c1cf8018c27077eb00021cfbe892a1b29ac5e2fda1038c7965656be94aec57b658582f16447089bcf50b09df216a7e21d861cd7474723a7bfc70bf1caa55a962476cf78eb4b54471018b1b020103d9e87370ededc599df3bf9dd0e48586005f1a1bb"
+            },
+            {
+              "type": "ECDSA_SIGNED_ENTITY",
+              "payload": "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo",
+              "signature": "0xb962b57accc8e12083769339888f82752d13f280012b2c7b2aa2722eae103aea7a623dc88605bf7036ec8c23b0bb8f036b52f5e4e30ee913f6f2a077d5e5e3e01b"
+            }
+          ]"#).unwrap();
+
+        let authenticator = Authenticator::new();
+        let result = authenticator
+            .verify_signature(&chain, "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo")
+            .await;
+
+        assert_eq!(result, Err(AuthenticatorError::ValidationError {
+            position: 1,
+            kind: "ECDSA_EIP_1654_EPHEMERAL".to_string(),
+            message: "rpc resolver not implemented".to_string()
+        }));
+    }
+
+    #[tokio::test]
     async fn test_should_fail_if_ephemeral_is_expired() {
         let authenticator = Authenticator::new();
         let chain = AuthChain::from_json(r#"[
