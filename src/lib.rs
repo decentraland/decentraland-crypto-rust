@@ -72,12 +72,13 @@
  * ```
  */
 pub mod account;
-pub mod identity;
 pub mod authenticator;
 pub mod chain;
+pub mod identity;
 pub mod util;
 
-pub use account::{Address, Account, Signer, Expiration};
+pub use account::{Account, Address, Expiration, Signer};
+pub use authenticator::Authenticator;
 pub use chain::{AuthChain, AuthLink};
 pub use identity::Identity;
-pub use authenticator::Authenticator;
+pub use web3::Transport as Web3Transport;
