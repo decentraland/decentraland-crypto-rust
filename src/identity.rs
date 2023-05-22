@@ -10,11 +10,15 @@ pub struct Identity {
     auth_chain: Vec<AuthLink>,
 }
 
+/// Implements `Signer` trait for `Identity`
 impl Signer for Identity {
+
+    /// Returns the address of the ephemeral identity
     fn address(&self) -> crate::Address {
         self.ephemeral_identity.address()
     }
 
+    /// Signs the given message with the ephemeral identity
     fn sign<M: AsRef<[u8]>>(&self, message: M) -> crate::account::PersonalSignature {
         self.ephemeral_identity.sign(message)
     }
