@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/util.rs`."><title>util.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../dcl_crypto/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/util.rs`."><title>util.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="dcl_crypto" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -92,7 +93,7 @@
 <a href="#92" id="92">92</a>
 <a href="#93" id="93">93</a>
 <a href="#94" id="94">94</a>
-</pre><pre class="rust"><code><span class="kw">use </span>ethabi::{Contract, Token};
+</pre></div><pre class="rust"><code><span class="kw">use </span>ethabi::{Contract, Token};
 <span class="kw">use </span>thiserror::Error;
 <span class="kw">use </span>web3::{
     api::Eth,
@@ -103,21 +104,21 @@
 <span class="kw">use </span><span class="kw">crate</span>::account::Address;
 
 <span class="kw">static </span>MAGIC_EIP1271_VALUE: [u8; <span class="number">4</span>] = [<span class="number">22</span>, <span class="number">38</span>, <span class="number">186</span>, <span class="number">126</span>];
-<span class="kw">static </span>EIP1654_ABI: <span class="kw-2">&amp;</span>[u8] = <span class="macro">include_bytes!</span>(<span class="string">&quot;../contracts/SignatureValidator.json&quot;</span>);
+<span class="kw">static </span>EIP1654_ABI: <span class="kw-2">&amp;</span>[u8] = <span class="macro">include_bytes!</span>(<span class="string">"../contracts/SignatureValidator.json"</span>);
 
 <span class="attr">#[derive(Error, Debug)]
 </span><span class="kw">pub enum </span>RPCCallError {
 
-    <span class="attr">#[error(<span class="string">&quot;rpc resolver not implemented&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"rpc resolver not implemented"</span>)]
     </span>NotImplemented,
 
-    <span class="attr">#[error(<span class="string">&quot;error encoding params: {0}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"error encoding params: {0}"</span>)]
     </span>Encode(ethabi::Error),
 
-    <span class="attr">#[error(<span class="string">&quot;error calling rpc: {0}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"error calling rpc: {0}"</span>)]
     </span>Call(web3::Error),
 
-    <span class="attr">#[error(<span class="string">&quot;error decoding result: {0}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"error decoding result: {0}"</span>)]
     </span>Decode(ethabi::Error),
 }
 
@@ -129,13 +130,13 @@
 /// use dcl_crypto::account::{Address, EIP1271Signature};
 ///
 /// # tokio_test::block_on(async {
-///     let endpoint = env!(&quot;ETHEREUM_MAINNET_RPC&quot;);
+///     let endpoint = env!("ETHEREUM_MAINNET_RPC");
 ///     let transport = Http::new(endpoint).unwrap();
 ///     let eth = Web3::new(transport).eth();
-///     let address = Address::try_from(&quot;0x3b21028719a4aca7ebee35b0157a6f1b0cf0d0c5&quot;).unwrap();
-///     // let address = Address::try_from(&quot;0xbdbee960fb7ce6267c467665dea046d0a4849cda&quot;).unwrap();
-///     let message = &quot;Decentraland Login\nEphemeral address: 0x69fBdE5Da06eb76e8E7F6Fd2FEEd968F28b951a5\nExpiration: Tue Aug 06 7112 10:14:51 GMT-0300 (Argentina Standard Time)&quot;.to_string();
-///     let hash = EIP1271Signature::try_from(&quot;0x03524dbe44d19aacc8162b4d5d17820c370872de7bfd25d1add2b842adb1de546b454fc973b6d215883c30f4c21774ae71683869317d773f27e6bfaa9a2a05101b36946c3444914bb93f17a29d88e2449bcafdb6478b4835102c522197fa6f63d13ce5ab1d5c11c95db0c210fb4380995dff672392e5569c86d7c6bb2a44c53a151c&quot;).unwrap().to_vec();
+///     let address = Address::try_from("0x3b21028719a4aca7ebee35b0157a6f1b0cf0d0c5").unwrap();
+///     // let address = Address::try_from("0xbdbee960fb7ce6267c467665dea046d0a4849cda").unwrap();
+///     let message = "Decentraland Login\nEphemeral address: 0x69fBdE5Da06eb76e8E7F6Fd2FEEd968F28b951a5\nExpiration: Tue Aug 06 7112 10:14:51 GMT-0300 (Argentina Standard Time)".to_string();
+///     let hash = EIP1271Signature::try_from("0x03524dbe44d19aacc8162b4d5d17820c370872de7bfd25d1add2b842adb1de546b454fc973b6d215883c30f4c21774ae71683869317d773f27e6bfaa9a2a05101b36946c3444914bb93f17a29d88e2449bcafdb6478b4835102c522197fa6f63d13ce5ab1d5c11c95db0c210fb4380995dff672392e5569c86d7c6bb2a44c53a151c").unwrap().to_vec();
 ///
 ///     let result = rpc_call_is_valid_signature(&amp;eth, address, message, hash).await.unwrap();
 ///     assert_eq!(result, true);
@@ -148,7 +149,7 @@
     hash: Vec&lt;u8&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;bool, RPCCallError&gt; {
     <span class="kw">let </span>contract = Contract::load(EIP1654_ABI).map_err(RPCCallError::Encode)<span class="question-mark">?</span>;
-    <span class="kw">let </span>func = contract.function(<span class="string">&quot;isValidSignature&quot;</span>)
+    <span class="kw">let </span>func = contract.function(<span class="string">"isValidSignature"</span>)
         .map_err(RPCCallError::Encode)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>call = func.encode_input(<span class="kw-2">&amp;</span>[
@@ -186,5 +187,4 @@
 
     <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="dcl_crypto" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

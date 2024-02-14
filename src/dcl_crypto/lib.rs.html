@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../dcl_crypto/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="dcl_crypto" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -82,19 +83,19 @@
 <a href="#82" id="82">82</a>
 <a href="#83" id="83">83</a>
 <a href="#84" id="84">84</a>
-</pre><pre class="rust"><code><span class="doccomment">/*!
+</pre></div><pre class="rust"><code><span class="doccomment">/*!
  * This crate is a port of the original [`@dcl/crypto`](https://github.com/decentraland/decentraland-crypto)
  * implemented on javascript and provides the necessary tools to create and validate
- * Decentraland&#39;s Authentication Chains.
+ * Decentraland's Authentication Chains.
  *
  * ## Usage
  *
  * This crate is [on crates.io](https://crates.io/crates/dcl_crypto) and can be
- * used by adding `dcl_crypto` to your dependencies in your project&#39;s `Cargo.toml`.
+ * used by adding `dcl_crypto` to your dependencies in your project's `Cargo.toml`.
  *
  * ```toml
  * [dependencies]
- * dcl_crypto = &quot;0&quot;
+ * dcl_crypto = "0"
  * ```
  *
  * ## Verify a signature
@@ -104,7 +105,7 @@
  *
  * The `Authenticator` is the one that will verify the two types of signatures that
  * can be present on an authchain:
- * - The signature of the wallet&#39;s owner, also referred as personal signature.
+ * - The signature of the wallet's owner, also referred as personal signature.
  * - The signature of the smart contract wallet, described on the [EIP-1271](https://eips.ethereum.org/EIPS/eip-1271).
  *
  * In order to verify the signature of the smart contract wallet, the `Authenticator`
@@ -113,12 +114,12 @@
  * ```rust
  * use dcl_crypto::Authenticator;
  *
- * let endpoint = std::env::var(&quot;ETHEREUM_MAINNET_RPC&quot;).unwrap();
+ * let endpoint = std::env::var("ETHEREUM_MAINNET_RPC").unwrap();
  * let transport = web3::transports::Http::new(&amp;endpoint).unwrap();
  * let authenticator = Authenticator::with_transport(&amp;transport);
  * ```
  *
- * If you don&#39;t need to verify the signature of the smart contract wallet, you can create
+ * If you don't need to verify the signature of the smart contract wallet, you can create
  * an `Authenticator` without a web3 provider using the [`Authenticator::new()`](authenticator/struct.Authenticator.html#method.new)
  * method.
  *
@@ -134,25 +135,25 @@
  * use dcl_crypto::{Authenticator, AuthChain};
  *
  * let authenticator = Authenticator::new();
- * let auth_chain = AuthChain::from_json(r#&quot;[
+ * let auth_chain = AuthChain::from_json(r#"[
  *   {
- *     &quot;type&quot;: &quot;SIGNER&quot;,
- *     &quot;payload&quot;: &quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;,
- *     &quot;signature&quot;: &quot;&quot;
+ *     "type": "SIGNER",
+ *     "payload": "0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34",
+ *     "signature": ""
  *   },
  *   {
- *     &quot;type&quot;: &quot;ECDSA_EPHEMERAL&quot;,
- *     &quot;payload&quot;: &quot;Decentraland Login\nEphemeral address: 0xB80549D339DCe9834271EcF5F1F1bb141C70AbC2\nExpiration: 2123-03-20T12:36:25.522Z&quot;,
- *     &quot;signature&quot;: &quot;0x76bf8d3c8ee6798bd488c4bc7ac1298d0ad78759669be39876e63ccfd9af81e31b8c6d8000b892ed2d17eb2f5a2b56fc3edbbf33c6089d3e5148d83cc70ce9001c&quot;
+ *     "type": "ECDSA_EPHEMERAL",
+ *     "payload": "Decentraland Login\nEphemeral address: 0xB80549D339DCe9834271EcF5F1F1bb141C70AbC2\nExpiration: 2123-03-20T12:36:25.522Z",
+ *     "signature": "0x76bf8d3c8ee6798bd488c4bc7ac1298d0ad78759669be39876e63ccfd9af81e31b8c6d8000b892ed2d17eb2f5a2b56fc3edbbf33c6089d3e5148d83cc70ce9001c"
  *   },
  *   {
- *     &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;,
- *     &quot;payload&quot;: &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;,
- *     &quot;signature&quot;: &quot;0xd71fb5511f7d9116d171a12754b2c6f4c795240bee982511049a14aba57f18684b48a08413ab00176801d773eab0436fff5d0c978877b6d05f483ee2ae36efb41b&quot;
+ *     "type": "ECDSA_SIGNED_ENTITY",
+ *     "payload": "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo",
+ *     "signature": "0xd71fb5511f7d9116d171a12754b2c6f4c795240bee982511049a14aba57f18684b48a08413ab00176801d773eab0436fff5d0c978877b6d05f483ee2ae36efb41b"
  *   }
- * ]&quot;#).unwrap();
+ * ]"#).unwrap();
  *
- * authenticator.verify_signature(&amp;auth_chain, &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;); // future
+ * authenticator.verify_signature(&amp;auth_chain, "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo"); // future
  * ```
  */
 </span><span class="kw">pub mod </span>account;
@@ -166,5 +167,4 @@
 <span class="kw">pub use </span>chain::{AuthChain, AuthLink};
 <span class="kw">pub use </span>identity::Identity;
 <span class="kw">pub use </span>web3::Transport <span class="kw">as </span>Web3Transport;
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="dcl_crypto" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/authenticator.rs`."><title>authenticator.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../dcl_crypto/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/authenticator.rs`."><title>authenticator.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="dcl_crypto" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -676,7 +677,7 @@
 <a href="#676" id="676">676</a>
 <a href="#677" id="677">677</a>
 <a href="#678" id="678">678</a>
-</pre><pre class="rust"><code><span class="kw">use </span>chrono::{DateTime, Utc};
+</pre></div><pre class="rust"><code><span class="kw">use </span>chrono::{DateTime, Utc};
 <span class="kw">use </span>futures::future::BoxFuture;
 <span class="kw">use </span>thiserror::Error;
 <span class="kw">use </span>web3::{
@@ -693,29 +694,29 @@
 
 <span class="attr">#[derive(Debug, Error, PartialEq)]
 </span><span class="kw">pub enum </span>AuthenticatorError {
-    <span class="attr">#[error(<span class="string">&quot;malformed authchain: expecting at least 2 links, but is empty&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"malformed authchain: expecting at least 2 links, but is empty"</span>)]
     </span>EmptyChain,
 
-    <span class="attr">#[error(<span class="string">&quot;malformed authchain: expecting SIGNER at position {position}, but found {found}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"malformed authchain: expecting SIGNER at position {position}, but found {found}"</span>)]
     </span>SignerExpected { position: usize, found: String },
 
-    <span class="attr">#[error(<span class="string">&quot;malformed authchain: expecting ECDSA_EPHEMERAL or ECDSA_EIP_1654_EPHEMERAL at position {position}, but found {found}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"malformed authchain: expecting ECDSA_EPHEMERAL or ECDSA_EIP_1654_EPHEMERAL at position {position}, but found {found}"</span>)]
     </span>EphemeralExpected { position: usize, found: String },
 
-    <span class="attr">#[error(<span class="string">&quot;malformed authchain: expecting ECDSA_SIGNED_ENTITY or ECDSA_EIP_1654_SIGNED_ENTITY at position {position}, but found {found}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"malformed authchain: expecting ECDSA_SIGNED_ENTITY or ECDSA_EIP_1654_SIGNED_ENTITY at position {position}, but found {found}"</span>)]
     </span>SignedEntityExpected { position: usize, found: String },
 
-    <span class="attr">#[error(<span class="string">&quot;malformed authchain: expecting ECDSA_SIGNED_ENTITY or ECDSA_EIP_1654_SIGNED_ENTITY&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"malformed authchain: expecting ECDSA_SIGNED_ENTITY or ECDSA_EIP_1654_SIGNED_ENTITY"</span>)]
     </span>SignedEntityMissing,
 
-    <span class="attr">#[error(<span class="string">&quot;fail to validate {kind} at position {position}: {message}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"fail to validate {kind} at position {position}: {message}"</span>)]
     </span>ValidationError {
         position: usize,
         kind: String,
         message: String,
     },
 
-    <span class="attr">#[error(<span class="string">&quot;unexpected authority at position {position}: expected {expected}, but found {found}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"unexpected authority at position {position}: expected {expected}, but found {found}"</span>)]
     </span>UnexpectedSigner {
         position: usize,
         expected: Address,
@@ -723,7 +724,7 @@
     },
 
     <span class="attr">#[error(
-        <span class="string">&quot;unexpected last authority at position {position}: expected {expected}, but found {found}&quot;
+        <span class="string">"unexpected last authority at position {position}: expected {expected}, but found {found}"
     </span>)]
     </span>UnexpectedLastAuthority {
         position: usize,
@@ -731,14 +732,14 @@
         found: String,
     },
 
-    <span class="attr">#[error(<span class="string">&quot;expired entity {kind} at position {position}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"expired entity {kind} at position {position}"</span>)]
     </span>ExpiredEntity { position: usize, kind: String },
 }
 
 <span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>WithoutTransport {}
 <span class="kw">impl </span>Transport <span class="kw">for </span>WithoutTransport {
-    <span class="kw">type </span>Out = BoxFuture&lt;<span class="lifetime">&#39;static</span>, <span class="prelude-ty">Result</span>&lt;serde_json::Value, Web3Error&gt;&gt;;
+    <span class="kw">type </span>Out = BoxFuture&lt;<span class="lifetime">'static</span>, <span class="prelude-ty">Result</span>&lt;serde_json::Value, Web3Error&gt;&gt;;
 
     <span class="kw">fn </span>prepare(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
@@ -763,27 +764,27 @@
 /// # tokio_test::block_on(async {
 ///     let authenticator = Authenticator::new();
 ///
-///     let chain = AuthChain::from_json(r#&quot;[
+///     let chain = AuthChain::from_json(r#"[
 ///        {
-///            &quot;type&quot;: &quot;SIGNER&quot;,
-///            &quot;payload&quot;: &quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;,
-///            &quot;signature&quot;: &quot;&quot;
+///            "type": "SIGNER",
+///            "payload": "0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34",
+///            "signature": ""
 ///        },
 ///        {
-///            &quot;type&quot;: &quot;ECDSA_EPHEMERAL&quot;,
-///            &quot;payload&quot;: &quot;Decentraland Login\r\nEphemeral address: 0xB80549D339DCe9834271EcF5F1F1bb141C70AbC2\r\nExpiration: 2123-03-20T12:36:25.522Z&quot;,
-///            &quot;signature&quot;: &quot;0x76bf8d3c8ee6798bd488c4bc7ac1298d0ad78759669be39876e63ccfd9af81e31b8c6d8000b892ed2d17eb2f5a2b56fc3edbbf33c6089d3e5148d83cc70ce9001c&quot;
+///            "type": "ECDSA_EPHEMERAL",
+///            "payload": "Decentraland Login\r\nEphemeral address: 0xB80549D339DCe9834271EcF5F1F1bb141C70AbC2\r\nExpiration: 2123-03-20T12:36:25.522Z",
+///            "signature": "0x76bf8d3c8ee6798bd488c4bc7ac1298d0ad78759669be39876e63ccfd9af81e31b8c6d8000b892ed2d17eb2f5a2b56fc3edbbf33c6089d3e5148d83cc70ce9001c"
 ///        },
 ///        {
-///            &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;,
-///            &quot;payload&quot;: &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;,
-///            &quot;signature&quot;: &quot;0xd71fb5511f7d9116d171a12754b2c6f4c795240bee982511049a14aba57f18684b48a08413ab00176801d773eab0436fff5d0c978877b6d05f483ee2ae36efb41b&quot;
+///            "type": "ECDSA_SIGNED_ENTITY",
+///            "payload": "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo",
+///            "signature": "0xd71fb5511f7d9116d171a12754b2c6f4c795240bee982511049a14aba57f18684b48a08413ab00176801d773eab0436fff5d0c978877b6d05f483ee2ae36efb41b"
 ///        }
-///     ]&quot;#).unwrap();
+///     ]"#).unwrap();
 ///
-///     let address =  Address::try_from(&quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;).unwrap();
+///     let address =  Address::try_from("0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34").unwrap();
 ///     let owner =  chain.owner().unwrap();
-///     let result = authenticator.verify_signature(&amp;chain, &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;).await.unwrap();
+///     let result = authenticator.verify_signature(&amp;chain, "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo").await.unwrap();
 ///     assert_eq!(result, &amp;address);
 ///     assert_eq!(result, owner);
 /// # })
@@ -833,9 +834,9 @@
     /// use dcl_crypto::account::{Address, PersonalSignature};
     ///
     /// # tokio_test::block_on(async {
-    ///     let address = Address::try_from(&quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;).unwrap();
-    ///     let message = &quot;Decentraland Login\nEphemeral address: 0xe94944439fAB988e5e14b128BbcF6D5502b05f9C\nExpiration: 2020-02-20T00:00:00.000Z&quot;;
-    ///     let hash = PersonalSignature::try_from(&quot;0x2d45e2a3e9e04614cf6bb822951b849458a78037733202d4bda12e60ef1ff4d266b02af7b72caa232c45052520fd440869672da2b0966b29fff21638e3d21ca01b&quot;).unwrap().to_vec();
+    ///     let address = Address::try_from("0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34").unwrap();
+    ///     let message = "Decentraland Login\nEphemeral address: 0xe94944439fAB988e5e14b128BbcF6D5502b05f9C\nExpiration: 2020-02-20T00:00:00.000Z";
+    ///     let hash = PersonalSignature::try_from("0x2d45e2a3e9e04614cf6bb822951b849458a78037733202d4bda12e60ef1ff4d266b02af7b72caa232c45052520fd440869672da2b0966b29fff21638e3d21ca01b").unwrap().to_vec();
     ///
     ///     let result = Authenticator::new().validate_personal(&amp;address, &amp;message, &amp;hash).unwrap();
     ///     assert_eq!(result, true);
@@ -861,11 +862,11 @@
     }
 
     <span class="doccomment">/// Verifies that and authlink is a signer and returns it as result. Otherwise, returns an error.
-    </span><span class="kw">async fn </span>verify_signer&lt;<span class="lifetime">&#39;a</span>&gt;(
+    </span><span class="kw">async fn </span>verify_signer&lt;<span class="lifetime">'a</span>&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        link: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AuthLink,
+        link: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AuthLink,
         position: usize,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Address, AuthenticatorError&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Address, AuthenticatorError&gt; {
         <span class="kw">match </span>link {
             AuthLink::Signer { payload, .. } =&gt; <span class="prelude-val">Ok</span>(payload),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(AuthenticatorError::SignerExpected {
@@ -882,13 +883,13 @@
     /// - the ephemeral signature corresponds to the authority
     ///
     /// returns the address defined in the ephemeral payload, otherwise returns an error.
-    </span><span class="kw">async fn </span>verify_ephemeral&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;l</span>, <span class="lifetime">&#39;d</span>&gt;(
+    </span><span class="kw">async fn </span>verify_ephemeral&lt;<span class="lifetime">'a</span>, <span class="lifetime">'l</span>, <span class="lifetime">'d</span>&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        authority: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Address,
-        link: <span class="kw-2">&amp;</span><span class="lifetime">&#39;l </span>AuthLink,
-        expiration: <span class="kw-2">&amp;</span><span class="lifetime">&#39;d </span>DateTime&lt;Utc&gt;,
+        authority: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Address,
+        link: <span class="kw-2">&amp;</span><span class="lifetime">'l </span>AuthLink,
+        expiration: <span class="kw-2">&amp;</span><span class="lifetime">'d </span>DateTime&lt;Utc&gt;,
         position: usize,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;l </span>Address, AuthenticatorError&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'l </span>Address, AuthenticatorError&gt; {
         <span class="kw">match </span>link {
             AuthLink::EcdsaPersonalEphemeral { payload, signature } =&gt; {
                 <span class="kw">if </span>payload.is_expired_at(expiration) {
@@ -911,7 +912,7 @@
                         position,
                         kind: link.kind().to_string(),
                         message: <span class="macro">format!</span>(
-                            <span class="string">&quot;Signature {} couldn&#39;t be validated against address {}&quot;</span>,
+                            <span class="string">"Signature {} couldn't be validated against address {}"</span>,
                             signature, authority
                         ),
                     });
@@ -941,7 +942,7 @@
                         position,
                         kind: link.kind().to_string(),
                         message: <span class="macro">format!</span>(
-                            <span class="string">&quot;Signature {} couldn&#39;t be validated against address {}&quot;</span>,
+                            <span class="string">"Signature {} couldn't be validated against address {}"</span>,
                             signature, authority
                         ),
                     });
@@ -962,12 +963,12 @@
     /// - the ephemeral signature corresponds to the authority
     ///
     /// returns the signed payload, otherwise returns an error.
-    </span><span class="kw">async fn </span>verify_signed_entity&lt;<span class="lifetime">&#39;a</span>&gt;(
+    </span><span class="kw">async fn </span>verify_signed_entity&lt;<span class="lifetime">'a</span>&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        authority: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Address,
-        link: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AuthLink,
+        authority: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Address,
+        link: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AuthLink,
         position: usize,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str, AuthenticatorError&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, AuthenticatorError&gt; {
         <span class="kw">match </span>link {
             AuthLink::EcdsaPersonalSignedEntity { payload, signature } =&gt; {
                 <span class="kw">let </span>result = <span class="self">self
@@ -983,7 +984,7 @@
                         position,
                         kind: link.kind().to_string(),
                         message: <span class="macro">format!</span>(
-                            <span class="string">&quot;Signature {} couldn&#39;t be validated against address {}&quot;</span>,
+                            <span class="string">"Signature {} couldn't be validated against address {}"</span>,
                             signature, authority
                         ),
                     });
@@ -1006,7 +1007,7 @@
                         position,
                         kind: link.kind().to_string(),
                         message: <span class="macro">format!</span>(
-                            <span class="string">&quot;Signature {} couldn&#39;t be validated against address {}&quot;</span>,
+                            <span class="string">"Signature {} couldn't be validated against address {}"</span>,
                             signature, authority
                         ),
                     });
@@ -1022,12 +1023,12 @@
     }
 
     <span class="doccomment">/// Verifies and authchain is valid, not expired at a given date and corresponds to the last_authority, otherwise, returns an error.
-    </span><span class="kw">pub async fn </span>verify_signature_at&lt;<span class="lifetime">&#39;a</span>&gt;(
+    </span><span class="kw">pub async fn </span>verify_signature_at&lt;<span class="lifetime">'a</span>&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        chain: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AuthChain,
+        chain: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AuthChain,
         last_authority: <span class="kw-2">&amp;</span>str,
         expiration: <span class="kw-2">&amp;</span>DateTime&lt;Utc&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Address, AuthenticatorError&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Address, AuthenticatorError&gt; {
         <span class="kw">let </span>owner = <span class="kw">match </span>chain.first() {
             <span class="prelude-val">Some</span>(link) =&gt; <span class="self">self</span>.verify_signer(link, <span class="number">0</span>).<span class="kw">await</span><span class="question-mark">?</span>,
             <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(AuthenticatorError::EmptyChain),
@@ -1064,11 +1065,11 @@
     }
 
     <span class="doccomment">/// Verifies and authchain is valid, not expired and corresponds to the last_authority, otherwise, returns an error.
-    </span><span class="kw">pub async fn </span>verify_signature&lt;<span class="lifetime">&#39;a</span>&gt;(
+    </span><span class="kw">pub async fn </span>verify_signature&lt;<span class="lifetime">'a</span>&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        chain: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AuthChain,
+        chain: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AuthChain,
         last_authority: <span class="kw-2">&amp;</span>str,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Address, AuthenticatorError&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Address, AuthenticatorError&gt; {
         <span class="kw">let </span>now = <span class="kw-2">&amp;</span>Utc::now();
         <span class="self">self</span>.verify_signature_at(chain, last_authority, now).<span class="kw">await
     </span>}
@@ -1100,243 +1101,243 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_should_validate_personal_signature() {
         <span class="kw">let </span>authenticator = Authenticator::new();
-        <span class="kw">let </span>chain = AuthChain::from_json(<span class="string">r#&quot;[
+        <span class="kw">let </span>chain = AuthChain::from_json(<span class="string">r#"[
             {
-              &quot;type&quot;: &quot;SIGNER&quot;,
-              &quot;payload&quot;: &quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;,
-              &quot;signature&quot;: &quot;&quot;
+              "type": "SIGNER",
+              "payload": "0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34",
+              "signature": ""
             },
             {
-              &quot;type&quot;: &quot;ECDSA_EPHEMERAL&quot;,
-              &quot;payload&quot;: &quot;Decentraland Login\nEphemeral address: 0xB80549D339DCe9834271EcF5F1F1bb141C70AbC2\nExpiration: 2123-03-20T12:36:25.522Z&quot;,
-              &quot;signature&quot;: &quot;0x76bf8d3c8ee6798bd488c4bc7ac1298d0ad78759669be39876e63ccfd9af81e31b8c6d8000b892ed2d17eb2f5a2b56fc3edbbf33c6089d3e5148d83cc70ce9001c&quot;
+              "type": "ECDSA_EPHEMERAL",
+              "payload": "Decentraland Login\nEphemeral address: 0xB80549D339DCe9834271EcF5F1F1bb141C70AbC2\nExpiration: 2123-03-20T12:36:25.522Z",
+              "signature": "0x76bf8d3c8ee6798bd488c4bc7ac1298d0ad78759669be39876e63ccfd9af81e31b8c6d8000b892ed2d17eb2f5a2b56fc3edbbf33c6089d3e5148d83cc70ce9001c"
             },
             {
-              &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;,
-              &quot;payload&quot;: &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;,
-              &quot;signature&quot;: &quot;0xd71fb5511f7d9116d171a12754b2c6f4c795240bee982511049a14aba57f18684b48a08413ab00176801d773eab0436fff5d0c978877b6d05f483ee2ae36efb41b&quot;
+              "type": "ECDSA_SIGNED_ENTITY",
+              "payload": "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo",
+              "signature": "0xd71fb5511f7d9116d171a12754b2c6f4c795240bee982511049a14aba57f18684b48a08413ab00176801d773eab0436fff5d0c978877b6d05f483ee2ae36efb41b"
             }
-          ]&quot;#</span>).unwrap();
+          ]"#</span>).unwrap();
 
         <span class="kw">let </span>owner = authenticator
-            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">&quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;</span>)
+            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">"QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo"</span>)
             .<span class="kw">await
             </span>.unwrap();
-        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">&quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;</span>).unwrap();
+        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">"0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34"</span>).unwrap();
         <span class="macro">assert_eq!</span>(owner, expected);
     }
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_should_validate_eip_1654_signatures() {
-        <span class="kw">let </span>endpoint = env::var(<span class="string">&quot;ETHEREUM_MAINNET_RPC&quot;</span>).unwrap();
+        <span class="kw">let </span>endpoint = env::var(<span class="string">"ETHEREUM_MAINNET_RPC"</span>).unwrap();
         <span class="kw">let </span>transport = web3::transports::Http::new(<span class="kw-2">&amp;</span>endpoint).unwrap();
         <span class="kw">let </span>authenticator = Authenticator::with_transport(<span class="kw-2">&amp;</span>transport);
-        <span class="kw">let </span>chain = AuthChain::from_json(<span class="string">r#&quot;[
+        <span class="kw">let </span>chain = AuthChain::from_json(<span class="string">r#"[
             {
-              &quot;type&quot;: &quot;SIGNER&quot;,
-              &quot;payload&quot;: &quot;0x8C889222833F961FC991B31d15e25738c6732930&quot;,
-              &quot;signature&quot;: &quot;&quot;
+              "type": "SIGNER",
+              "payload": "0x8C889222833F961FC991B31d15e25738c6732930",
+              "signature": ""
             },
             {
-              &quot;type&quot;: &quot;ECDSA_EIP_1654_EPHEMERAL&quot;,
-              &quot;payload&quot;: &quot;Decentraland Login\nEphemeral address: 0x4A1b9FD363dE915145008C41FA217377B2C223F2\nExpiration: 2123-03-18T16:59:36.515Z&quot;,
-              &quot;signature&quot;: &quot;0x00050203596af90cecdbf9a768886e771178fd5561dd27ab005d000100019dde76f11e2c6aff01f6548f3046a9d0c569e13e79dec4218322068d3123e1162167fabd84dccfaabd350b93d2405f7b8a9cef4846b4d9a55d17838809a0e2591b020101c50adeadb7fe15bee45dcb820610cdedcd314eb0030102640dccefda3685e6c0dbeb70c1cf8018c27077eb00021cfbe892a1b29ac5e2fda1038c7965656be94aec57b658582f16447089bcf50b09df216a7e21d861cd7474723a7bfc70bf1caa55a962476cf78eb4b54471018b1b020103d9e87370ededc599df3bf9dd0e48586005f1a1bb&quot;
+              "type": "ECDSA_EIP_1654_EPHEMERAL",
+              "payload": "Decentraland Login\nEphemeral address: 0x4A1b9FD363dE915145008C41FA217377B2C223F2\nExpiration: 2123-03-18T16:59:36.515Z",
+              "signature": "0x00050203596af90cecdbf9a768886e771178fd5561dd27ab005d000100019dde76f11e2c6aff01f6548f3046a9d0c569e13e79dec4218322068d3123e1162167fabd84dccfaabd350b93d2405f7b8a9cef4846b4d9a55d17838809a0e2591b020101c50adeadb7fe15bee45dcb820610cdedcd314eb0030102640dccefda3685e6c0dbeb70c1cf8018c27077eb00021cfbe892a1b29ac5e2fda1038c7965656be94aec57b658582f16447089bcf50b09df216a7e21d861cd7474723a7bfc70bf1caa55a962476cf78eb4b54471018b1b020103d9e87370ededc599df3bf9dd0e48586005f1a1bb"
             },
             {
-              &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;,
-              &quot;payload&quot;: &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;,
-              &quot;signature&quot;: &quot;0xb962b57accc8e12083769339888f82752d13f280012b2c7b2aa2722eae103aea7a623dc88605bf7036ec8c23b0bb8f036b52f5e4e30ee913f6f2a077d5e5e3e01b&quot;
+              "type": "ECDSA_SIGNED_ENTITY",
+              "payload": "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo",
+              "signature": "0xb962b57accc8e12083769339888f82752d13f280012b2c7b2aa2722eae103aea7a623dc88605bf7036ec8c23b0bb8f036b52f5e4e30ee913f6f2a077d5e5e3e01b"
             }
-          ]&quot;#</span>).unwrap();
+          ]"#</span>).unwrap();
 
         <span class="kw">let </span>owner = authenticator
-            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">&quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;</span>)
+            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">"QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo"</span>)
             .<span class="kw">await
             </span>.unwrap();
-        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">&quot;0x8C889222833F961FC991B31d15e25738c6732930&quot;</span>).unwrap();
+        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">"0x8C889222833F961FC991B31d15e25738c6732930"</span>).unwrap();
         <span class="macro">assert_eq!</span>(owner, expected);
     }
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_should_validate_simple_personal_signatures() {
         <span class="kw">let </span>authenticator = Authenticator::new();
-        <span class="kw">let </span>signer = Address::try_from(<span class="string">&quot;0xeC6E6c0841a2bA474E92Bf42BaF76bFe80e8657C&quot;</span>).unwrap();
-        <span class="kw">let </span>payload = <span class="string">&quot;QmWyFNeHbxXaPtUnzKvDZPpKSa4d5anZEZEFJ8TC1WgcfU&quot;</span>;
-        <span class="kw">let </span>signature = <span class="string">&quot;0xaaafb0368c13c42e401e71162cb55a062b3b0a5389e0740e7dc34e623b12f0fd65e2fadac51ab5f0de8f69b1311f23f1f218753e8a957043a2a789ba721141f91c&quot;</span>;
+        <span class="kw">let </span>signer = Address::try_from(<span class="string">"0xeC6E6c0841a2bA474E92Bf42BaF76bFe80e8657C"</span>).unwrap();
+        <span class="kw">let </span>payload = <span class="string">"QmWyFNeHbxXaPtUnzKvDZPpKSa4d5anZEZEFJ8TC1WgcfU"</span>;
+        <span class="kw">let </span>signature = <span class="string">"0xaaafb0368c13c42e401e71162cb55a062b3b0a5389e0740e7dc34e623b12f0fd65e2fadac51ab5f0de8f69b1311f23f1f218753e8a957043a2a789ba721141f91c"</span>;
         <span class="kw">let </span>chain = AuthChain::simple(signer, payload, signature).unwrap();
 
         <span class="kw">let </span>owner = authenticator
-            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">&quot;QmWyFNeHbxXaPtUnzKvDZPpKSa4d5anZEZEFJ8TC1WgcfU&quot;</span>)
+            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">"QmWyFNeHbxXaPtUnzKvDZPpKSa4d5anZEZEFJ8TC1WgcfU"</span>)
             .<span class="kw">await
             </span>.unwrap();
-        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">&quot;0xeC6E6c0841a2bA474E92Bf42BaF76bFe80e8657C&quot;</span>).unwrap();
+        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">"0xeC6E6c0841a2bA474E92Bf42BaF76bFe80e8657C"</span>).unwrap();
         <span class="macro">assert_eq!</span>(owner, expected);
     }
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_should_validate_simple_eip_1654_signatures() {
-        <span class="kw">let </span>endpoint = env::var(<span class="string">&quot;ETHEREUM_MAINNET_RPC&quot;</span>).unwrap();
+        <span class="kw">let </span>endpoint = env::var(<span class="string">"ETHEREUM_MAINNET_RPC"</span>).unwrap();
         <span class="kw">let </span>transport = web3::transports::Http::new(<span class="kw-2">&amp;</span>endpoint).unwrap();
         <span class="kw">let </span>authenticator = Authenticator::with_transport(<span class="kw-2">&amp;</span>transport);
 
-        <span class="kw">let </span>signer = Address::try_from(<span class="string">&quot;0x6b7d7e82c984a0F4489c722fd11906F017f57704&quot;</span>).unwrap();
-        <span class="kw">let </span>payload = <span class="string">&quot;QmNUd7Cyoo9CREGsACkvBrQSb3KjhWX379FVsdjTCGsTAz&quot;</span>;
-        <span class="kw">let </span>signature = <span class="string">&quot;0x7fba0fbe75d0b28a224ec49ad99f6025f9055880db9ed1a35bc527a372c54ebe2461406aa07097bc47017da4319e19e517c49952697f074bcdc702f36afa72b01c759138c6ca4675367458884eb9b820c51af60a79efe1904ebcf2c1950fc7a2c02f3595a82ea1cc9d67a680c2f9b34df6abf5b344e857773dfe4210c6f85405151b&quot;</span>;
+        <span class="kw">let </span>signer = Address::try_from(<span class="string">"0x6b7d7e82c984a0F4489c722fd11906F017f57704"</span>).unwrap();
+        <span class="kw">let </span>payload = <span class="string">"QmNUd7Cyoo9CREGsACkvBrQSb3KjhWX379FVsdjTCGsTAz"</span>;
+        <span class="kw">let </span>signature = <span class="string">"0x7fba0fbe75d0b28a224ec49ad99f6025f9055880db9ed1a35bc527a372c54ebe2461406aa07097bc47017da4319e19e517c49952697f074bcdc702f36afa72b01c759138c6ca4675367458884eb9b820c51af60a79efe1904ebcf2c1950fc7a2c02f3595a82ea1cc9d67a680c2f9b34df6abf5b344e857773dfe4210c6f85405151b"</span>;
         <span class="kw">let </span>chain = AuthChain::simple(signer, payload, signature).unwrap();
 
         <span class="kw">let </span>owner = authenticator
-            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">&quot;QmNUd7Cyoo9CREGsACkvBrQSb3KjhWX379FVsdjTCGsTAz&quot;</span>)
+            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">"QmNUd7Cyoo9CREGsACkvBrQSb3KjhWX379FVsdjTCGsTAz"</span>)
             .<span class="kw">await
             </span>.unwrap();
-        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">&quot;0x6b7d7e82c984a0F4489c722fd11906F017f57704&quot;</span>).unwrap();
+        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">"0x6b7d7e82c984a0F4489c722fd11906F017f57704"</span>).unwrap();
         <span class="macro">assert_eq!</span>(owner, expected);
     }
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_should_support_r_on_personal_signatures() {
         <span class="kw">let </span>authenticator = Authenticator::new();
-        <span class="kw">let </span>chain = AuthChain::from_json(<span class="string">r#&quot;[
+        <span class="kw">let </span>chain = AuthChain::from_json(<span class="string">r#"[
             {
-              &quot;type&quot;: &quot;SIGNER&quot;,
-              &quot;payload&quot;: &quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;,
-              &quot;signature&quot;: &quot;&quot;
+              "type": "SIGNER",
+              "payload": "0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34",
+              "signature": ""
             },
             {
-              &quot;type&quot;: &quot;ECDSA_EPHEMERAL&quot;,
-              &quot;payload&quot;: &quot;Decentraland Login\r\nEphemeral address: 0xB80549D339DCe9834271EcF5F1F1bb141C70AbC2\r\nExpiration: 2123-03-20T12:36:25.522Z&quot;,
-              &quot;signature&quot;: &quot;0x76bf8d3c8ee6798bd488c4bc7ac1298d0ad78759669be39876e63ccfd9af81e31b8c6d8000b892ed2d17eb2f5a2b56fc3edbbf33c6089d3e5148d83cc70ce9001c&quot;
+              "type": "ECDSA_EPHEMERAL",
+              "payload": "Decentraland Login\r\nEphemeral address: 0xB80549D339DCe9834271EcF5F1F1bb141C70AbC2\r\nExpiration: 2123-03-20T12:36:25.522Z",
+              "signature": "0x76bf8d3c8ee6798bd488c4bc7ac1298d0ad78759669be39876e63ccfd9af81e31b8c6d8000b892ed2d17eb2f5a2b56fc3edbbf33c6089d3e5148d83cc70ce9001c"
             },
             {
-              &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;,
-              &quot;payload&quot;: &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;,
-              &quot;signature&quot;: &quot;0xd71fb5511f7d9116d171a12754b2c6f4c795240bee982511049a14aba57f18684b48a08413ab00176801d773eab0436fff5d0c978877b6d05f483ee2ae36efb41b&quot;
+              "type": "ECDSA_SIGNED_ENTITY",
+              "payload": "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo",
+              "signature": "0xd71fb5511f7d9116d171a12754b2c6f4c795240bee982511049a14aba57f18684b48a08413ab00176801d773eab0436fff5d0c978877b6d05f483ee2ae36efb41b"
             }
-          ]&quot;#</span>).unwrap();
+          ]"#</span>).unwrap();
 
         <span class="kw">let </span>owner = authenticator
-            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">&quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;</span>)
+            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">"QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo"</span>)
             .<span class="kw">await
             </span>.unwrap();
-        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">&quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;</span>).unwrap();
+        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">"0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34"</span>).unwrap();
         <span class="macro">assert_eq!</span>(owner, expected);
     }
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_should_support_r_on_eip_1654_signatures() {
-        <span class="kw">let </span>endpoint = env::var(<span class="string">&quot;ETHEREUM_MAINNET_RPC&quot;</span>).unwrap();
+        <span class="kw">let </span>endpoint = env::var(<span class="string">"ETHEREUM_MAINNET_RPC"</span>).unwrap();
         <span class="kw">let </span>transport = web3::transports::Http::new(<span class="kw-2">&amp;</span>endpoint).unwrap();
         <span class="kw">let </span>authenticator = Authenticator::with_transport(<span class="kw-2">&amp;</span>transport);
-        <span class="kw">let </span>chain = AuthChain::from_json(<span class="string">r#&quot;[
+        <span class="kw">let </span>chain = AuthChain::from_json(<span class="string">r#"[
             {
-              &quot;type&quot;: &quot;SIGNER&quot;,
-              &quot;payload&quot;: &quot;0x8C889222833F961FC991B31d15e25738c6732930&quot;,
-              &quot;signature&quot;: &quot;&quot;
+              "type": "SIGNER",
+              "payload": "0x8C889222833F961FC991B31d15e25738c6732930",
+              "signature": ""
             },
             {
-              &quot;type&quot;: &quot;ECDSA_EIP_1654_EPHEMERAL&quot;,
-              &quot;payload&quot;: &quot;Decentraland Login\r\nEphemeral address: 0x4A1b9FD363dE915145008C41FA217377B2C223F2\r\nExpiration: 2123-03-18T16:59:36.515Z&quot;,
-              &quot;signature&quot;: &quot;0x00050203596af90cecdbf9a768886e771178fd5561dd27ab005d000100019dde76f11e2c6aff01f6548f3046a9d0c569e13e79dec4218322068d3123e1162167fabd84dccfaabd350b93d2405f7b8a9cef4846b4d9a55d17838809a0e2591b020101c50adeadb7fe15bee45dcb820610cdedcd314eb0030102640dccefda3685e6c0dbeb70c1cf8018c27077eb00021cfbe892a1b29ac5e2fda1038c7965656be94aec57b658582f16447089bcf50b09df216a7e21d861cd7474723a7bfc70bf1caa55a962476cf78eb4b54471018b1b020103d9e87370ededc599df3bf9dd0e48586005f1a1bb&quot;
+              "type": "ECDSA_EIP_1654_EPHEMERAL",
+              "payload": "Decentraland Login\r\nEphemeral address: 0x4A1b9FD363dE915145008C41FA217377B2C223F2\r\nExpiration: 2123-03-18T16:59:36.515Z",
+              "signature": "0x00050203596af90cecdbf9a768886e771178fd5561dd27ab005d000100019dde76f11e2c6aff01f6548f3046a9d0c569e13e79dec4218322068d3123e1162167fabd84dccfaabd350b93d2405f7b8a9cef4846b4d9a55d17838809a0e2591b020101c50adeadb7fe15bee45dcb820610cdedcd314eb0030102640dccefda3685e6c0dbeb70c1cf8018c27077eb00021cfbe892a1b29ac5e2fda1038c7965656be94aec57b658582f16447089bcf50b09df216a7e21d861cd7474723a7bfc70bf1caa55a962476cf78eb4b54471018b1b020103d9e87370ededc599df3bf9dd0e48586005f1a1bb"
             },
             {
-              &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;,
-              &quot;payload&quot;: &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;,
-              &quot;signature&quot;: &quot;0xb962b57accc8e12083769339888f82752d13f280012b2c7b2aa2722eae103aea7a623dc88605bf7036ec8c23b0bb8f036b52f5e4e30ee913f6f2a077d5e5e3e01b&quot;
+              "type": "ECDSA_SIGNED_ENTITY",
+              "payload": "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo",
+              "signature": "0xb962b57accc8e12083769339888f82752d13f280012b2c7b2aa2722eae103aea7a623dc88605bf7036ec8c23b0bb8f036b52f5e4e30ee913f6f2a077d5e5e3e01b"
             }
-          ]&quot;#</span>).unwrap();
+          ]"#</span>).unwrap();
 
         <span class="kw">let </span>owner = authenticator
-            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">&quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;</span>)
+            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">"QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo"</span>)
             .<span class="kw">await
             </span>.unwrap();
-        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">&quot;0x8C889222833F961FC991B31d15e25738c6732930&quot;</span>).unwrap();
+        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">"0x8C889222833F961FC991B31d15e25738c6732930"</span>).unwrap();
         <span class="macro">assert_eq!</span>(owner, expected);
     }
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_should_fail_it_tries_to_verify_a_eip_1654_signatures_without_a_transport() {
-        <span class="kw">let </span>chain = AuthChain::from_json(<span class="string">r#&quot;[
+        <span class="kw">let </span>chain = AuthChain::from_json(<span class="string">r#"[
             {
-              &quot;type&quot;: &quot;SIGNER&quot;,
-              &quot;payload&quot;: &quot;0x8C889222833F961FC991B31d15e25738c6732930&quot;,
-              &quot;signature&quot;: &quot;&quot;
+              "type": "SIGNER",
+              "payload": "0x8C889222833F961FC991B31d15e25738c6732930",
+              "signature": ""
             },
             {
-              &quot;type&quot;: &quot;ECDSA_EIP_1654_EPHEMERAL&quot;,
-              &quot;payload&quot;: &quot;Decentraland Login\r\nEphemeral address: 0x4A1b9FD363dE915145008C41FA217377B2C223F2\r\nExpiration: 2123-03-18T16:59:36.515Z&quot;,
-              &quot;signature&quot;: &quot;0x00050203596af90cecdbf9a768886e771178fd5561dd27ab005d000100019dde76f11e2c6aff01f6548f3046a9d0c569e13e79dec4218322068d3123e1162167fabd84dccfaabd350b93d2405f7b8a9cef4846b4d9a55d17838809a0e2591b020101c50adeadb7fe15bee45dcb820610cdedcd314eb0030102640dccefda3685e6c0dbeb70c1cf8018c27077eb00021cfbe892a1b29ac5e2fda1038c7965656be94aec57b658582f16447089bcf50b09df216a7e21d861cd7474723a7bfc70bf1caa55a962476cf78eb4b54471018b1b020103d9e87370ededc599df3bf9dd0e48586005f1a1bb&quot;
+              "type": "ECDSA_EIP_1654_EPHEMERAL",
+              "payload": "Decentraland Login\r\nEphemeral address: 0x4A1b9FD363dE915145008C41FA217377B2C223F2\r\nExpiration: 2123-03-18T16:59:36.515Z",
+              "signature": "0x00050203596af90cecdbf9a768886e771178fd5561dd27ab005d000100019dde76f11e2c6aff01f6548f3046a9d0c569e13e79dec4218322068d3123e1162167fabd84dccfaabd350b93d2405f7b8a9cef4846b4d9a55d17838809a0e2591b020101c50adeadb7fe15bee45dcb820610cdedcd314eb0030102640dccefda3685e6c0dbeb70c1cf8018c27077eb00021cfbe892a1b29ac5e2fda1038c7965656be94aec57b658582f16447089bcf50b09df216a7e21d861cd7474723a7bfc70bf1caa55a962476cf78eb4b54471018b1b020103d9e87370ededc599df3bf9dd0e48586005f1a1bb"
             },
             {
-              &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;,
-              &quot;payload&quot;: &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;,
-              &quot;signature&quot;: &quot;0xb962b57accc8e12083769339888f82752d13f280012b2c7b2aa2722eae103aea7a623dc88605bf7036ec8c23b0bb8f036b52f5e4e30ee913f6f2a077d5e5e3e01b&quot;
+              "type": "ECDSA_SIGNED_ENTITY",
+              "payload": "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo",
+              "signature": "0xb962b57accc8e12083769339888f82752d13f280012b2c7b2aa2722eae103aea7a623dc88605bf7036ec8c23b0bb8f036b52f5e4e30ee913f6f2a077d5e5e3e01b"
             }
-          ]&quot;#</span>).unwrap();
+          ]"#</span>).unwrap();
 
         <span class="kw">let </span>authenticator = Authenticator::new();
         <span class="kw">let </span>result = authenticator
-            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">&quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;</span>)
+            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">"QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo"</span>)
             .<span class="kw">await</span>;
 
         <span class="macro">assert_eq!</span>(result, <span class="prelude-val">Err</span>(AuthenticatorError::ValidationError {
             position: <span class="number">1</span>,
-            kind: <span class="string">&quot;ECDSA_EIP_1654_EPHEMERAL&quot;</span>.to_string(),
-            message: <span class="string">&quot;rpc resolver not implemented&quot;</span>.to_string()
+            kind: <span class="string">"ECDSA_EIP_1654_EPHEMERAL"</span>.to_string(),
+            message: <span class="string">"rpc resolver not implemented"</span>.to_string()
         }));
     }
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_should_fail_if_ephemeral_is_expired() {
         <span class="kw">let </span>authenticator = Authenticator::new();
-        <span class="kw">let </span>chain = AuthChain::from_json(<span class="string">r#&quot;[
+        <span class="kw">let </span>chain = AuthChain::from_json(<span class="string">r#"[
             {
-              &quot;type&quot;: &quot;SIGNER&quot;,
-              &quot;payload&quot;: &quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;,
-              &quot;signature&quot;: &quot;&quot;
+              "type": "SIGNER",
+              "payload": "0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34",
+              "signature": ""
             },
             {
-              &quot;type&quot;: &quot;ECDSA_EPHEMERAL&quot;,
-              &quot;payload&quot;: &quot;Decentraland Login\nEphemeral address: 0xe94944439fAB988e5e14b128BbcF6D5502b05f9C\nExpiration: 2020-02-20T00:00:00.000Z&quot;,
-              &quot;signature&quot;: &quot;0x2d45e2a3e9e04614cf6bb822951b849458a78037733202d4bda12e60ef1ff4d266b02af7b72caa232c45052520fd440869672da2b0966b29fff21638e3d21ca01b&quot;
+              "type": "ECDSA_EPHEMERAL",
+              "payload": "Decentraland Login\nEphemeral address: 0xe94944439fAB988e5e14b128BbcF6D5502b05f9C\nExpiration: 2020-02-20T00:00:00.000Z",
+              "signature": "0x2d45e2a3e9e04614cf6bb822951b849458a78037733202d4bda12e60ef1ff4d266b02af7b72caa232c45052520fd440869672da2b0966b29fff21638e3d21ca01b"
             },
             {
-              &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;,
-              &quot;payload&quot;: &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;,
-              &quot;signature&quot;: &quot;0x6ae9bbd2af56ea61db3afe188d78381f0cb3177376b12537a3cb01e5d242c3fc49955475615209f194d98f0c751a24f712ab1c0caa9f92fa222bd2e13e2efd611c&quot;
+              "type": "ECDSA_SIGNED_ENTITY",
+              "payload": "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo",
+              "signature": "0x6ae9bbd2af56ea61db3afe188d78381f0cb3177376b12537a3cb01e5d242c3fc49955475615209f194d98f0c751a24f712ab1c0caa9f92fa222bd2e13e2efd611c"
             }
-          ]&quot;#</span>).unwrap();
+          ]"#</span>).unwrap();
 
         <span class="kw">let </span>result = authenticator
-            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">&quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;</span>)
+            .verify_signature(<span class="kw-2">&amp;</span>chain, <span class="string">"QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo"</span>)
             .<span class="kw">await</span>;
 
         <span class="macro">assert_eq!</span>(
             result,
             <span class="prelude-val">Err</span>(AuthenticatorError::ExpiredEntity {
                 position: <span class="number">1</span>,
-                kind: String::from(<span class="string">&quot;ECDSA_EPHEMERAL&quot;</span>)
+                kind: String::from(<span class="string">"ECDSA_EPHEMERAL"</span>)
             })
         );
 
-        <span class="kw">let </span>time = DateTime::parse_from_rfc3339(<span class="string">&quot;2020-01-01T00:00:00.000Z&quot;</span>)
+        <span class="kw">let </span>time = DateTime::parse_from_rfc3339(<span class="string">"2020-01-01T00:00:00.000Z"</span>)
             .unwrap()
             .with_timezone(<span class="kw-2">&amp;</span>Utc);
         <span class="kw">let </span>owner = authenticator
             .verify_signature_at(
                 <span class="kw-2">&amp;</span>chain,
-                <span class="string">&quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;</span>,
+                <span class="string">"QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo"</span>,
                 <span class="kw-2">&amp;</span>time,
             )
             .<span class="kw">await
             </span>.unwrap();
 
-        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">&quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;</span>).unwrap();
+        <span class="kw">let </span>expected = <span class="kw-2">&amp;</span>Address::try_from(<span class="string">"0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34"</span>).unwrap();
         <span class="macro">assert_eq!</span>(owner, expected);
     }
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_should_recover_address_from_signature() {
         <span class="kw">let </span>account = Account::random();
-        <span class="kw">let </span>payload = <span class="string">&quot;QmWyFNeHbxXaPtUnzKvDZPpKSa4d5anZEZEFJ8TC1WgcfU&quot;</span>;
+        <span class="kw">let </span>payload = <span class="string">"QmWyFNeHbxXaPtUnzKvDZPpKSa4d5anZEZEFJ8TC1WgcfU"</span>;
         <span class="kw">let </span>signature = account.sign(payload);
         <span class="kw">let </span>authenticator = Authenticator::new();
         <span class="kw">let </span>result =
@@ -1354,5 +1355,4 @@
         <span class="macro">assert_eq!</span>(owner, <span class="kw-2">&amp;</span>account.address());
     }
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="dcl_crypto" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

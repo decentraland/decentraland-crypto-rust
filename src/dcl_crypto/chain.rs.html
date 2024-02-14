@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/chain.rs`."><title>chain.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../dcl_crypto/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/chain.rs`."><title>chain.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="dcl_crypto" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -264,7 +265,7 @@
 <a href="#264" id="264">264</a>
 <a href="#265" id="265">265</a>
 <a href="#266" id="266">266</a>
-</pre><pre class="rust"><code><span class="kw">use </span>std::ops::Deref;
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::ops::Deref;
 <span class="kw">use </span>chrono::{DateTime, Utc};
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>serde_json::Error <span class="kw">as </span>SerdeError;
@@ -272,11 +273,11 @@
 <span class="kw">use crate</span>::{account::{Address, EIP1271Signature, PersonalSignature, EphemeralPayload, PERSONAL_SIGNATURE_SIZE, DecodeHexError}};
 
 
-<span class="kw">static </span>SIGNER: <span class="kw-2">&amp;</span>str = <span class="string">&quot;SIGNER&quot;</span>;
-<span class="kw">static </span>ECDSA_EPHEMERAL: <span class="kw-2">&amp;</span>str = <span class="string">&quot;ECDSA_EPHEMERAL&quot;</span>;
-<span class="kw">static </span>ECDSA_SIGNED_ENTITY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;ECDSA_SIGNED_ENTITY&quot;</span>;
-<span class="kw">static </span>ECDSA_EIP_1654_EPHEMERAL: <span class="kw-2">&amp;</span>str = <span class="string">&quot;ECDSA_EIP_1654_EPHEMERAL&quot;</span>;
-<span class="kw">static </span>ECDSA_EIP_1654_SIGNED_ENTITY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;ECDSA_EIP_1654_SIGNED_ENTITY&quot;</span>;
+<span class="kw">static </span>SIGNER: <span class="kw-2">&amp;</span>str = <span class="string">"SIGNER"</span>;
+<span class="kw">static </span>ECDSA_EPHEMERAL: <span class="kw-2">&amp;</span>str = <span class="string">"ECDSA_EPHEMERAL"</span>;
+<span class="kw">static </span>ECDSA_SIGNED_ENTITY: <span class="kw-2">&amp;</span>str = <span class="string">"ECDSA_SIGNED_ENTITY"</span>;
+<span class="kw">static </span>ECDSA_EIP_1654_EPHEMERAL: <span class="kw-2">&amp;</span>str = <span class="string">"ECDSA_EIP_1654_EPHEMERAL"</span>;
+<span class="kw">static </span>ECDSA_EIP_1654_SIGNED_ENTITY: <span class="kw-2">&amp;</span>str = <span class="string">"ECDSA_EIP_1654_SIGNED_ENTITY"</span>;
 
 <span class="doccomment">/// Representation of each link on an auth chain
 ///
@@ -284,8 +285,8 @@
 /// use dcl_crypto::account::Address;
 /// use dcl_crypto::chain::AuthLink;
 ///
-/// let signer = AuthLink::parse(r#&quot;{&quot;type&quot;: &quot;SIGNER&quot;,&quot;payload&quot;: &quot;0x3f17f1962b36e491b30a40b2405849e597ba5fb5&quot;,&quot;signature&quot;: &quot;&quot;}&quot;#).unwrap();
-/// let expected = AuthLink::signer(Address::try_from(&quot;0x3f17f1962b36e491b30a40b2405849e597ba5fb5&quot;).unwrap());
+/// let signer = AuthLink::parse(r#"{"type": "SIGNER","payload": "0x3f17f1962b36e491b30a40b2405849e597ba5fb5","signature": ""}"#).unwrap();
+/// let expected = AuthLink::signer(Address::try_from("0x3f17f1962b36e491b30a40b2405849e597ba5fb5").unwrap());
 /// assert_eq!(signer, expected);
 /// ```
 ///
@@ -293,29 +294,29 @@
 /// use dcl_crypto::account::{Address, PersonalSignature, EphemeralPayload};
 /// use dcl_crypto::chain::AuthLink;
 ///
-/// let personal_ephemeral = AuthLink::parse(r#&quot;{&quot;type&quot;:&quot;ECDSA_EPHEMERAL&quot;,&quot;payload&quot;:&quot;Decentraland Login\nEphemeral address: 0x612f2657CE738799056051aB09926cE806CcDa0E\nExpiration: 2023-05-02T23:06:21.135Z&quot;,&quot;signature&quot;:&quot;0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c5&quot;}&quot;#).unwrap();
+/// let personal_ephemeral = AuthLink::parse(r#"{"type":"ECDSA_EPHEMERAL","payload":"Decentraland Login\nEphemeral address: 0x612f2657CE738799056051aB09926cE806CcDa0E\nExpiration: 2023-05-02T23:06:21.135Z","signature":"0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c5"}"#).unwrap();
 /// let expected = AuthLink::EcdsaPersonalEphemeral{
-///     payload: EphemeralPayload::try_from(&quot;Decentraland Login\nEphemeral address: 0x612f2657CE738799056051aB09926cE806CcDa0E\nExpiration: 2023-05-02T23:06:21.135Z&quot;).unwrap(),
-///     signature: PersonalSignature::try_from(&quot;0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c5&quot;).unwrap(),
+///     payload: EphemeralPayload::try_from("Decentraland Login\nEphemeral address: 0x612f2657CE738799056051aB09926cE806CcDa0E\nExpiration: 2023-05-02T23:06:21.135Z").unwrap(),
+///     signature: PersonalSignature::try_from("0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c5").unwrap(),
 /// };
 /// assert_eq!(personal_ephemeral, expected);
 /// ```
 </span><span class="attr">#[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
-#[serde(tag = <span class="string">&quot;type&quot;</span>)]
+#[serde(tag = <span class="string">"type"</span>)]
 </span><span class="kw">pub enum </span>AuthLink {
-    <span class="attr">#[serde(rename = <span class="string">&quot;SIGNER&quot;</span>)]
+    <span class="attr">#[serde(rename = <span class="string">"SIGNER"</span>)]
     </span>Signer{
         payload: Address,
         signature: String,
     },
 
-    <span class="attr">#[serde(rename = <span class="string">&quot;ECDSA_EPHEMERAL&quot;</span>)]
+    <span class="attr">#[serde(rename = <span class="string">"ECDSA_EPHEMERAL"</span>)]
     </span>EcdsaPersonalEphemeral {
         payload: EphemeralPayload,
         signature: PersonalSignature,
     },
 
-    <span class="attr">#[serde(rename = <span class="string">&quot;ECDSA_SIGNED_ENTITY&quot;</span>)]
+    <span class="attr">#[serde(rename = <span class="string">"ECDSA_SIGNED_ENTITY"</span>)]
     </span>EcdsaPersonalSignedEntity {
         payload: String,
         signature: PersonalSignature,
@@ -323,7 +324,7 @@
 
     <span class="doccomment">/// See &lt;https://github.com/ethereum/EIPs/issues/1654&gt;
     /// See &lt;https://eips.ethereum.org/EIPS/eip-1271&gt;
-    </span><span class="attr">#[serde(rename = <span class="string">&quot;ECDSA_EIP_1654_EPHEMERAL&quot;</span>)]
+    </span><span class="attr">#[serde(rename = <span class="string">"ECDSA_EIP_1654_EPHEMERAL"</span>)]
     </span>EcdsaEip1654Ephemeral {
         payload: EphemeralPayload,
         signature: EIP1271Signature,
@@ -331,7 +332,7 @@
 
     <span class="doccomment">/// See &lt;https://github.com/ethereum/EIPs/issues/1654&gt;
     /// See &lt;https://eips.ethereum.org/EIPS/eip-1271&gt;
-    </span><span class="attr">#[serde(rename = <span class="string">&quot;ECDSA_EIP_1654_SIGNED_ENTITY&quot;</span>)]
+    </span><span class="attr">#[serde(rename = <span class="string">"ECDSA_EIP_1654_SIGNED_ENTITY"</span>)]
     </span>EcdsaEip1654SignedEntity {
         payload: String,
         signature: EIP1271Signature,
@@ -385,26 +386,26 @@
     /// use dcl_crypto::chain::AuthChain;
     /// use dcl_crypto::account::Address;
     ///
-    /// let address = Address::try_from(&quot;0x4A1b9FD363dE915145008C41FA217377B2C223F2&quot;).unwrap();
-    /// let payload = &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;;
-    /// let signature = &quot;0xb962b57accc8e12083769339888f82752d13f280012b2c7b2aa2722eae103aea7a623dc88605bf7036ec8c23b0bb8f036b52f5e4e30ee913f6f2a077d5e5e3e01b&quot;;
+    /// let address = Address::try_from("0x4A1b9FD363dE915145008C41FA217377B2C223F2").unwrap();
+    /// let payload = "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo";
+    /// let signature = "0xb962b57accc8e12083769339888f82752d13f280012b2c7b2aa2722eae103aea7a623dc88605bf7036ec8c23b0bb8f036b52f5e4e30ee913f6f2a077d5e5e3e01b";
     ///
     /// let chain = AuthChain::simple(address, payload, signature).unwrap();
     /// let owner = chain.owner().unwrap();
-    /// assert_eq!(owner, &amp;Address::try_from(&quot;0x4A1b9FD363dE915145008C41FA217377B2C223F2&quot;).unwrap());
+    /// assert_eq!(owner, &amp;Address::try_from("0x4A1b9FD363dE915145008C41FA217377B2C223F2").unwrap());
     /// ```
     ///
     /// ```rust
     /// use dcl_crypto::chain::AuthChain;
     /// use dcl_crypto::account::Address;
     ///
-    /// let address = Address::try_from(&quot;0x8C889222833F961FC991B31d15e25738c6732930&quot;).unwrap();
-    /// let payload = &quot;QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo&quot;;
-    /// let signature = &quot;0x00050203596af90cecdbf9a768886e771178fd5561dd27ab005d000100018d7c77aaeb3a8529951423128fa5b807192c27c4ce5af76bbf73ffc84eecd48c4a004c4b4db03cf04b269ad0f1fcf26c31b859cb0a693eeb3b8efd89dc9e3bea1b020101c50adeadb7fe15bee45dcb820610cdedcd314eb0030102640dccefda3685e6c0dbeb70c1cf8018c27077eb00020af67e80c0f311fddd79d3163c8ee840863a5a1eb3d236b10b8b6972164164236b32e13443e3cfe1be591534cb93607cf6e49e48e51f012e806c158819fa7b471c020103d9e87370ededc599df3bf9dd0e48586005f1a1bb&quot;;
+    /// let address = Address::try_from("0x8C889222833F961FC991B31d15e25738c6732930").unwrap();
+    /// let payload = "QmUsqJaHc5HQaBrojhBdjF4fr5MQc6CqhwZjqwhVRftNAo";
+    /// let signature = "0x00050203596af90cecdbf9a768886e771178fd5561dd27ab005d000100018d7c77aaeb3a8529951423128fa5b807192c27c4ce5af76bbf73ffc84eecd48c4a004c4b4db03cf04b269ad0f1fcf26c31b859cb0a693eeb3b8efd89dc9e3bea1b020101c50adeadb7fe15bee45dcb820610cdedcd314eb0030102640dccefda3685e6c0dbeb70c1cf8018c27077eb00020af67e80c0f311fddd79d3163c8ee840863a5a1eb3d236b10b8b6972164164236b32e13443e3cfe1be591534cb93607cf6e49e48e51f012e806c158819fa7b471c020103d9e87370ededc599df3bf9dd0e48586005f1a1bb";
     ///
     /// let chain = AuthChain::simple(address, payload, signature).unwrap();
     /// let owner = chain.owner().unwrap();
-    /// assert_eq!(owner, &amp;Address::try_from(&quot;0x8C889222833F961FC991B31d15e25738c6732930&quot;).unwrap());
+    /// assert_eq!(owner, &amp;Address::try_from("0x8C889222833F961FC991B31d15e25738c6732930").unwrap());
     /// ```
     </span><span class="kw">pub fn </span>simple&lt;P, T&gt;(signer: Address, payload: P, signature: T) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, DecodeHexError&gt; <span class="kw">where </span>P: AsRef&lt;str&gt;, T: AsRef&lt;str&gt; {
         <span class="kw">let </span>signature = signature.as_ref();
@@ -429,27 +430,27 @@
     /// use dcl_crypto::chain::AuthChain;
     /// use dcl_crypto::account::Address;
     ///
-    /// let chain = AuthChain::from_json(r#&quot;[
+    /// let chain = AuthChain::from_json(r#"[
     ///       {
-    ///        &quot;type&quot;: &quot;SIGNER&quot;,
-    ///        &quot;payload&quot;: &quot;0x3f17f1962b36e491b30a40b2405849e597ba5fb5&quot;,
-    ///        &quot;signature&quot;: &quot;&quot;
+    ///        "type": "SIGNER",
+    ///        "payload": "0x3f17f1962b36e491b30a40b2405849e597ba5fb5",
+    ///        "signature": ""
     ///      },
     ///      {
-    ///        &quot;type&quot;: &quot;ECDSA_EPHEMERAL&quot;,
-    ///        &quot;payload&quot;: &quot;Decentraland Login\nEphemeral address: 0x612f2657CE738799056051aB09926cE806CcDa0E\nExpiration: 2023-05-02T23:06:21.135Z&quot;,
-    ///        &quot;signature&quot;: &quot;0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c5&quot;
+    ///        "type": "ECDSA_EPHEMERAL",
+    ///        "payload": "Decentraland Login\nEphemeral address: 0x612f2657CE738799056051aB09926cE806CcDa0E\nExpiration: 2023-05-02T23:06:21.135Z",
+    ///        "signature": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c5"
     ///      },
     ///      {
-    ///        &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;,
-    ///        &quot;payload&quot;: &quot;signed message&quot;,
-    ///        &quot;signature&quot;: &quot;0x6168f285b5f905510de86c042c08fea79a66fff86abdf9ba4d374d0a6680ffc52ac251e36430a208d2369692797b3b049164b4b68d7519f50c8e5022e100837c1c&quot;
+    ///        "type": "ECDSA_SIGNED_ENTITY",
+    ///        "payload": "signed message",
+    ///        "signature": "0x6168f285b5f905510de86c042c08fea79a66fff86abdf9ba4d374d0a6680ffc52ac251e36430a208d2369692797b3b049164b4b68d7519f50c8e5022e100837c1c"
     ///      }
-    ///    ]&quot;#).unwrap();
+    ///    ]"#).unwrap();
     /// ```
     ///
     /// let owner = chain.owner().unwrap();
-    /// assert_eq!(owner, &amp;Address::try_from(&quot;0x3f17f1962b36e491b30a40b2405849e597ba5fb5&quot;).unwrap());
+    /// assert_eq!(owner, &amp;Address::try_from("0x3f17f1962b36e491b30a40b2405849e597ba5fb5").unwrap());
     </span><span class="kw">pub fn </span>from_json&lt;V&gt;(value: V) -&gt; <span class="prelude-ty">Result</span>&lt;AuthChain, SerdeError&gt; <span class="kw">where </span>V: AsRef&lt;str&gt; {
         serde_json::from_str::&lt;AuthChain&gt;(value.as_ref())
     }
@@ -461,24 +462,24 @@
     /// use dcl_crypto::chain::AuthChain;
     ///
     /// let chain = AuthChain::from_json_links(vec![
-    ///      r#&quot;{
-    ///        &quot;type&quot;: &quot;SIGNER&quot;,
-    ///        &quot;payload&quot;: &quot;0x3f17f1962b36e491b30a40b2405849e597ba5fb5&quot;,
-    ///        &quot;signature&quot;: &quot;&quot;
-    ///      }&quot;#,
-    ///     r#&quot;{
-    ///        &quot;type&quot;: &quot;ECDSA_EPHEMERAL&quot;,
-    ///        &quot;payload&quot;: &quot;Decentraland Login\nEphemeral address: 0x612f2657CE738799056051aB09926cE806CcDa0E\nExpiration: 2023-05-02T23:06:21.135Z&quot;,
-    ///        &quot;signature&quot;: &quot;0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c5&quot;
-    ///      }&quot;#,
-    ///     r#&quot;{
-    ///        &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;,
-    ///        &quot;payload&quot;: &quot;signed message&quot;,
-    ///        &quot;signature&quot;: &quot;0x6168f285b5f905510de86c042c08fea79a66fff86abdf9ba4d374d0a6680ffc52ac251e36430a208d2369692797b3b049164b4b68d7519f50c8e5022e100837c1c&quot;
-    ///      }&quot;#]).unwrap();
+    ///      r#"{
+    ///        "type": "SIGNER",
+    ///        "payload": "0x3f17f1962b36e491b30a40b2405849e597ba5fb5",
+    ///        "signature": ""
+    ///      }"#,
+    ///     r#"{
+    ///        "type": "ECDSA_EPHEMERAL",
+    ///        "payload": "Decentraland Login\nEphemeral address: 0x612f2657CE738799056051aB09926cE806CcDa0E\nExpiration: 2023-05-02T23:06:21.135Z",
+    ///        "signature": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c5"
+    ///      }"#,
+    ///     r#"{
+    ///        "type": "ECDSA_SIGNED_ENTITY",
+    ///        "payload": "signed message",
+    ///        "signature": "0x6168f285b5f905510de86c042c08fea79a66fff86abdf9ba4d374d0a6680ffc52ac251e36430a208d2369692797b3b049164b4b68d7519f50c8e5022e100837c1c"
+    ///      }"#]).unwrap();
     ///
     /// let owner = chain.owner().unwrap();
-    /// assert_eq!(owner, &amp;Address::try_from(&quot;0x3f17f1962b36e491b30a40b2405849e597ba5fb5&quot;).unwrap());
+    /// assert_eq!(owner, &amp;Address::try_from("0x3f17f1962b36e491b30a40b2405849e597ba5fb5").unwrap());
     /// ```
     </span><span class="kw">pub fn </span>from_json_links(value: Vec&lt;<span class="kw-2">&amp;</span>str&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;AuthChain, SerdeError&gt; {
         <span class="kw">let </span>links = value
@@ -498,13 +499,13 @@
     /// use dcl_crypto::chain::AuthChain;
     /// use dcl_crypto::account::Address;
     ///
-    /// let chain = AuthChain::from_json(r#&quot;[
-    ///     { &quot;type&quot;: &quot;SIGNER&quot;, &quot;payload&quot;: &quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;, &quot;signature&quot;: &quot;&quot;},
-    ///     { &quot;type&quot;: &quot;ECDSA_SIGNED_ENTITY&quot;, &quot;payload&quot;: &quot;signed message&quot;, &quot;signature&quot;: &quot;0x013e0b0b75bd8404d70a37d96bb893596814d8f29f517e383d9d1421111f83c32d4ca0d6e399349c7badd54261feaa39895d027880d28d806c01089677400b7c1b&quot;}
-    /// ]&quot;#).unwrap();
+    /// let chain = AuthChain::from_json(r#"[
+    ///     { "type": "SIGNER", "payload": "0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34", "signature": ""},
+    ///     { "type": "ECDSA_SIGNED_ENTITY", "payload": "signed message", "signature": "0x013e0b0b75bd8404d70a37d96bb893596814d8f29f517e383d9d1421111f83c32d4ca0d6e399349c7badd54261feaa39895d027880d28d806c01089677400b7c1b"}
+    /// ]"#).unwrap();
     ///
     /// let owner = chain.owner().unwrap();
-    /// assert_eq!(owner, &amp;Address::try_from(&quot;0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34&quot;).unwrap());
+    /// assert_eq!(owner, &amp;Address::try_from("0x84452bbfa4ca14b7828e2f3bbd106a2bd495cd34").unwrap());
     /// ```
     </span><span class="kw">pub fn </span>owner(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Address&gt; {
         <span class="kw">match </span>(<span class="kw-2">*</span><span class="self">self</span>).first() {
@@ -530,5 +531,4 @@
         })
     }
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="dcl_crypto" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

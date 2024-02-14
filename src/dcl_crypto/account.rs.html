@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/account.rs`."><title>account.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../dcl_crypto/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/account.rs`."><title>account.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="dcl_crypto" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -883,7 +884,7 @@
 <a href="#883" id="883">883</a>
 <a href="#884" id="884">884</a>
 <a href="#885" id="885">885</a>
-</pre><pre class="rust"><code><span class="kw">use </span>chrono::{DateTime, ParseError, SecondsFormat, TimeZone, Utc};
+</pre></div><pre class="rust"><code><span class="kw">use </span>chrono::{DateTime, ParseError, SecondsFormat, TimeZone, Utc};
 <span class="kw">use </span>hex::encode;
 <span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>regex::Regex;
@@ -903,16 +904,16 @@
 <span class="doccomment">/// An error that can occur when decoding a hexadecimal string
 </span><span class="attr">#[derive(Debug, PartialEq, Error)]
 </span><span class="kw">pub enum </span>DecodeHexError {
-    <span class="attr">#[error(<span class="string">&quot;hexadecimal value must be prefixed with 0x&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"hexadecimal value must be prefixed with 0x"</span>)]
     </span>MissingPrefix,
 
-    <span class="attr">#[error(<span class="string">&quot;odd number of digits&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"odd number of digits"</span>)]
     </span>OddLength,
 
-    <span class="attr">#[error(<span class="string">&quot;invalid string length&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"invalid string length"</span>)]
     </span>InvalidLength,
 
-    <span class="attr">#[error(<span class="string">&quot;invalid character {c:?} at position {index}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"invalid character {c:?} at position {index}"</span>)]
     </span>InvalidHexCharacter { c: char, index: usize },
 }
 
@@ -949,16 +950,16 @@
 /// use dcl_crypto::account::{decode, DecodeHexError};
 ///
 /// assert_eq!(
-///     decode(&quot;0x48656c6c6f20776f726c6421&quot;),
-///     Ok(&quot;Hello world!&quot;.to_owned().into_bytes())
+///     decode("0x48656c6c6f20776f726c6421"),
+///     Ok("Hello world!".to_owned().into_bytes())
 /// );
 ///
-/// assert_eq!(decode(&quot;123&quot;), Err(DecodeHexError::MissingPrefix));
-/// assert_eq!(decode(&quot;0x123&quot;), Err(DecodeHexError::OddLength));
-/// assert_eq!(decode(&quot;0xfo&quot;), Err(DecodeHexError::InvalidHexCharacter { c: &#39;o&#39;, index: 3 }));
+/// assert_eq!(decode("123"), Err(DecodeHexError::MissingPrefix));
+/// assert_eq!(decode("0x123"), Err(DecodeHexError::OddLength));
+/// assert_eq!(decode("0xfo"), Err(DecodeHexError::InvalidHexCharacter { c: 'o', index: 3 }));
 /// ```
 </span><span class="kw">pub fn </span>decode(value: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;u8&gt;, DecodeHexError&gt; {
-    <span class="kw">if </span>!value.starts_with(<span class="string">&quot;0x&quot;</span>) {
+    <span class="kw">if </span>!value.starts_with(<span class="string">"0x"</span>) {
         <span class="kw">return </span><span class="prelude-val">Err</span>(DecodeHexError::MissingPrefix);
     }
 
@@ -980,11 +981,11 @@
 /// use dcl_crypto::account::{decode_to_slice, DecodeHexError};
 ///
 /// let mut bytes = [0u8; 4];
-/// assert_eq!(decode_to_slice(&quot;0x6b697769&quot;, &amp;mut bytes as &amp;mut [u8]), Ok(()));
-/// assert_eq!(&amp;bytes, b&quot;kiwi&quot;);
+/// assert_eq!(decode_to_slice("0x6b697769", &amp;mut bytes as &amp;mut [u8]), Ok(()));
+/// assert_eq!(&amp;bytes, b"kiwi");
 /// ```
 </span><span class="kw">pub fn </span>decode_to_slice(value: <span class="kw-2">&amp;</span>str, bits: <span class="kw-2">&amp;mut </span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;(), DecodeHexError&gt; {
-    <span class="kw">if </span>!value.starts_with(<span class="string">&quot;0x&quot;</span>) {
+    <span class="kw">if </span>!value.starts_with(<span class="string">"0x"</span>) {
         <span class="kw">return </span><span class="prelude-val">Err</span>(DecodeHexError::MissingPrefix);
     }
 
@@ -996,7 +997,7 @@
 }
 
 <span class="attr">#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Copy)]
-#[serde(try_from = <span class="string">&quot;String&quot;</span>, into = <span class="string">&quot;String&quot;</span>)]
+#[serde(try_from = <span class="string">"String"</span>, into = <span class="string">"String"</span>)]
 </span><span class="kw">pub struct </span>Address(H160);
 
 <span class="kw">impl </span>Deref <span class="kw">for </span>Address {
@@ -1013,7 +1014,7 @@
     ///   use dcl_crypto::account::Address;
     ///
     ///   let address = Address::from([0; 20]);
-    ///   assert_eq!(address.to_string(), &quot;0x0000000000000000000000000000000000000000&quot;)
+    ///   assert_eq!(address.to_string(), "0x0000000000000000000000000000000000000000")
     /// ```
     </span><span class="kw">fn </span>from(value: [u8; <span class="number">20</span>]) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>(H160(value))
@@ -1028,7 +1029,7 @@
     ///   use dcl_crypto::account::Address;
     ///
     ///   let address = Address::from(H160([0; 20]));
-    ///   assert_eq!(address.to_string(), &quot;0x0000000000000000000000000000000000000000&quot;)
+    ///   assert_eq!(address.to_string(), "0x0000000000000000000000000000000000000000")
     /// ```
     </span><span class="kw">fn </span>from(value: H160) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>(value)
@@ -1062,8 +1063,8 @@
     /// ```rust
     ///   use dcl_crypto::account::Address;
     ///
-    ///   let lower_address = Address::try_from(&quot;0xf15fd08462c3248b2bfe9c39b48af7801fc303db&quot;);
-    ///   let upper_address = Address::try_from(&quot;0xF15FD08462C3248B2BFE9C39B48AF7801FC303DB&quot;);
+    ///   let lower_address = Address::try_from("0xf15fd08462c3248b2bfe9c39b48af7801fc303db");
+    ///   let upper_address = Address::try_from("0xF15FD08462C3248B2BFE9C39B48AF7801FC303DB");
     ///   let address_expected: [u8; 20] = [ 241, 95, 208, 132, 98, 195, 36, 139, 43, 254, 156, 57, 180, 138, 247, 128, 31, 195, 3, 219];
     ///   assert_eq!(lower_address.unwrap(), Address::from(address_expected));
     ///   assert_eq!(upper_address.unwrap(), Address::from(address_expected));
@@ -1073,7 +1074,7 @@
     /// ```rust
     ///   use dcl_crypto::account::{Address, DecodeHexError};
     ///
-    ///   let not_prefixed_address = Address::try_from(&quot;f15fd08462c3248b2bfe9c39b48af7801fc303db&quot;);
+    ///   let not_prefixed_address = Address::try_from("f15fd08462c3248b2bfe9c39b48af7801fc303db");
     ///   assert_eq!(not_prefixed_address.is_err(), true);
     ///   assert_eq!(not_prefixed_address, Err(DecodeHexError::MissingPrefix));
     /// ```
@@ -1082,11 +1083,11 @@
     /// ```rust
     ///   use dcl_crypto::account::{Address, DecodeHexError};
     ///
-    ///   let len_41_address = Address::try_from(&quot;0xf15fd08462c3248b2bfe9c39b48af7801fc303d&quot;);
+    ///   let len_41_address = Address::try_from("0xf15fd08462c3248b2bfe9c39b48af7801fc303d");
     ///   assert_eq!(len_41_address.is_err(), true);
     ///   assert_eq!(len_41_address, Err(DecodeHexError::InvalidLength));
     ///
-    ///   let len_43_address = Address::try_from(&quot;0xf15fd08462c3248b2bfe9c39b48af7801fc303dbb&quot;);
+    ///   let len_43_address = Address::try_from("0xf15fd08462c3248b2bfe9c39b48af7801fc303dbb");
     ///   assert_eq!(len_43_address.is_err(), true);
     ///   assert_eq!(len_43_address, Err(DecodeHexError::InvalidLength));
     /// ```
@@ -1095,9 +1096,9 @@
     /// ```rust
     ///   use dcl_crypto::account::{Address, DecodeHexError};
     ///
-    ///   let not_hex_address = Address::try_from(&quot;0xf15fd08462c3248b2bfe9c39b48af7801fc303dx&quot;);
+    ///   let not_hex_address = Address::try_from("0xf15fd08462c3248b2bfe9c39b48af7801fc303dx");
     ///   assert_eq!(not_hex_address.is_err(), true);
-    ///   assert_eq!(not_hex_address, Err(DecodeHexError::InvalidHexCharacter{ c: &#39;x&#39;, index: 41}));
+    ///   assert_eq!(not_hex_address, Err(DecodeHexError::InvalidHexCharacter{ c: 'x', index: 41}));
     /// ```
     </span><span class="kw">fn </span>try_from(value: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>bits: [u8; <span class="number">20</span>] = [<span class="number">0</span>; <span class="number">20</span>];
@@ -1123,13 +1124,13 @@
     ///     let address = Address::from([255; 20]);
     ///     let zero = Address::from([0; 20]);
     ///
-    ///     assert_eq!(format!(&quot;{zero:X}&quot;), &quot;0000000000000000000000000000000000000000&quot;);
-    ///     assert_eq!(format!(&quot;{address:X}&quot;), &quot;FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF&quot;);
+    ///     assert_eq!(format!("{zero:X}"), "0000000000000000000000000000000000000000");
+    ///     assert_eq!(format!("{address:X}"), "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
     ///
-    ///     assert_eq!(format!(&quot;{zero:#X}&quot;), &quot;0X0000000000000000000000000000000000000000&quot;);
-    ///     assert_eq!(format!(&quot;{address:#X}&quot;), &quot;0XFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF&quot;);
+    ///     assert_eq!(format!("{zero:#X}"), "0X0000000000000000000000000000000000000000");
+    ///     assert_eq!(format!("{address:#X}"), "0XFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
     /// ```
-    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
         std::fmt::UpperHex::fmt(<span class="kw-2">&amp;**</span><span class="self">self</span>, f)
     }
 }
@@ -1142,13 +1143,13 @@
     ///     let address = Address::from([255; 20]);
     ///     let zero = Address::from([0; 20]);
     ///
-    ///     assert_eq!(format!(&quot;{zero:x}&quot;), &quot;0000000000000000000000000000000000000000&quot;);
-    ///     assert_eq!(format!(&quot;{address:x}&quot;), &quot;ffffffffffffffffffffffffffffffffffffffff&quot;);
+    ///     assert_eq!(format!("{zero:x}"), "0000000000000000000000000000000000000000");
+    ///     assert_eq!(format!("{address:x}"), "ffffffffffffffffffffffffffffffffffffffff");
     ///
-    ///     assert_eq!(format!(&quot;{zero:#x}&quot;), &quot;0x0000000000000000000000000000000000000000&quot;);
-    ///     assert_eq!(format!(&quot;{address:#x}&quot;), &quot;0xffffffffffffffffffffffffffffffffffffffff&quot;);
+    ///     assert_eq!(format!("{zero:#x}"), "0x0000000000000000000000000000000000000000");
+    ///     assert_eq!(format!("{address:#x}"), "0xffffffffffffffffffffffffffffffffffffffff");
     /// ```
-    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
         std::fmt::LowerHex::fmt(<span class="kw-2">&amp;**</span><span class="self">self</span>, f)
     }
 }
@@ -1158,11 +1159,11 @@
     ///
     /// ```rust
     ///   use dcl_crypto::account::Address;
-    ///   assert_eq!(Address::from([0; 20]).to_string(), &quot;0x0000000000000000000000000000000000000000&quot;);
-    ///   assert_eq!(Address::from([255; 20]).to_string(), &quot;0xffffffffffffffffffffffffffffffffffffffff&quot;);
+    ///   assert_eq!(Address::from([0; 20]).to_string(), "0x0000000000000000000000000000000000000000");
+    ///   assert_eq!(Address::from([255; 20]).to_string(), "0xffffffffffffffffffffffffffffffffffffffff");
     /// ```
-    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        <span class="macro">write!</span>(f, <span class="string">&quot;{self:#x}&quot;</span>)
+    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">"{self:#x}"</span>)
     }
 }
 
@@ -1171,7 +1172,7 @@
     ///
     /// ```rust
     ///   use dcl_crypto::account::Address;
-    ///   assert_eq!(Address::zero().to_string(), &quot;0x0000000000000000000000000000000000000000&quot;)
+    ///   assert_eq!(Address::zero().to_string(), "0x0000000000000000000000000000000000000000")
     /// ```
     </span><span class="kw">pub fn </span>zero() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::from([<span class="number">0</span>; <span class="number">20</span>])
@@ -1181,14 +1182,14 @@
     ///
     /// ```rust
     ///     use dcl_crypto::account::Address;
-    ///     assert_eq!(Address::try_from(&quot;0x0f5d2fb29fb7d3cfee444a200298f468908cc942&quot;).unwrap().checksum(), &quot;0x0F5D2fB29fb7d3CFeE444a200298f468908cC942&quot;);
-    ///     assert_eq!(Address::try_from(&quot;0x554bb6488ba955377359bed16b84ed0822679cdc&quot;).unwrap().checksum(), &quot;0x554BB6488bA955377359bED16b84Ed0822679CDC&quot;);
-    ///     assert_eq!(Address::try_from(&quot;0x1784ef41af86e97f8d28afe95b573a24aeda966e&quot;).unwrap().checksum(), &quot;0x1784Ef41af86e97f8D28aFe95b573a24aEDa966e&quot;);
-    ///     assert_eq!(Address::from([255; 20]).checksum(), &quot;0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF&quot;);
-    ///     assert_eq!(Address::from([0; 20]).checksum(), &quot;0x0000000000000000000000000000000000000000&quot;);
+    ///     assert_eq!(Address::try_from("0x0f5d2fb29fb7d3cfee444a200298f468908cc942").unwrap().checksum(), "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942");
+    ///     assert_eq!(Address::try_from("0x554bb6488ba955377359bed16b84ed0822679cdc").unwrap().checksum(), "0x554BB6488bA955377359bED16b84Ed0822679CDC");
+    ///     assert_eq!(Address::try_from("0x1784ef41af86e97f8d28afe95b573a24aeda966e").unwrap().checksum(), "0x1784Ef41af86e97f8D28aFe95b573a24aEDa966e");
+    ///     assert_eq!(Address::from([255; 20]).checksum(), "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF");
+    ///     assert_eq!(Address::from([0; 20]).checksum(), "0x0000000000000000000000000000000000000000");
     /// ```
     </span><span class="kw">pub fn </span>checksum(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-        <span class="kw">let </span>hash = keccak256(<span class="macro">format!</span>(<span class="string">&quot;{self:x}&quot;</span>).as_bytes());
+        <span class="kw">let </span>hash = keccak256(<span class="macro">format!</span>(<span class="string">"{self:x}"</span>).as_bytes());
         <span class="kw">let </span>checksum = <span class="self">self
             </span>.as_bytes()
             .iter()
@@ -1197,12 +1198,12 @@
                 <span class="comment">// let h = hash[i];
                 </span><span class="kw">let </span>h1 = (hash[i] &amp; <span class="number">0b1111_0000</span>) &gt;&gt; <span class="number">4</span>;
                 <span class="kw">let </span>h2 = hash[i] &amp; <span class="number">0b0000_1111</span>;
-                <span class="kw">let </span>hex = <span class="macro">format!</span>(<span class="string">&quot;{b:02x}&quot;</span>);
-                <span class="kw">let </span>b1 = hex.get(<span class="number">0</span>..=<span class="number">0</span>).unwrap_or(<span class="string">&quot;0&quot;</span>);
-                <span class="kw">let </span>b2 = hex.get(<span class="number">1</span>..=<span class="number">1</span>).unwrap_or(<span class="string">&quot;0&quot;</span>);
+                <span class="kw">let </span>hex = <span class="macro">format!</span>(<span class="string">"{b:02x}"</span>);
+                <span class="kw">let </span>b1 = hex.get(<span class="number">0</span>..=<span class="number">0</span>).unwrap_or(<span class="string">"0"</span>);
+                <span class="kw">let </span>b2 = hex.get(<span class="number">1</span>..=<span class="number">1</span>).unwrap_or(<span class="string">"0"</span>);
                 <span class="comment">// hex
                 </span><span class="macro">format!</span>(
-                    <span class="string">&quot;{}{}&quot;</span>,
+                    <span class="string">"{}{}"</span>,
                     <span class="kw">if </span>h1 &gt;= <span class="number">8 </span>{
                         b1.to_uppercase()
                     } <span class="kw">else </span>{
@@ -1217,14 +1218,14 @@
             })
             .collect::&lt;String&gt;();
 
-        <span class="macro">format!</span>(<span class="string">&quot;0x{checksum}&quot;</span>)
+        <span class="macro">format!</span>(<span class="string">"0x{checksum}"</span>)
     }
 }
 
 <span class="kw">pub const </span>PERSONAL_SIGNATURE_SIZE: usize = <span class="number">65</span>;
 
 <span class="attr">#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
-#[serde(try_from = <span class="string">&quot;String&quot;</span>, into = <span class="string">&quot;String&quot;</span>)]
+#[serde(try_from = <span class="string">"String"</span>, into = <span class="string">"String"</span>)]
 </span><span class="kw">pub struct </span>PersonalSignature([u8; PERSONAL_SIGNATURE_SIZE]);
 
 <span class="kw">impl </span>Deref <span class="kw">for </span>PersonalSignature {
@@ -1324,10 +1325,10 @@
     ///
     /// ```rust
     ///   use dcl_crypto::account::PersonalSignature;
-    ///   assert_eq!(PersonalSignature::from([0; 65]).to_string(), &quot;0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000&quot;);
+    ///   assert_eq!(PersonalSignature::from([0; 65]).to_string(), "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
     /// ```
-    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        <span class="macro">write!</span>(f, <span class="string">&quot;0x{}&quot;</span>, hex::encode(<span class="self">self</span>.<span class="number">0</span>))
+    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">"0x{}"</span>, hex::encode(<span class="self">self</span>.<span class="number">0</span>))
     }
 }
 
@@ -1336,9 +1337,9 @@
     ///
     /// ```rust
     ///   use dcl_crypto::account::PersonalSignature;
-    ///   let signer = &quot;0xb92702b3eefb3c2049aeb845b0335b283e11e9c6&quot;;
-    ///   let message = &quot;Decentraland Login\nEphemeral address: 0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3\nExpiration: 2023-03-30T15:44:55.787Z&quot;;
-    ///   let payload = &quot;0xd35f95b1e35e95e31a65d972348633c34411030ce971e2c49513a28a04706aa44906c6da35cf7bad51872b15dc971541952be62e63af8c8e9b300dfcddf4c60a1c&quot;;
+    ///   let signer = "0xb92702b3eefb3c2049aeb845b0335b283e11e9c6";
+    ///   let message = "Decentraland Login\nEphemeral address: 0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3\nExpiration: 2023-03-30T15:44:55.787Z";
+    ///   let payload = "0xd35f95b1e35e95e31a65d972348633c34411030ce971e2c49513a28a04706aa44906c6da35cf7bad51872b15dc971541952be62e63af8c8e9b300dfcddf4c60a1c";
     ///
     ///   let sign = PersonalSignature::try_from(payload).unwrap();
     ///   let address = sign.try_recover_from_message(message).unwrap();
@@ -1366,7 +1367,7 @@
 
 <span class="doccomment">/// And
 </span><span class="attr">#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
-#[serde(try_from = <span class="string">&quot;String&quot;</span>, into = <span class="string">&quot;String&quot;</span>)]
+#[serde(try_from = <span class="string">"String"</span>, into = <span class="string">"String"</span>)]
 </span><span class="kw">pub struct </span>EIP1271Signature(Vec&lt;u8&gt;);
 
 <span class="kw">impl </span>Deref <span class="kw">for </span>EIP1271Signature {
@@ -1377,8 +1378,8 @@
 }
 
 <span class="kw">impl </span>Display <span class="kw">for </span>EIP1271Signature {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        <span class="macro">write!</span>(f, <span class="string">&quot;0x{}&quot;</span>, hex::encode(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>))
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">"0x{}"</span>, hex::encode(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>))
     }
 }
 
@@ -1407,12 +1408,12 @@
 
 <span class="kw">impl </span>From&lt;EIP1271Signature&gt; <span class="kw">for </span>String {
     <span class="kw">fn </span>from(value: EIP1271Signature) -&gt; <span class="self">Self </span>{
-        <span class="macro">format!</span>(<span class="string">&quot;0x{}&quot;</span>, hex::encode(value.<span class="number">0</span>))
+        <span class="macro">format!</span>(<span class="string">"0x{}"</span>, hex::encode(value.<span class="number">0</span>))
     }
 }
 
 <span class="attr">#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, PartialOrd, Copy)]
-#[serde(try_from = <span class="string">&quot;String&quot;</span>, into = <span class="string">&quot;String&quot;</span>)]
+#[serde(try_from = <span class="string">"String"</span>, into = <span class="string">"String"</span>)]
 </span><span class="kw">pub struct </span>Expiration(DateTime&lt;Utc&gt;);
 
 <span class="kw">impl </span>Deref <span class="kw">for </span>Expiration {
@@ -1452,8 +1453,8 @@
 }
 
 <span class="kw">impl </span>Display <span class="kw">for </span>Expiration {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="number">0</span>.to_rfc3339_opts(SecondsFormat::Millis, <span class="bool-val">true</span>))
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">"{}"</span>, <span class="self">self</span>.<span class="number">0</span>.to_rfc3339_opts(SecondsFormat::Millis, <span class="bool-val">true</span>))
     }
 }
 
@@ -1465,22 +1466,22 @@
 
 <span class="attr">#[derive(PartialEq, Debug, Error)]
 </span><span class="kw">pub enum </span>EphemeralPayloadError {
-    <span class="attr">#[error(<span class="string">&quot;invalid payload content&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"invalid payload content"</span>)]
     </span>InvalidPayload,
 
-    <span class="attr">#[error(<span class="string">&quot;missing title line on payload&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"missing title line on payload"</span>)]
     </span>MissingTitle,
 
-    <span class="attr">#[error(<span class="string">&quot;missing address line on payload&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"missing address line on payload"</span>)]
     </span>MissingAddress,
 
-    <span class="attr">#[error(<span class="string">&quot;invalid address: {err} (address: {value})&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"invalid address: {err} (address: {value})"</span>)]
     </span>InvalidAddress { err: DecodeHexError, value: String },
 
-    <span class="attr">#[error(<span class="string">&quot;missing expiration line on payload&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"missing expiration line on payload"</span>)]
     </span>MissingExpiration,
 
-    <span class="attr">#[error(<span class="string">&quot;invalid expiration: {err} (expiration: {value})&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"invalid expiration: {err} (expiration: {value})"</span>)]
     </span>InvalidExpiration { err: ParseError, value: String },
 }
 
@@ -1489,32 +1490,32 @@
 /// See &lt;https://github.com/ethereum/EIPs/issues/1654&gt;
 </span><span class="kw">pub type </span>EIP1654Signature = EIP1271Signature;
 
-<span class="kw">static </span>DEFAULT_EPHEMERAL_PAYLOAD_TITLE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Decentraland Login&quot;</span>;
+<span class="kw">static </span>DEFAULT_EPHEMERAL_PAYLOAD_TITLE: <span class="kw-2">&amp;</span>str = <span class="string">"Decentraland Login"</span>;
 
 <span class="doccomment">/// An `EphemeralPayload` is a message that delegates the right to sign a message to a specific address until an expiration date.
 ///
 /// ```rust
 ///     use dcl_crypto::account::{Address, EphemeralPayload, Expiration};
 ///
-///     let payload = EphemeralPayload::try_from(&quot;Decentraland Login\nEphemeral address: 0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3\nExpiration: 2023-03-30T15:44:55.787Z&quot;).unwrap();
-///     let expiration = Expiration::try_from(&quot;2023-03-30T15:44:55.787Z&quot;).unwrap();
+///     let payload = EphemeralPayload::try_from("Decentraland Login\nEphemeral address: 0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3\nExpiration: 2023-03-30T15:44:55.787Z").unwrap();
+///     let expiration = Expiration::try_from("2023-03-30T15:44:55.787Z").unwrap();
 ///
 ///     assert_eq!(payload, EphemeralPayload::new(
-///         Address::try_from(&quot;0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3&quot;).unwrap(),
+///         Address::try_from("0xA69ef8104E05325B01A15bA822Be43eF13a2f5d3").unwrap(),
 ///         expiration,
 ///     ))
 /// ```
 </span><span class="attr">#[derive(PartialEq, Debug, Serialize, Deserialize, Clone)]
-#[serde(try_from = <span class="string">&quot;String&quot;</span>, into = <span class="string">&quot;String&quot;</span>)]
+#[serde(try_from = <span class="string">"String"</span>, into = <span class="string">"String"</span>)]
 </span><span class="kw">pub struct </span>EphemeralPayload {
     <span class="kw">pub </span>title: String,
     <span class="kw">pub </span>address: Address,
     <span class="kw">pub </span>expiration: Expiration,
 }
 
-<span class="kw">static </span>RE_TITLE_CAPTURE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;title&quot;</span>;
-<span class="kw">static </span>RE_ADDRESS_CAPTURE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;address&quot;</span>;
-<span class="kw">static </span>RE_EXPIRATION_CAPTURE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;expiration&quot;</span>;
+<span class="kw">static </span>RE_TITLE_CAPTURE: <span class="kw-2">&amp;</span>str = <span class="string">"title"</span>;
+<span class="kw">static </span>RE_ADDRESS_CAPTURE: <span class="kw-2">&amp;</span>str = <span class="string">"address"</span>;
+<span class="kw">static </span>RE_EXPIRATION_CAPTURE: <span class="kw-2">&amp;</span>str = <span class="string">"expiration"</span>;
 
 <span class="kw">impl </span>TryFrom&lt;<span class="kw-2">&amp;</span>str&gt; <span class="kw">for </span>EphemeralPayload {
     <span class="kw">type </span>Error = EphemeralPayloadError;
@@ -1522,7 +1523,7 @@
     <span class="kw">fn </span>try_from(value: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
         <span class="macro">lazy_static! </span>{
             <span class="kw">static </span><span class="kw-2">ref </span>EPHEMERAL_PAYLOAD_REGEX: Regex = Regex::new(<span class="kw-2">&amp;</span><span class="macro">format!</span>(
-                <span class="string">r&quot;^(?P&lt;{}&gt;[^\r\n]*)\r?\nEphemeral address: (?P&lt;{}&gt;[^\r\n]*)\r?\nExpiration: (?P&lt;{}&gt;.*)$&quot;</span>,
+                <span class="string">r"^(?P&lt;{}&gt;[^\r\n]*)\r?\nEphemeral address: (?P&lt;{}&gt;[^\r\n]*)\r?\nExpiration: (?P&lt;{}&gt;.*)$"</span>,
                 RE_TITLE_CAPTURE, RE_ADDRESS_CAPTURE, RE_EXPIRATION_CAPTURE
             ))
             .unwrap();
@@ -1579,10 +1580,10 @@
 }
 
 <span class="kw">impl </span>Display <span class="kw">for </span>EphemeralPayload {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
         <span class="macro">write!</span>(
             f,
-            <span class="string">&quot;{}\nEphemeral address: {}\nExpiration: {}&quot;</span>,
+            <span class="string">"{}\nEphemeral address: {}\nExpiration: {}"</span>,
             <span class="self">self</span>.title,
             <span class="self">self</span>.address.checksum(),
             <span class="self">self</span>.expiration
@@ -1592,7 +1593,7 @@
 
 <span class="kw">impl </span>From&lt;EphemeralPayload&gt; <span class="kw">for </span>String {
     <span class="kw">fn </span>from(payload: EphemeralPayload) -&gt; <span class="self">Self </span>{
-        <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, payload)
+        <span class="macro">format!</span>(<span class="string">"{}"</span>, payload)
     }
 }
 
@@ -1642,7 +1643,7 @@
 
 <span class="comment">// Intermediary representation of a private key from an Identity
 </span><span class="attr">#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = <span class="string">&quot;camelCase&quot;</span>)]
+#[serde(rename_all = <span class="string">"camelCase"</span>)]
 </span><span class="kw">struct </span>EphemeralAccountRepresentation {
     <span class="kw">pub </span>address: String,
     <span class="kw">pub </span>public_key: String,
@@ -1661,8 +1662,8 @@
 <span class="doccomment">/// A Struct that allows us to sign messages and serialize and deserialize it easily
 </span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(
-    try_from = <span class="string">&quot;EphemeralAccountRepresentation&quot;</span>,
-    into = <span class="string">&quot;EphemeralAccountRepresentation&quot;
+    try_from = <span class="string">"EphemeralAccountRepresentation"</span>,
+    into = <span class="string">"EphemeralAccountRepresentation"
 </span>)]
 </span><span class="kw">pub struct </span>Account(secp256k1::SecretKey);
 
@@ -1695,7 +1696,7 @@
 <span class="doccomment">/// Converts an account into the hexadecimal representation of its private key.
 </span><span class="kw">impl </span>From&lt;Account&gt; <span class="kw">for </span>String {
     <span class="kw">fn </span>from(account: Account) -&gt; <span class="self">Self </span>{
-        <span class="macro">format!</span>(<span class="string">&quot;0x{}&quot;</span>, encode(account.<span class="number">0</span>.secret_bytes()))
+        <span class="macro">format!</span>(<span class="string">"0x{}"</span>, encode(account.<span class="number">0</span>.secret_bytes()))
     }
 }
 
@@ -1705,7 +1706,7 @@
         <span class="kw">let </span>public = to_public_key(<span class="kw-2">&amp;</span>account.<span class="number">0</span>).serialize_uncompressed();
         <span class="self">Self </span>{
             address: account.address().checksum(),
-            public_key: <span class="macro">format!</span>(<span class="string">&quot;0x{}&quot;</span>, hex::encode(public)),
+            public_key: <span class="macro">format!</span>(<span class="string">"0x{}"</span>, hex::encode(public)),
             private_key: account.into(),
         }
     }
@@ -1730,7 +1731,7 @@
     <span class="doccomment">/// Return the address of the signer.
     </span><span class="kw">fn </span>address(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Address;
 
-    <span class="doccomment">/// Sign a message with the Address&#39;s private key.
+    <span class="doccomment">/// Sign a message with the Address's private key.
     </span><span class="kw">fn </span>sign&lt;M: AsRef&lt;[u8]&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, message: M) -&gt; PersonalSignature;
 }
 
@@ -1740,8 +1741,8 @@
     /// ```rust
     /// use dcl_crypto::account::{Account, Address, Signer};
     ///
-    /// let account = Account::try_from(&quot;0xbc453a92d9baeb3d10294cbc1d48ef6738f718fd31b4eb8085efe7b311299399&quot;).unwrap();
-    /// assert_eq!(account.address(), Address::try_from(&quot;0x84452bbFA4ca14B7828e2F3BBd106A2bD495CD34&quot;).unwrap());
+    /// let account = Account::try_from("0xbc453a92d9baeb3d10294cbc1d48ef6738f718fd31b4eb8085efe7b311299399").unwrap();
+    /// assert_eq!(account.address(), Address::try_from("0x84452bbFA4ca14B7828e2F3BBd106A2bD495CD34").unwrap());
     /// ```
     </span><span class="kw">fn </span>address(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Address {
         <span class="kw">let </span>public = to_public_key(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>).serialize_uncompressed();
@@ -1756,9 +1757,9 @@
     /// ```rust
     /// use dcl_crypto::account::{Account, PersonalSignature, Signer};
     ///
-    /// let account = Account::try_from(&quot;0xbc453a92d9baeb3d10294cbc1d48ef6738f718fd31b4eb8085efe7b311299399&quot;).unwrap();
-    /// let message = account.sign(&quot;signed message&quot;);
-    /// assert_eq!(message, PersonalSignature::try_from(&quot;0x013e0b0b75bd8404d70a37d96bb893596814d8f29f517e383d9d1421111f83c32d4ca0d6e399349c7badd54261feaa39895d027880d28d806c01089677400b7c1b&quot;).unwrap());
+    /// let account = Account::try_from("0xbc453a92d9baeb3d10294cbc1d48ef6738f718fd31b4eb8085efe7b311299399").unwrap();
+    /// let message = account.sign("signed message");
+    /// assert_eq!(message, PersonalSignature::try_from("0x013e0b0b75bd8404d70a37d96bb893596814d8f29f517e383d9d1421111f83c32d4ca0d6e399349c7badd54261feaa39895d027880d28d806c01089677400b7c1b").unwrap());
     /// ```
     ///
     </span><span class="kw">fn </span>sign&lt;M: AsRef&lt;[u8]&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, message: M) -&gt; PersonalSignature {
@@ -1768,5 +1769,4 @@
         secp.sign_ecdsa_recoverable(<span class="kw-2">&amp;</span>message, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>).into()
     }
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="dcl_crypto" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>
